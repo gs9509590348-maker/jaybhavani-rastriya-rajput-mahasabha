@@ -10,29 +10,113 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif;}
 body{background:#f4f4f4;color:#222}
-header{background:linear-gradient(90deg,#7b0000,#b30000);color:#fff;text-align:center;padding:25px}
+
+header{
+background:linear-gradient(90deg,#7b0000,#b30000);
+color:#fff;text-align:center;padding:25px
+}
 header img{width:150px;margin-bottom:10px}
-nav{background:#111;display:flex;justify-content:center;flex-wrap:wrap}
-nav a{color:#fff;text-decoration:none;padding:12px 18px;font-weight:600}
+
+nav{
+background:#111;
+display:flex;
+justify-content:center;
+flex-wrap:wrap
+}
+nav a{
+color:#fff;
+text-decoration:none;
+padding:12px 18px;
+font-weight:600
+}
 nav a:hover{background:#b30000}
-.hero{background:#7b0000;color:#fff;text-align:center;padding:80px 20px}
+
+.hero{
+background:#7b0000;
+color:#fff;
+text-align:center;
+padding:80px 20px
+}
 .hero h2{font-size:34px}
-.section{padding:50px 20px;max-width:1100px;margin:auto}
-.section h3{text-align:center;color:#7b0000;font-size:28px;margin-bottom:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
-.box,.exec-card,.join-box{background:#fff;padding:22px;border-radius:14px;box-shadow:0 6px 18px rgba(0,0,0,.2);text-align:center}
-.exec-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px}
-.join-box{max-width:600px;margin:auto}
-.join-box input,.join-box textarea{width:100%;padding:12px;margin-bottom:12px}
-.join-box button{width:100%;padding:14px;background:#b30000;color:#fff;border:none;border-radius:30px;font-size:17px;font-weight:bold}
-footer{background:#111;color:#fff;text-align:center;padding:20px;margin-top:40px}
+
+.section{
+padding:50px 20px;
+max-width:1100px;
+margin:auto
+}
+.section h3{
+text-align:center;
+color:#7b0000;
+font-size:28px;
+margin-bottom:20px
+}
+
+.exec-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:20px
+}
+.exec-card{
+background:#fff;
+padding:22px;
+border-radius:14px;
+box-shadow:0 6px 18px rgba(0,0,0,.2);
+text-align:center
+}
+
+.join-box{
+background:#fff;
+padding:25px;
+border-radius:14px;
+box-shadow:0 6px 18px rgba(0,0,0,.2);
+max-width:600px;
+margin:auto;
+text-align:center
+}
+.join-box input{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+font-size:16px
+}
+.join-box button{
+width:100%;
+padding:14px;
+background:#b30000;
+color:#fff;
+border:none;
+border-radius:30px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer
+}
+.join-box button:hover{background:#7b0000}
+
+.join-links a{
+display:block;
+margin-top:15px;
+background:#111;
+color:#fff;
+padding:12px;
+border-radius:25px;
+text-decoration:none;
+font-weight:bold
+}
+
+footer{
+background:#111;
+color:#fff;
+text-align:center;
+padding:20px;
+margin-top:40px
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<img src="logo.png">
+<img src="logo.png" alt="JBRRMS Logo">
 <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
 <p>स्वाभिमान • एकता • संगठन • अधिकार</p>
 </header>
@@ -55,7 +139,7 @@ footer{background:#111;color:#fff;text-align:center;padding:20px;margin-top:40px
 <div class="exec-card"><b>शंकर सिंह राणा</b><br>युवा राष्ट्रीय अध्यक्ष<br>📞 9116568039</div>
 <div class="exec-card"><b>ठा. श्याम सिंह राठौड़</b><br>युवा प्रदेश अध्यक्ष (MP)<br>📞 9165463190</div>
 <div class="exec-card"><b>पप्पू सिंह जी</b><br>प्रदेश अध्यक्ष राजस्थान<br>📞 9772710875</div>
-<div class="exec-card"><b>गोपालसिंह</b><br>वेबसाइट हेल्पलाइन<br>📞 9166377972</div>
+<div class="exec-card"><b>गोपाल सिंह</b><br>वेबसाइट हेल्पलाइन<br>📞 9166377972</div>
 </div>
 </section>
 
@@ -64,28 +148,26 @@ footer{background:#111;color:#fff;text-align:center;padding:20px;margin-top:40px
 
 <div class="join-box">
 <form onsubmit="joinWA();return false;">
-<input id="n" placeholder="पूरा नाम" required>
-<input id="m" placeholder="मोबाइल" required>
-<input id="p" placeholder="जिला / राज्य" required>
+<input id="name" placeholder="पूरा नाम" required>
+<input id="mobile" placeholder="मोबाइल नंबर" required>
+<input id="place" placeholder="जिला / राज्य" required>
 <button>🚩 WhatsApp से Join करें</button>
 </form>
 
-<br>
-
-<a href="https://forms.gle/PASTE_GOOGLE_FORM_LINK"
-target="_blank"
-style="display:inline-block;background:#111;color:#fff;padding:12px 25px;border-radius:25px;text-decoration:none">
+<div class="join-links">
+<a href="https://forms.gle/PASTE_GOOGLE_FORM_LINK" target="_blank">
 📊 Online Join Form (Google Sheet)
 </a>
+</div>
 </div>
 </section>
 
 <section class="section" id="admin">
 <h3>Admin / Certificate</h3>
 <p style="text-align:center">
-<a href="https://docs.google.com/spreadsheets/d/PASTE_SHEET_LINK"
-target="_blank">📊 Admin Dashboard (Google Sheet)</a><br><br>
-
+<a href="https://docs.google.com/spreadsheets/d/PASTE_SHEET_LINK" target="_blank">
+📊 Admin Dashboard (Google Sheet)
+</a><br><br>
 📄 Certificate & 🪪 QR ID Card<br>
 ➡️ Admin Dashboard से Auto Generate होते हैं
 </p>
@@ -97,8 +179,20 @@ target="_blank">📊 Admin Dashboard (Google Sheet)</a><br><br>
 
 <script>
 function joinWA(){
-var t="जय भवानी राष्ट्रीय राजपूत महासभा Join%0Aनाम:"+n.value+"%0Aमोबाइल:"+m.value+"%0Aस्थान:"+p.value;
-window.open("https://wa.me/919166377972?text="+t,"_blank");
+var n=document.getElementById("name").value;
+var m=document.getElementById("mobile").value;
+var p=document.getElementById("place").value;
+
+var msg =
+"जय भवानी राष्ट्रीय राजपूत महासभा Join\n"+
+"नाम: "+n+"\n"+
+"मोबाइल: "+m+"\n"+
+"स्थान: "+p;
+
+window.open(
+"https://wa.me/919166377972?text="+encodeURIComponent(msg),
+"_blank"
+);
 }
 </script>
 
