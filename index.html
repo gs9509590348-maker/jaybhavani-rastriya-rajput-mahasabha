@@ -5,25 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Website</title>
-
 <meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, एकता, संगठन और अधिकार।">
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Segoe UI,sans-serif;
-}
-
-html{
-scroll-behavior:smooth;
-}
-
-body{
-background:#f4f4f4;
-color:#222;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif;}
+html{scroll-behavior:smooth;}
+body{background:#f4f4f4;color:#222;}
 
 /* HEADER */
 header{
@@ -32,24 +19,19 @@ color:#fff;
 text-align:center;
 padding:25px;
 }
-header img{
-width:150px;
-margin-bottom:10px;
-}
-header h1{
-font-size:28px;
-}
-header p{
-margin-top:6px;
-font-size:16px;
-}
+header img{width:150px;margin-bottom:10px;}
+header h1{font-size:28px;}
+header p{margin-top:6px;font-size:16px;}
 
-/* NAV */
+/* NAVBAR */
 nav{
 background:#111;
 display:flex;
 justify-content:center;
 flex-wrap:wrap;
+position:sticky;
+top:0;
+z-index:999;
 }
 nav a{
 color:#fff;
@@ -57,9 +39,7 @@ text-decoration:none;
 padding:12px 18px;
 font-weight:600;
 }
-nav a:hover{
-background:#b30000;
-}
+nav a:hover{background:#b30000;}
 
 /* HERO */
 .hero{
@@ -68,9 +48,7 @@ color:#fff;
 text-align:center;
 padding:80px 20px;
 }
-.hero h2{
-font-size:34px;
-}
+.hero h2{font-size:34px;}
 
 /* SECTION */
 .section{
@@ -83,6 +61,14 @@ text-align:center;
 color:#7b0000;
 font-size:28px;
 margin-bottom:25px;
+}
+
+/* BOX */
+.box{
+background:#fff;
+padding:25px;
+border-radius:14px;
+box-shadow:0 6px 18px rgba(0,0,0,.2);
 }
 
 /* EXECUTIVE */
@@ -101,13 +87,8 @@ text-align:center;
 
 /* JOIN */
 .join-box{
-background:#fff;
-padding:25px;
-border-radius:14px;
-box-shadow:0 6px 18px rgba(0,0,0,.2);
 max-width:600px;
 margin:auto;
-text-align:center;
 }
 .join-box input{
 width:100%;
@@ -126,9 +107,7 @@ font-size:17px;
 font-weight:bold;
 cursor:pointer;
 }
-.join-box button:hover{
-background:#7b0000;
-}
+.join-box button:hover{background:#7b0000;}
 
 .join-links a{
 display:block;
@@ -139,6 +118,7 @@ padding:12px;
 border-radius:25px;
 text-decoration:none;
 font-weight:bold;
+text-align:center;
 }
 
 /* FOOTER */
@@ -155,13 +135,14 @@ margin-top:40px;
 <body>
 
 <header>
-<img src="logo.png" alt="जय भवानी राष्ट्रीय राजपूत महासभा लोगो">
+<img src="logo.png" alt="JBRRMS Logo">
 <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
 <p>स्वाभिमान • एकता • संगठन • अधिकार</p>
 </header>
 
 <nav>
 <a href="#">Home</a>
+<a href="#objective">उद्देश्य</a>
 <a href="#executive">कार्यकारिणी</a>
 <a href="#join">जुड़ें</a>
 <a href="#admin">Admin</a>
@@ -171,44 +152,90 @@ margin-top:40px;
 <h2>राजपूत स्वाभिमान की राष्ट्रीय आवाज़</h2>
 </section>
 
-<section class="section" id="executive">
-<h3>कार्यकारिणी</h3>
-<div class="exec-grid">
-<div class="exec-card"><b>ठा. गोवर्धन सिंह जी</b><br>संस्थापक<br>📞 9784823382</div>
-<div class="exec-card"><b>शंकर सिंह राणा</b><br>युवा राष्ट्रीय अध्यक्ष<br>📞 9116568039</div>
-<div class="exec-card"><b>ठा. श्याम सिंह राठौड़</b><br>युवा प्रदेश अध्यक्ष (MP)<br>📞 9165463190</div>
-<div class="exec-card"><b>पप्पू सिंह जी</b><br>प्रदेश अध्यक्ष राजस्थान<br>📞 9772710875</div>
-<div class="exec-card"><b>गोपाल सिंह</b><br>वेबसाइट हेल्पलाइन<br>📞 9166377972</div>
+<!-- OBJECTIVE -->
+<section class="section" id="objective">
+<h3>🔴 उद्देश्य एवं संकल्प</h3>
+<div class="box" style="line-height:1.8;font-size:17px">
+
+<p><b>जय भवानी राष्ट्रीय राजपूत महासभा</b> का मुख्य उद्देश्य
+राजपूत समाज के <b>स्वाभिमान, एकता, संगठन और अधिकारों</b> की रक्षा करना है
+और राष्ट्र निर्माण में सक्रिय भूमिका निभाना है।</p>
+
+<hr>
+
+<p><b>1️⃣ स्वाभिमान की रक्षा</b><br>
+अन्याय, अपमान व शोषण के विरुद्ध संगठित आवाज़।</p>
+
+<p><b>2️⃣ एकता और संगठन</b><br>
+सम्पूर्ण देश में राजपूत समाज को एक सूत्र में बाँधना।</p>
+
+<p><b>3️⃣ सामाजिक न्याय और अधिकार</b><br>
+सामाजिक, आर्थिक, शैक्षणिक व राजनीतिक अधिकारों की रक्षा।</p>
+
+<p><b>4️⃣ युवा सशक्तिकरण</b><br>
+युवाओं को शिक्षा, नेतृत्व और राष्ट्रसेवा के लिए प्रेरित करना।</p>
+
+<p><b>5️⃣ संस्कृति संरक्षण</b><br>
+राजपूत इतिहास, परंपरा और बलिदान की रक्षा।</p>
+
+<p><b>6️⃣ शिक्षा और जागरूकता</b><br>
+शिक्षा व आत्मनिर्भरता को बढ़ावा।</p>
+
+<p><b>7️⃣ राष्ट्रहित सर्वोपरि</b><br>
+राष्ट्र की एकता व अखंडता के लिए प्रतिबद्धता।</p>
+
+<p><b>8️⃣ सेवा और सहयोग</b><br>
+आपदा व संकट में समाज व राष्ट्र की सेवा।</p>
+
+<hr>
+<p style="text-align:center;font-weight:bold">
+“पद से बड़ा स्वाभिमान,<br>
+व्यक्ति से बड़ा समाज,<br>
+और समाज से बड़ा राष्ट्र।”
+</p>
+
 </div>
 </section>
 
+<!-- EXECUTIVE -->
+<section class="section" id="executive">
+<h3>कार्यकारिणी</h3>
+<div class="exec-grid">
+<div class="exec-card"><b>ठा. गोवर्धन सिंह जी</b><br>संस्थापक</div>
+<div class="exec-card"><b>शंकर सिंह राणा</b><br>युवा राष्ट्रीय अध्यक्ष</div>
+<div class="exec-card"><b>ठा. श्याम सिंह राठौड़</b><br>युवा प्रदेश अध्यक्ष (MP)</div>
+<div class="exec-card"><b>पप्पू सिंह जी</b><br>प्रदेश अध्यक्ष राजस्थान</div>
+<div class="exec-card"><b>गोपाल सिंह</b><br>वेबसाइट हेल्पलाइन</div>
+</div>
+</section>
+
+<!-- JOIN -->
 <section class="section" id="join">
 <h3>संगठन से जुड़ें</h3>
-
-<div class="join-box">
+<div class="box join-box">
 <form id="joinForm">
 <input id="name" placeholder="पूरा नाम" required>
-<input id="mobile" type="tel" pattern="[0-9]{10}" placeholder="मोबाइल नंबर (10 अंक)" required>
+<input id="mobile" type="tel" pattern="[0-9]{10}" placeholder="मोबाइल नंबर" required>
 <input id="place" placeholder="जिला / राज्य" required>
 <button type="submit">🚩 WhatsApp से Join करें</button>
 </form>
 
 <div class="join-links">
 <a href="https://forms.gle/PASTE_GOOGLE_FORM_LINK" target="_blank">
-📊 Online Join Form (Google Sheet)
+📊 Online Join Form
 </a>
 </div>
 </div>
 </section>
 
+<!-- ADMIN -->
 <section class="section" id="admin">
-<h3>Admin / Certificate</h3>
+<h3>Admin Panel</h3>
 <p style="text-align:center">
 <a href="https://docs.google.com/spreadsheets/d/PASTE_SHEET_LINK" target="_blank">
 📊 Admin Dashboard (Google Sheet)
 </a><br><br>
-📄 Certificate & 🪪 QR ID Card<br>
-➡️ Admin Dashboard से Auto Generate होते हैं
+ID Card और Certificate Admin से Auto Generate होते हैं
 </p>
 </section>
 
@@ -219,26 +246,10 @@ margin-top:40px;
 <script>
 document.getElementById("joinForm").addEventListener("submit",function(e){
 e.preventDefault();
-
-var n=document.getElementById("name").value.trim();
-var m=document.getElementById("mobile").value.trim();
-var p=document.getElementById("place").value.trim();
-
-if(n==="" || m==="" || p===""){
-alert("कृपया सभी जानकारी भरें");
-return;
-}
-
-var msg =
-"जय भवानी राष्ट्रीय राजपूत महासभा Join\n"+
-"नाम: "+n+"\n"+
-"मोबाइल: "+m+"\n"+
-"स्थान: "+p;
-
-window.open(
-"https://wa.me/919166377972?text="+encodeURIComponent(msg),
-"_blank"
-);
+var n=name.value.trim(), m=mobile.value.trim(), p=place.value.trim();
+if(!n||!m||!p){alert("सभी जानकारी भरें");return;}
+var msg="जय भवानी Join\nनाम: "+n+"\nमोबाइल: "+m+"\nस्थान: "+p;
+window.open("https://wa.me/919166377972?text="+encodeURIComponent(msg),"_blank");
 });
 </script>
 
