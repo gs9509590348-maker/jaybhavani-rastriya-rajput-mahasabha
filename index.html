@@ -1,14 +1,13 @@
-
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>जय भवानी राष्ट्रीय राजपूत महासभा</title>
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | JBRRMS</title>
 
-<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, संगठन और एकता का राष्ट्रीय मंच">
-<meta name="keywords" content="Rajput, JBRRMS, जय भवानी, राजपूत महासभा">
+<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, संगठन और एकता का राष्ट्रीय मंच।">
+<meta name="keywords" content="JBRRMS, जय भवानी, राजपूत महासभा, Rajput Samaj">
 <meta name="author" content="JBRRMS">
 
 <style>
@@ -22,25 +21,19 @@
 body{
     background:#f4f4f4;
     color:#222;
+    line-height:1.6;
 }
 
 /* HEADER */
 header{
     background:linear-gradient(90deg,#7b0000,#b30000);
     color:#fff;
-    padding:25px;
+    padding:30px 15px;
     text-align:center;
 }
 
-header h1{
-    font-size:30px;
-    font-weight:bold;
-}
-
-header p{
-    margin-top:8px;
-    font-size:16px;
-}
+header h1{ font-size:32px; }
+header p{ margin-top:8px; font-size:17px; }
 
 /* NAV */
 nav{
@@ -49,45 +42,86 @@ nav{
     justify-content:center;
     flex-wrap:wrap;
 }
-
 nav a{
     color:#fff;
     text-decoration:none;
     padding:12px 18px;
     font-weight:600;
 }
-
-nav a:hover{
-    background:#b30000;
-}
+nav a:hover{ background:#b30000; }
 
 /* HERO */
 .hero{
-    padding:40px 20px;
-    text-align:center;
     background:#fff;
+    padding:50px 20px;
+    text-align:center;
 }
-
 .hero h2{
-    font-size:26px;
     color:#7b0000;
+    font-size:28px;
 }
-
 .hero p{
-    margin-top:12px;
-    font-size:17px;
+    margin:15px auto;
+    max-width:750px;
+    font-size:18px;
+}
+.hero a{
+    display:inline-block;
+    margin-top:20px;
+    background:#b30000;
+    color:#fff;
+    padding:12px 30px;
+    border-radius:30px;
+    text-decoration:none;
+    font-weight:600;
 }
 
 /* SECTION */
 .section{
-    padding:30px 20px;
-    max-width:900px;
+    max-width:1000px;
     margin:auto;
+    padding:40px 20px;
 }
-
 .section h3{
     color:#7b0000;
-    margin-bottom:10px;
+    margin-bottom:15px;
+    font-size:24px;
+}
+
+/* OBJECTIVES */
+.objectives ul{ padding-left:20px; }
+.objectives li{ margin-bottom:10px; }
+.sankalp{
+    margin-top:20px;
+    padding:15px;
+    background:#fff3f3;
+    border-left:5px solid #b30000;
+    color:#7b0000;
+    font-weight:600;
+}
+
+/* OFFICIALS TABLE */
+.executive{
+    background:#fff;
+    border-radius:6px;
+    padding:20px;
+}
+.executive table{
+    width:100%;
+    border-collapse:collapse;
+}
+.executive th, .executive td{
+    border:1px solid #ddd;
+    padding:12px;
+    text-align:center;
+    font-size:15px;
+}
+.executive th{
+    background:#7b0000;
+    color:#fff;
+}
+.executive tr:nth-child(even){
+    background:#f9f9f9;
 }
 
 /* FOOTER */
@@ -95,8 +129,15 @@ footer{
     background:#111;
     color:#fff;
     text-align:center;
-    padding:15px;
-    margin-top:30px;
+    padding:18px;
+    margin-top:40px;
+    font-size:14px;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+    header h1{ font-size:26px; }
+    .hero h2{ font-size:22px; }
 }
 </style>
 </head>
@@ -110,36 +151,83 @@ footer{
 
 <nav>
     <a href="#">होम</a>
-    <a href="#">हमारे बारे में</a>
-    <a href="#">उद्देश्य</a>
-    <a href="#">सदस्यता</a>
-    <a href="#">संपर्क</a>
+    <a href="#objectives">उद्देश्य</a>
+    <a href="#officials">पदाधिकारी</a>
+    <a href="#contact">संपर्क</a>
 </nav>
 
-<div class="hero">
+<section class="hero">
     <h2>राजपूत स्वाभिमान का राष्ट्रीय मंच</h2>
-    <p>एकता, अधिकार और सम्मान के लिए समर्पित संगठन</p>
-</div>
-
-<div class="section">
-    <h3>हमारा उद्देश्य</h3>
     <p>
-        जय भवानी राष्ट्रीय राजपूत महासभा का उद्देश्य
-        राजपूत समाज को संगठित करना, स्वाभिमान की रक्षा करना
-        और समाज के हितों के लिए राष्ट्रीय स्तर पर आवाज़ उठाना है।
+        जय भवानी राष्ट्रीय राजपूत महासभा राजपूत समाज की
+        एकता, सम्मान और अधिकारों के लिए
+        राष्ट्रीय स्तर पर कार्यरत संगठन है।
     </p>
-</div>
+    <a href="https://wa.me/919166377972">WhatsApp से जुड़ें</a>
+</section>
 
-<div class="section">
-    <h3>सदस्य बनें</h3>
-    <p>
-        आप भी हमारे संगठन से जुड़कर
-        समाज निर्माण में अपना योगदान दे सकते हैं।
-    </p>
-</div>
+<section class="section objectives" id="objectives">
+    <h3>हमारे उद्देश्य</h3>
+    <ul>
+        <li>राजपूत समाज के स्वाभिमान और सम्मान की रक्षा करना।</li>
+        <li>देशभर में समाज को संगठित कर मजबूत संगठन बनाना।</li>
+        <li>युवाओं को नेतृत्व, शिक्षा और संस्कार के लिए प्रेरित करना।</li>
+        <li>सामाजिक, शैक्षणिक एवं आर्थिक उत्थान करना।</li>
+        <li>संस्कृति, परंपरा और इतिहास का संरक्षण करना।</li>
+        <li>एकता, भाईचारा और समरसता को बढ़ावा देना।</li>
+        <li>राष्ट्रहित एवं समाजहित में सक्रिय भूमिका निभाना।</li>
+    </ul>
 
-<footer>
-    © 2025 जय भवानी राष्ट्रीय राजपूत महासभा | All Rights Reserved
+    <div class="sankalp">
+        “स्वाभिमान हमारी पहचान है, संगठन हमारी शक्ति है और एकता हमारा संकल्प।”
+    </div>
+</section>
+
+<section class="section executive" id="officials">
+    <h3>संस्थापक एवं पदाधिकारी</h3>
+
+    <table>
+        <tr>
+            <th>पद</th>
+            <th>नाम</th>
+            <th>ठिकाना</th>
+            <th>मोबाइल नंबर</th>
+        </tr>
+        <tr>
+            <td>संस्थापक</td>
+            <td>ठा. गोवर्धन सिंह जी</td>
+            <td>बरखेड़ी मिठ्ठू</td>
+            <td><a href="tel:+919784823382">+91 97848 23382</a></td>
+        </tr>
+        <tr>
+            <td>राष्ट्रीय युवा अध्यक्ष</td>
+            <td>शंकर सिंह जी राणा</td>
+            <td>मोगरा</td>
+            <td><a href="tel:+919116568039">+91 91165 68039</a></td>
+        </tr>
+        <tr>
+            <td>युवा प्रदेश अध्यक्ष (म.प्र.)</td>
+            <td>ठा. श्याम सिंह राठौड़</td>
+            <td>डाबला मनोहर</td>
+            <td><a href="tel:+919165463190">+91 91654 63190</a></td>
+        </tr>
+        <tr>
+            <td>प्रदेश अध्यक्ष (राजस्थान)</td>
+            <td>पप्पू सिंह जी</td>
+            <td>झरिका का खेड़ा</td>
+            <td><a href="tel:+919772710875">+91 97727 10875</a></td>
+        </tr>
+        <tr>
+            <td>वेबसाइट हेल्पलाइन</td>
+            <td>गोपाल सिंह (हरनावदा गजा)</td>
+            <td>—</td>
+            <td><a href="tel:+919166377972">+91 91663 77972</a></td>
+        </tr>
+    </table>
+</section>
+
+<footer id="contact">
+    © 2025 जय भवानी राष्ट्रीय राजपूत महासभा (JBRRMS) | All Rights Reserved
 </footer>
 
 </body>
