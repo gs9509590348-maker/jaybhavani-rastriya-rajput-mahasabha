@@ -3,67 +3,103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Website</title>
 
 <meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, एकता, संगठन और अधिकार।">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif;}
-body{background:#f4f4f4;color:#222}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI,sans-serif;
+}
 
+html{
+scroll-behavior:smooth;
+}
+
+body{
+background:#f4f4f4;
+color:#222;
+}
+
+/* HEADER */
 header{
 background:linear-gradient(90deg,#7b0000,#b30000);
-color:#fff;text-align:center;padding:25px
+color:#fff;
+text-align:center;
+padding:25px;
 }
-header img{width:150px;margin-bottom:10px}
+header img{
+width:150px;
+margin-bottom:10px;
+}
+header h1{
+font-size:28px;
+}
+header p{
+margin-top:6px;
+font-size:16px;
+}
 
+/* NAV */
 nav{
 background:#111;
 display:flex;
 justify-content:center;
-flex-wrap:wrap
+flex-wrap:wrap;
 }
 nav a{
 color:#fff;
 text-decoration:none;
 padding:12px 18px;
-font-weight:600
+font-weight:600;
 }
-nav a:hover{background:#b30000}
+nav a:hover{
+background:#b30000;
+}
 
+/* HERO */
 .hero{
 background:#7b0000;
 color:#fff;
 text-align:center;
-padding:80px 20px
+padding:80px 20px;
 }
-.hero h2{font-size:34px}
+.hero h2{
+font-size:34px;
+}
 
+/* SECTION */
 .section{
 padding:50px 20px;
 max-width:1100px;
-margin:auto
+margin:auto;
 }
 .section h3{
 text-align:center;
 color:#7b0000;
 font-size:28px;
-margin-bottom:20px
+margin-bottom:25px;
 }
 
+/* EXECUTIVE */
 .exec-grid{
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:20px
+gap:20px;
 }
 .exec-card{
 background:#fff;
 padding:22px;
 border-radius:14px;
 box-shadow:0 6px 18px rgba(0,0,0,.2);
-text-align:center
+text-align:center;
 }
 
+/* JOIN */
 .join-box{
 background:#fff;
 padding:25px;
@@ -71,13 +107,13 @@ border-radius:14px;
 box-shadow:0 6px 18px rgba(0,0,0,.2);
 max-width:600px;
 margin:auto;
-text-align:center
+text-align:center;
 }
 .join-box input{
 width:100%;
 padding:12px;
 margin-bottom:12px;
-font-size:16px
+font-size:16px;
 }
 .join-box button{
 width:100%;
@@ -88,9 +124,11 @@ border:none;
 border-radius:30px;
 font-size:17px;
 font-weight:bold;
-cursor:pointer
+cursor:pointer;
 }
-.join-box button:hover{background:#7b0000}
+.join-box button:hover{
+background:#7b0000;
+}
 
 .join-links a{
 display:block;
@@ -100,15 +138,16 @@ color:#fff;
 padding:12px;
 border-radius:25px;
 text-decoration:none;
-font-weight:bold
+font-weight:bold;
 }
 
+/* FOOTER */
 footer{
 background:#111;
 color:#fff;
 text-align:center;
 padding:20px;
-margin-top:40px
+margin-top:40px;
 }
 </style>
 </head>
@@ -116,7 +155,7 @@ margin-top:40px
 <body>
 
 <header>
-<img src="logo.png" alt="JBRRMS Logo">
+<img src="logo.png" alt="जय भवानी राष्ट्रीय राजपूत महासभा लोगो">
 <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
 <p>स्वाभिमान • एकता • संगठन • अधिकार</p>
 </header>
@@ -147,11 +186,11 @@ margin-top:40px
 <h3>संगठन से जुड़ें</h3>
 
 <div class="join-box">
-<form onsubmit="joinWA();return false;">
+<form id="joinForm">
 <input id="name" placeholder="पूरा नाम" required>
-<input id="mobile" placeholder="मोबाइल नंबर" required>
+<input id="mobile" type="tel" pattern="[0-9]{10}" placeholder="मोबाइल नंबर (10 अंक)" required>
 <input id="place" placeholder="जिला / राज्य" required>
-<button>🚩 WhatsApp से Join करें</button>
+<button type="submit">🚩 WhatsApp से Join करें</button>
 </form>
 
 <div class="join-links">
@@ -178,10 +217,17 @@ margin-top:40px
 </footer>
 
 <script>
-function joinWA(){
-var n=document.getElementById("name").value;
-var m=document.getElementById("mobile").value;
-var p=document.getElementById("place").value;
+document.getElementById("joinForm").addEventListener("submit",function(e){
+e.preventDefault();
+
+var n=document.getElementById("name").value.trim();
+var m=document.getElementById("mobile").value.trim();
+var p=document.getElementById("place").value.trim();
+
+if(n==="" || m==="" || p===""){
+alert("कृपया सभी जानकारी भरें");
+return;
+}
 
 var msg =
 "जय भवानी राष्ट्रीय राजपूत महासभा Join\n"+
@@ -193,7 +239,7 @@ window.open(
 "https://wa.me/919166377972?text="+encodeURIComponent(msg),
 "_blank"
 );
-}
+});
 </script>
 
 </body>
