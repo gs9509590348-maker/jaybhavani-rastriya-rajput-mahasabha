@@ -1,127 +1,294 @@
 
-<!-- ================= LOGO HEADER START ================= -->
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Website</title>
+
+<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, एकता, संगठन और अधिकारों के लिए समर्पित राष्ट्रीय संगठन।">
+
 <style>
-.logo-header{
-    background:linear-gradient(90deg,#7b0000,#b30000);
-    padding:20px;
-    text-align:center;
-    color:#fff;
-}
-.logo-header img{
-    width:120px;
-    height:auto;
-    margin-bottom:10px;
-}
-.logo-header h1{
-    font-size:28px;
-}
-.logo-header p{
-    font-size:16px;
-}
-</style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,sans-serif;}
+body{background:#f4f4f4;color:#222;}
 
-<div class="logo-header">
-    <!-- LOGO IMAGE -->
-    <img src="logo.jpg" alt="जय भवानी राष्ट्रीय राजपूत महासभा लोगो">
-    <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
-    <p>स्वाभिमान • संगठन • एकता</p>
-</div>
-<!-- ================= LOGO HEADER END ================= -->
+/* HEADER */
+header{
+background:linear-gradient(90deg,#7b0000,#b30000);
+color:#fff;
+padding:25px 15px;
+text-align:center;
+}
+header img{
+width:160px;
+max-width:90%;
+margin-bottom:10px;
+}
+header h1{font-size:30px;font-weight:800;}
+header p{margin-top:6px;font-size:16px;}
 
+/* NAV */
+nav{
+background:#111;
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+}
+nav a{
+color:#fff;
+text-decoration:none;
+padding:12px 18px;
+font-weight:600;
+}
+nav a:hover{background:#b30000;}
 
-<!-- ================= JOIN SECTION START ================= -->
-<style>
-.join-section{
-    background:#fff;
-    padding:40px 20px;
-    text-align:center;
+/* HERO */
+.hero{
+background:#7b0000;
+padding:80px 20px;
+color:#fff;
+text-align:center;
 }
-.join-section h3{
-    color:#7b0000;
-    font-size:26px;
-    margin-bottom:10px;
+.hero h2{font-size:34px;font-weight:900;}
+.hero p{font-size:18px;margin-top:15px;}
+.hero a{
+display:inline-block;
+margin-top:25px;
+background:#fff;
+color:#7b0000;
+padding:14px 36px;
+border-radius:30px;
+text-decoration:none;
+font-weight:bold;
 }
-.join-section p{
-    font-size:17px;
-    margin-bottom:20px;
+
+/* SECTION */
+.section{
+padding:50px 20px;
+max-width:1100px;
+margin:auto;
 }
+.section h3{
+text-align:center;
+font-size:28px;
+color:#7b0000;
+margin-bottom:20px;
+}
+.section p{
+font-size:17px;
+line-height:1.7;
+text-align:center;
+}
+
+/* OBJECTIVES */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:20px;
+margin-top:30px;
+}
+.box{
+background:#fff;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,0.15);
+text-align:center;
+}
+.box h4{color:#b30000;margin-bottom:10px;}
+
+/* EXECUTIVE */
+.exec-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+margin-top:30px;
+}
+.exec-card{
+background:#fff;
+padding:22px;
+border-radius:14px;
+text-align:center;
+box-shadow:0 6px 18px rgba(0,0,0,0.2);
+}
+.exec-card h4{
+color:#7b0000;
+font-size:19px;
+margin-bottom:6px;
+}
+.exec-card span{
+font-size:15px;
+font-weight:600;
+display:block;
+margin-bottom:6px;
+}
+.exec-card small{
+display:block;
+font-size:14px;
+color:#333;
+}
+
+/* JOIN */
 .join-box{
-    max-width:900px;
-    margin:auto;
+background:#fff;
+padding:30px 20px;
+border-radius:14px;
+box-shadow:0 6px 20px rgba(0,0,0,0.2);
+max-width:600px;
+margin:40px auto;
+text-align:center;
 }
-.join-box img{
-    width:100%;
-    border-radius:10px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+.join-box input,.join-box textarea{
+width:100%;
+padding:12px;
+margin-bottom:12px;
 }
-.join-btn{
-    display:inline-block;
-    margin-top:25px;
-    background:#b30000;
-    color:#fff;
-    padding:14px 35px;
-    border-radius:30px;
-    text-decoration:none;
-    font-size:18px;
-    font-weight:bold;
+.join-box button{
+width:100%;
+padding:14px;
+background:#b30000;
+color:#fff;
+border:none;
+border-radius:30px;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
 }
-.join-btn:hover{
-    background:#7b0000;
+
+/* FOOTER */
+footer{
+background:#111;
+color:#fff;
+text-align:center;
+padding:20px;
+margin-top:40px;
+font-size:14px;
 }
 </style>
+</head>
 
-<section class="join-section" id="join">
-    <h3>संगठन से जुड़ें</h3>
-    <p>जय भवानी राष्ट्रीय राजपूत महासभा से जुड़कर स्वाभिमान, संगठन और एकता की शक्ति बनें</p>
+<body>
 
-    <div class="join-box">
-        <!-- JOIN POSTER IMAGE -->
-        <img src="join.jpg" alt="Join Jay Bhavani Rashtriya Rajput Mahasabha">
-    </div>
+<header>
+<img src="logo.png" alt="जय भवानी राष्ट्रीय राजपूत महासभा">
+<h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
+<p>स्वाभिमान • एकता • संगठन • अधिकार</p>
+</header>
 
-    <a class="join-btn" href="https://wa.me/919166377972">WhatsApp से ज्वाइन करें</a>
+<nav>
+<a href="#">Home</a>
+<a href="#about">परिचय</a>
+<a href="#aim">उद्देश्य</a>
+<a href="#executive">कार्यकारिणी</a>
+<a href="#join">जुड़ें</a>
+<a href="#contact">संपर्क</a>
+</nav>
+
+<section class="hero">
+<h2>राजपूत स्वाभिमान की राष्ट्रीय आवाज़</h2>
+<p>एकजुट समाज • सशक्त संगठन • सम्मान की रक्षा</p>
+<a href="#join">🚩 संगठन से जुड़ें</a>
 </section>
-<!-- ================= JOIN SECTION END ================= -->
 
-
-<!-- ================= GALLERY SECTION START ================= -->
-<style>
-.gallery{
-    background:#f9f9f9;
-    padding:40px 20px;
-}
-.gallery h3{
-    text-align:center;
-    color:#7b0000;
-    font-size:26px;
-    margin-bottom:25px;
-}
-.gallery-grid{
-    max-width:1100px;
-    margin:auto;
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));
-    gap:15px;
-}
-.gallery-grid img{
-    width:100%;
-    height:200px;
-    object-fit:cover;
-    border-radius:8px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.15);
-}
-</style>
-
-<section class="gallery" id="gallery">
-    <h3>फोटो गैलरी</h3>
-
-    <div class="gallery-grid">
-        <img src="gallery1.jpg" alt="JBRRMS Event">
-        <img src="gallery2.jpg" alt="JBRRMS Meeting">
-        <img src="gallery3.jpg" alt="Rajput Samaj Program">
-        <img src="gallery4.jpg" alt="Youth Wing Activity">
-        <img src="gallery5.jpg" alt="Social Work">
-        <img src="gallery6.jpg" alt="Community Gathering">
-    </div>
+<section class="section" id="about">
+<h3>हमारा परिचय</h3>
+<p>
+जय भवानी राष्ट्रीय राजपूत महासभा एक राष्ट्रीय सामाजिक संगठन है
+जो राजपूत समाज की एकता, संस्कृति और अधिकारों की रक्षा हेतु समर्पित है।
+</p>
 </section>
-<!-- ================= GALLERY SECTION END ================= -->
+
+<section class="section" id="aim">
+<h3>हमारे उद्देश्य</h3>
+<div class="grid">
+<div class="box"><h4>🛡️ स्वाभिमान</h4><p>समाज के आत्मगौरव की रक्षा</p></div>
+<div class="box"><h4>🤝 एकता</h4><p>समस्त राजपूत समाज को संगठित करना</p></div>
+<div class="box"><h4>📢 अधिकार</h4><p>सामाजिक व संवैधानिक अधिकारों की आवाज़</p></div>
+<div class="box"><h4>🔥 नेतृत्व</h4><p>युवाओं में नेतृत्व निर्माण</p></div>
+</div>
+</section>
+
+<section class="section" id="executive">
+<h3>कार्यकारिणी</h3>
+
+<div class="exec-grid">
+
+<div class="exec-card">
+<h4>ठा. गोवर्धन सिंह जी</h4>
+<span>संस्थापक</span>
+<small>ठिकाना: बरखेङी मिठ्ठू</small>
+<small>मोबाइल: +91 97848 23382</small>
+</div>
+
+<div class="exec-card">
+<h4>शंकर सिंह जी राणा</h4>
+<span>युवा कार्यकारिणी – राष्ट्रीय अध्यक्ष</span>
+<small>ठिकाना: मोगरा</small>
+<small>मोबाइल: +91 91165 68039</small>
+</div>
+
+<div class="exec-card">
+<h4>ठा. श्याम सिंह राठौड़</h4>
+<span>युवा कार्यकारिणी – प्रदेश अध्यक्ष (म.प्र.)</span>
+<small>ठिकाना: डाबला मनोहर</small>
+<small>मोबाइल: +91 91654 63190</small>
+</div>
+
+<div class="exec-card">
+<h4>पप्पू सिंह जी</h4>
+<span>प्रदेश अध्यक्ष (राजस्थान)</span>
+<small>ठिकाना: झरिका का खेड़ा</small>
+<small>मोबाइल: +91 97727 10875</small>
+</div>
+
+<div class="exec-card">
+<h4>गोपालसिंह</h4>
+<span>वेबसाइट हेल्पलाइन</span>
+<small>ठिकाना: हरनावदा गजा</small>
+<small>मोबाइल: +91 91663 77972</small>
+</div>
+
+</div>
+</section>
+
+<section class="section" id="join">
+<h3>संगठन से जुड़ें</h3>
+
+<div class="join-box">
+<form onsubmit="sendJoin();return false;">
+<input id="n" placeholder="पूरा नाम" required>
+<input id="m" placeholder="मोबाइल नंबर" required>
+<input id="p" placeholder="जिला / राज्य" required>
+<textarea id="r" placeholder="आप क्यों जुड़ना चाहते हैं?"></textarea>
+<button>🚩 WhatsApp से ज्वॉइन करें</button>
+</form>
+</div>
+
+</section>
+
+<section class="section" id="contact">
+<h3>संपर्क करें</h3>
+<p>
+📞 +91 91663 77972<br>
+✉️ official@jbrrms.in
+</p>
+</section>
+
+<footer>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा | All Rights Reserved
+</footer>
+
+<script>
+function sendJoin(){
+var t=
+"जय भवानी राष्ट्रीय राजपूत महासभा – सदस्यता आवेदन%0A%0A"+
+"नाम: "+n.value+"%0A"+
+"मोबाइल: "+m.value+"%0A"+
+"जिला/राज्य: "+p.value+"%0A"+
+"संदेश: "+r.value;
+window.open("https://wa.me/919166377972?text="+t,"_blank");
+}
+</script>
+
+</body>
+</html>
