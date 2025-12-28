@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Website</title>
-<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, एकता, संगठन और अधिकारों की रक्षा।">
+<title>जय भवानी राष्ट्रीय राजपूत महासभा</title>
+<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – स्वाभिमान, एकता, संगठन और राष्ट्र निर्माण।">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI,Arial}
@@ -17,10 +17,10 @@ header{
 background:linear-gradient(90deg,#7b0000,#b30000);
 color:#fff;
 text-align:center;
-padding:30px 15px;
+padding:35px 15px;
 }
 header h1{font-size:30px;font-weight:800}
-header p{margin-top:8px;font-size:16px}
+header p{margin-top:10px;font-size:16px}
 
 /* NAVBAR */
 nav{
@@ -35,107 +35,58 @@ z-index:999;
 nav a{
 color:#fff;
 text-decoration:none;
-padding:12px 18px;
+padding:14px 16px;
 font-weight:600;
 }
-nav a:hover{background:#b30000}
-.admin-btn{background:#b30000;border-radius:20px}
-
-/* HERO */
-.hero{
-background:#7b0000;
-color:#fff;
-text-align:center;
-padding:80px 20px;
+nav a:hover{background:#7b0000}
+.admin{
+background:#b30000;
+border-radius:20px;
 }
-.hero h2{font-size:34px;margin-bottom:10px}
-.hero p{font-size:18px}
 
 /* SECTION */
 .section{
-padding:60px 20px;
+padding:50px 20px;
 max-width:1100px;
 margin:auto;
 }
-.section h3{
-text-align:center;
+.section h2{
 color:#7b0000;
-font-size:28px;
-margin-bottom:30px;
+margin-bottom:20px;
+border-bottom:2px solid #7b0000;
+display:inline-block;
+padding-bottom:5px;
 }
 
-/* OBJECTIVE */
-.objective p{
-font-size:18px;
-line-height:1.7;
-text-align:center;
-}
-
-/* EXECUTIVE */
-.exec-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-gap:20px;
-}
-.exec-card{
+/* CARD */
+.card{
 background:#fff;
 padding:20px;
-border-radius:10px;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-text-align:center;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+margin-bottom:20px;
+line-height:1.7;
 }
-.exec-card h4{color:#7b0000;margin-bottom:6px}
-.exec-card p{font-size:15px}
 
-/* JOIN */
-.join{
-background:#fff;
-text-align:center;
-}
-.join a{
+/* JOIN BUTTON */
+.join-btn{
 display:inline-block;
-margin-top:20px;
-background:#b30000;
-color:#fff;
-padding:14px 35px;
-border-radius:30px;
-text-decoration:none;
-font-size:18px;
-font-weight:bold;
-}
-.join a:hover{background:#7b0000}
-
-/* SEARCH */
-.search-box{
-text-align:center;
-}
-.search-box input{
-padding:12px;
-width:260px;
-max-width:90%;
-border:1px solid #ccc;
-border-radius:6px;
-}
-.search-box button{
-padding:12px 20px;
-border:none;
 background:#7b0000;
 color:#fff;
-border-radius:6px;
-margin-left:5px;
-cursor:pointer;
+padding:14px 28px;
+border-radius:30px;
+text-decoration:none;
+font-weight:700;
+margin-top:20px;
 }
-.search-box p{
-margin-top:15px;
-font-size:16px;
-}
+.join-btn:hover{background:#b30000}
 
 /* FOOTER */
 footer{
 background:#111;
 color:#fff;
 text-align:center;
-padding:20px;
+padding:15px;
 font-size:14px;
 }
 </style>
@@ -144,84 +95,116 @@ font-size:14px;
 <body>
 
 <!-- HEADER -->
-<header>
-<h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
-<p>स्वाभिमान • एकता • संगठन • अधिकार</p>
+<header id="home">
+  <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
+  <p>स्वाभिमान • एकता • संगठन • राष्ट्र निर्माण</p>
 </header>
 
 <!-- NAVBAR -->
 <nav>
-<a href="#home">Home</a>
-<a href="#objective">उद्देश्य</a>
-<a href="#executive">कार्यकारिणी</a>
-<a href="#join">Join</a>
-<a href="#search">Member Search</a>
-<a href="https://script.google.com/macros/s/YOUR_ADMIN_WEBAPP_URL/exec" class="admin-btn">Admin</a>
+  <a href="#founder">संस्थापक</a>
+  <a href="#national">राष्ट्रीय कार्यकारिणी</a>
+  <a href="#national-youth">राष्ट्रीय युवा कार्यकारिणी</a>
+  <a href="#state">प्रदेश कार्यकारिणी</a>
+  <a href="#state-youth">प्रदेश युवा कार्यकारिणी</a>
+  <a href="#members">मेंबर जानकारी</a>
+  <a href="ADMIN_LINK_HERE" class="admin">Admin</a>
 </nav>
 
-<!-- HERO -->
-<section class="hero" id="home">
-<h2>राष्ट्रीय राजपूत समाज का संगठन</h2>
-<p>एकता में शक्ति – संगठन में समाधान</p>
-</section>
-
 <!-- OBJECTIVE -->
-<section class="section objective" id="objective">
-<h3>उद्देश्य एवं संकल्प</h3>
-<p>
-जय भवानी राष्ट्रीय राजपूत महासभा का मुख्य उद्देश्य राजपूत समाज के
-स्वाभिमान, एकता, संगठन और अधिकारों की रक्षा करना है।
-युवा शक्ति को संगठित कर समाज को सशक्त बनाना हमारा संकल्प है।
-</p>
+<section class="section">
+  <h2>उद्देश्य एवं संकल्प</h2>
+  <div class="card">
+    <p>
+    जय भवानी राष्ट्रीय राजपूत महासभा का मुख्य उद्देश्य राजपूत समाज के
+    स्वाभिमान, एकता, संगठन और अधिकारों की रक्षा एवं सुदृढ़ीकरण करना है।
+    यह महासभा समाज को संगठित कर राष्ट्र निर्माण में सक्रिय भूमिका निभाने
+    के लिए प्रतिबद्ध है।
+    </p>
+
+    <p><b>🎯 प्रमुख उद्देश्य:</b></p>
+    <p>
+    1️⃣ स्वाभिमान की रक्षा<br>
+    2️⃣ एकता और संगठन<br>
+    3️⃣ सामाजिक न्याय और अधिकार<br>
+    4️⃣ युवा सशक्तिकरण<br>
+    5️⃣ संस्कृति और परंपरा का संरक्षण<br>
+    6️⃣ शिक्षा और जागरूकता<br>
+    7️⃣ राष्ट्रहित सर्वोपरि<br>
+    8️⃣ सेवा और सहयोग
+    </p>
+
+    <p><b>🚩 हमारा संकल्प:</b><br>
+    “पद से बड़ा स्वाभिमान,<br>
+    व्यक्ति से बड़ा समाज,<br>
+    और समाज से बड़ा राष्ट्र।”</p>
+
+    <a href="GOOGLE_FORM_LINK_HERE" target="_blank" class="join-btn">
+      सदस्य बनने के लिए यहाँ क्लिक करें
+    </a>
+  </div>
 </section>
 
-<!-- EXECUTIVE -->
-<section class="section" id="executive">
-<h3>राष्ट्रीय कार्यकारिणी</h3>
-<div class="exec-grid">
-
-<div class="exec-card">
-<h4>ठा. गोवर्धन सिंह जी</h4>
-<p>संस्थापक</p>
-<p>बरखेड़ी मिट्ठू</p>
-</div>
-
-<div class="exec-card">
-<h4>शंकर सिंह जी राणा</h4>
-<p>राष्ट्रीय युवा अध्यक्ष</p>
-<p>मोगरा</p>
-</div>
-
-<div class="exec-card">
-<h4>ठा. श्याम सिंह राठौड़</h4>
-<p>प्रदेश अध्यक्ष (म.प्र.)</p>
-<p>डाबला मनोहर</p>
-</div>
-
-<div class="exec-card">
-<h4>पप्पू सिंह जी</h4>
-<p>प्रदेश अध्यक्ष (राजस्थान)</p>
-<p>झरिका का खेड़ा</p>
-</div>
-
-</div>
+<!-- FOUNDER -->
+<section class="section" id="founder">
+  <h2>संस्थापक</h2>
+  <div class="card">
+    <b>ठा. गोवर्धन सिंह जी</b><br>
+    📞 +91 97848 23382<br>
+    📍 बरखेड़ी मिट्ठू
+  </div>
 </section>
 
-<!-- JOIN -->
-<section class="section join" id="join">
-<h3>संगठन से जुड़ें</h3>
-<p>ऑनलाइन फॉर्म भरकर सदस्य बनें</p>
-<a href="https://docs.google.com/forms/d/e/1FAIpQLSclpu3rFuiHeg1ymWtKkdLAfqzdll6gIhhgPlr7GStUDkjV3A/viewform" target="_blank">
-Join Now
-</a>
+<!-- NATIONAL -->
+<section class="section" id="national">
+  <h2>राष्ट्रीय कार्यकारिणी</h2>
+  <div class="card">
+    <b>पप्पू सिंह जी</b><br>
+    राजस्थान प्रदेश अध्यक्ष<br>
+    📞 +91 97727 10875<br>
+    📍 झरिका का खेड़ा
+  </div>
 </section>
 
-<!-- SEARCH -->
-<section class="section search-box" id="search">
-<h3>Member Search</h3>
-<input type="text" placeholder="Enter Member ID">
-<button>Search</button>
-<p>Approved सदस्य की जानकारी यहाँ दिखाई देगी</p>
+<!-- NATIONAL YOUTH -->
+<section class="section" id="national-youth">
+  <h2>राष्ट्रीय युवा कार्यकारिणी</h2>
+  <div class="card">
+    <b>शंकर सिंह जी राणा</b><br>
+    युवा राष्ट्रीय अध्यक्ष<br>
+    📞 +91 91165 68039<br>
+    📍 मोगरा
+  </div>
+</section>
+
+<!-- STATE -->
+<section class="section" id="state">
+  <h2>प्रदेश कार्यकारिणी</h2>
+  <div class="card">
+    <b>ठा. श्याम सिंह राठौड़</b><br>
+    प्रदेश अध्यक्ष (मध्य प्रदेश)<br>
+    📞 +91 91654 63190<br>
+    📍 डाबला मनोहर
+  </div>
+</section>
+
+<!-- STATE YOUTH -->
+<section class="section" id="state-youth">
+  <h2>प्रदेश युवा कार्यकारिणी</h2>
+  <div class="card">
+    जल्द अपडेट किया जाएगा
+  </div>
+</section>
+
+<!-- MEMBERS -->
+<section class="section" id="members">
+  <h2>मेंबर जानकारी</h2>
+  <div class="card">
+    <b>वेबसाइट हेल्पलाइन</b><br>
+    गोपालसिंह राजपूत<br>
+    📞 +91 91663 77972<br>
+    📍 हरनावदा गजा
+  </div>
 </section>
 
 <!-- FOOTER -->
