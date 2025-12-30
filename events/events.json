@@ -1,14 +1,56 @@
-[
-  {
-    "id": "event1",
-    "title": "जिला स्तरीय बैठक – जयपुर",
-    "date": "12 मार्च 2025",
-    "cover": "events/event1/1.jpg"
-  },
-  {
-    "id": "event2",
-    "title": "प्रदेश कार्यकारिणी सम्मेलन",
-    "date": "25 अप्रैल 2025",
-    "cover": "events/event2/1.jpg"
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Event Photos | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0}
+header{background:#7b0000;color:#fff;text-align:center;padding:15px}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:10px;padding:15px
+}
+.grid img{
+  width:100%;border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.2)
+}
+.info{
+  text-align:center;padding:10px;color:#333
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h3 id="title">Event Photos</h3>
+</header>
+
+<div class="info">
+<span id="date"></span> | <span id="place"></span>
+</div>
+
+<div class="grid" id="photos"></div>
+
+<script>
+const id = new URLSearchParams(location.search).get("id");
+
+fetch(`events/${id}/info.json`)
+.then(r=>r.json())
+.then(info=>{
+  title.innerText = info.title;
+  date.innerText = "📅 " + info.date;
+  place.innerText = "📍 " + info.place;
+
+  let html="";
+  for(let i=1;i<=info.total_photos;i++){
+    html += `<img src="events/${id}/${i}.jpg">`;
   }
-]
+  photos.innerHTML = html;
+});
+</script>
+
+</body>
+</html>
