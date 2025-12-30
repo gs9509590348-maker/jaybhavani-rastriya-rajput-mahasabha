@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>JBRRMS Member ID Card</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#eee;
+}
+.card{
+  width:320px;
+  margin:40px auto;
+  background:#fff;
+  border:2px solid #7b0000;
+  border-radius:12px;
+  overflow:hidden;
+}
+.header{
+  background:#7b0000;
+  color:#fff;
+  text-align:center;
+  padding:10px;
+}
+.header h3{margin:5px 0;font-size:16px}
+.photo{
+  text-align:center;
+  margin-top:10px;
+}
+.photo img{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  border:2px solid #7b0000;
+}
+.info{
+  padding:10px 15px;
+  font-size:14px;
+}
+.info p{margin:4px 0}
+.qr{
+  text-align:center;
+  padding:10px;
+}
+.footer{
+  background:#f4f4f4;
+  text-align:center;
+  font-size:12px;
+  padding:8px;
+}
+button{
+  display:block;
+  width:90%;
+  margin:15px auto;
+  padding:10px;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card" id="card">
+  <div class="header">
+    <h3>जय भवानी राष्ट्रीय राजपूत महासभा</h3>
+    <small>Official Member ID Card</small>
+  </div>
+
+  <div class="photo">
+    <img id="photo" src="https://via.placeholder.com/90">
+  </div>
+
+  <div class="info">
+    <p><b>Name:</b> <span id="name"></span></p>
+    <p><b>Father:</b> <span id="father"></span></p>
+    <p><b>Post:</b> <span id="post"></span></p>
+    <p><b>Level:</b> <span id="level"></span></p>
+    <p><b>Member ID:</b> <span id="mid"></span></p>
+  </div>
+
+  <div class="qr">
+    <img id="qr" width="90">
+  </div>
