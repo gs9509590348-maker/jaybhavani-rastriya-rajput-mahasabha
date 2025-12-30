@@ -2,64 +2,25 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Member ID Card</title>
+<title>Member ID Card | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#eee;
-}
+body{background:#eee;font-family:Arial}
 .card{
-  width:320px;
-  margin:40px auto;
-  background:#fff;
-  border:2px solid #7b0000;
-  border-radius:12px;
-  overflow:hidden;
+  width:320px;margin:40px auto;background:#fff;
+  border:2px solid #7b0000;border-radius:12px;overflow:hidden
 }
-.header{
-  background:#7b0000;
-  color:#fff;
-  text-align:center;
-  padding:10px;
-}
-.header h3{margin:5px 0;font-size:16px}
-.photo{
-  text-align:center;
-  margin-top:10px;
-}
-.photo img{
-  width:90px;
-  height:90px;
-  border-radius:50%;
-  border:2px solid #7b0000;
-}
-.info{
-  padding:10px 15px;
-  font-size:14px;
-}
+.header{background:#7b0000;color:#fff;text-align:center;padding:10px}
+.photo{text-align:center;margin-top:10px}
+.photo img{width:90px;height:90px;border-radius:50%;border:2px solid #7b0000}
+.info{padding:10px 15px;font-size:14px}
 .info p{margin:4px 0}
-.qr{
-  text-align:center;
-  padding:10px;
-}
-.footer{
-  background:#f4f4f4;
-  text-align:center;
-  font-size:12px;
-  padding:8px;
-}
+.qr{text-align:center;padding:10px}
+.footer{background:#f4f4f4;text-align:center;font-size:12px;padding:8px}
 button{
-  display:block;
-  width:90%;
-  margin:15px auto;
-  padding:10px;
-  background:#7b0000;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  font-size:15px;
+  display:block;width:90%;margin:15px auto;padding:10px;
+  background:#7b0000;color:#fff;border:none;border-radius:6px;font-size:15px
 }
 </style>
 </head>
@@ -85,5 +46,42 @@ button{
   </div>
 
   <div class="qr">
-    <img id="qr" width="90">
+    <img id="qr" width="100">
   </div>
+
+  <div class="footer">
+    Verify: https://jbrrms.in/verify.html
+  </div>
+</div>
+
+<button onclick="download()">⬇️ Download ID Card</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const id=new URLSearchParams(location.search).get("id");
+
+fetch("data/members.json").then(r=>r.json()).then(d=>{
+  const m=d.find(x=>x.member_id===id);
+  if(!m){alert("Member not found");return;}
+
+  name.innerText=m.name;
+  father.innerText=m.father;
+  post.innerText=m.post;
+  level.innerText=m.level;
+  mid.innerText=m.member_id;
+
+  qr.src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://jbrrms.in/verify.html?id="+m.member_id;
+});
+
+function download(){
+  html2canvas(document.getElementById("card")).then(c=>{
+    const a=document.createElement("a");
+    a.download="JBRRMS_ID_CARD.png";
+    a.href=c.toDataURL();
+    a.click();
+  });
+}
+</script>
+
+</body>
+</html>
