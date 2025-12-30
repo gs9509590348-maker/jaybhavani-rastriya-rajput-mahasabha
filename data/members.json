@@ -1,1 +1,17 @@
-[]
+[
+  {
+    "member_id": "JBRRMS-2025-001",
+    "name": "गोपाल सिंह",
+    "father": "राम सिंह",
+    "mobile": "9166377972",
+    "state": "राजस्थान",
+    "district": "झालावाड़",
+    "tehsil": "हरनावदा",
+    "level": "District",
+    "post": "जिला अध्यक्ष",
+    "department": "जिला कार्यकारिणी",
+    "id_card": "PASTE_ID_CARD_PDF_LINK",
+    "certificate": "PASTE_CERTIFICATE_PDF_LINK",
+    "appointment": "PASTE_APPOINTMENT_PDF_LINK"
+  }
+]
