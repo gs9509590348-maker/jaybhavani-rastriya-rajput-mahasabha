@@ -1,0 +1,14 @@
+[
+  {
+    "id": "event1",
+    "title": "जिला स्तरीय बैठक – जयपुर",
+    "date": "12 मार्च 2025",
+    "cover": "events/event1/1.jpg"
+  },
+  {
+    "id": "event2",
+    "title": "प्रदेश कार्यकारिणी सम्मेलन",
+    "date": "25 अप्रैल 2025",
+    "cover": "events/event2/1.jpg"
+  }
+]
