@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Member Verify | JBRRMS</title>
+<title>Member Verification | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -22,6 +22,7 @@ body{
 h2{
   text-align:center;
   color:#7b0000;
+  margin-bottom:20px;
 }
 input{
   width:100%;
@@ -29,28 +30,30 @@ input{
   margin:10px 0;
   border:1px solid #ccc;
   border-radius:5px;
+  font-size:15px;
 }
 button{
   width:100%;
+  padding:12px;
   background:#7b0000;
   color:#fff;
   border:none;
-  padding:12px;
-  font-size:16px;
   border-radius:5px;
+  font-size:16px;
   cursor:pointer;
 }
+button:hover{opacity:.9}
 .result{
   margin-top:20px;
   padding:15px;
   border:1px solid #ddd;
   border-radius:8px;
 }
-.success{color:green}
-.error{color:red}
-a.btn{
+.success{color:green;font-weight:bold}
+.error{color:red;font-weight:bold}
+.btn{
   display:inline-block;
-  margin-top:8px;
+  margin:6px 4px;
   padding:8px 12px;
   background:#7b0000;
   color:#fff;
@@ -62,7 +65,7 @@ a.btn{
   text-align:center;
   font-size:13px;
   color:#555;
-  margin:40px 0 20px;
+  margin:40px 20px;
   line-height:1.6;
 }
 </style>
@@ -80,8 +83,8 @@ a.btn{
   <div id="out"></div>
 
   <p style="font-size:12px;color:#666;text-align:center;margin-top:15px">
-    सदस्यों की जानकारी केवल सत्यापन हेतु उपयोग की जाती है।  
-    हम किसी भी प्रकार की व्यक्तिगत जानकारी साझा नहीं करते।
+    कृपया Member ID और वही Mobile Number डालें  
+    जो सदस्यता के समय दिया गया था
   </p>
 </div>
 
@@ -91,67 +94,50 @@ async function verify(){
   const mob = document.getElementById("mobile").value.trim();
   const out = document.getElementById("out");
 
-  out.innerHTML = "Checking...";
-
   if(!mid || !mob){
-    out.innerHTML = "<p class='error'>कृपया Member ID और Mobile Number डालें</p>";
+    out.innerHTML = "<p class='error'>❌ Member ID और Mobile Number जरूरी है</p>";
     return;
   }
 
-  const res = await fetch("data/members.json");
-  const data = await res.json();
+  out.innerHTML = "⏳ Checking...";
 
-  const m = data.find(x => x.member_id === mid && x.mobile === mob);
+  try{
+    const res = await fetch("members.json");
+    const data = await res.json();
 
-  if(!m){
-    out.innerHTML = "<p class='error'>❌ Member नहीं मिला</p>";
-    return;
-  }
+    const m = data.find(x =>
+      (x.member_id || x.memberId) == mid &&
+      String(x.mobile) == String(mob)
+    );
 
-  out.innerHTML = `
+    if(!m){
+      out.innerHTML = "<p class='error'>❌ Member नहीं मिला</p>";
+      return;
+    }
+
+    out.innerHTML = `
     <div class="result">
-      <p class="success"><b>✅ Verified Member</b></p>
+      <p class="success">✅ Verified Member</p>
       <p><b>Name:</b> ${m.name}</p>
       <p><b>Father:</b> ${m.father}</p>
       <p><b>Post:</b> ${m.post}</p>
       <p><b>Level:</b> ${m.level}</p>
-      <p><b>Department:</b> ${m.department || "-"}</p>
       <p><b>Status:</b> ${m.status || "Active"}</p>
 
-      <a class="btn" href="${m.id_card}" target="_blank">🪪 ID Card</a>
-      <a class="btn" href="${m.certificate}" target="_blank">📜 Certificate</a>
-      <a class="btn" href="${m.appointment}" target="_blank">📄 Appointment</a>
-
-      <a class="btn" style="background:#25D366"
-         onclick="shareOnWhatsApp('${m.member_id}')">
-         📲 Share on WhatsApp
-      </a>
-    </div>
-  `;
-}
-
-function shareOnWhatsApp(memberId){
-  const msg =
-`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
-
-Member ID: ${memberId}
-
-Verify Online 👇
-https://jbrrms.in/verify.html?id=${memberId}`;
-
-  window.open(
-    "https://wa.me/?text=" + encodeURIComponent(msg),
-    "_blank"
-  );
+      <a class="btn" href="${m.id_card}" target="_blank">ID Card</a>
+      <a class="btn" href="${m.certificate}" target="_blank">Certificate</a>
+      <a class="btn" href="${m.appointment}" target="_blank">Appointment</a>
+    </div>`;
+  }catch(e){
+    out.innerHTML = "<p class='error'>❌ Data load error</p>";
+  }
 }
 </script>
 
-<footer class="footer">
-  © 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-  <br>
-  यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।  
-  यह किसी सरकारी संस्था से संबद्ध नहीं है।
-</footer>
+<div class="footer">
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+यह वेबसाइट केवल सत्यापन हेतु है
+</div>
 
 </body>
 </html>
