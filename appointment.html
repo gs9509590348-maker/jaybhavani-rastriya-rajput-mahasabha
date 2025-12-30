@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Certificate | JBRRMS</title>
+<title>Appointment Letter | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,23 +11,18 @@ body{
   font-family:Arial, sans-serif;
   margin:0;
 }
-.paper{
+.letter{
   width:700px;
   max-width:95%;
   margin:30px auto;
   background:#fff;
   padding:30px;
-  border:4px double #7b0000;
+  border:2px solid #7b0000;
 }
 h1{
   text-align:center;
   color:#7b0000;
   margin:0;
-}
-hr{
-  border:0;
-  border-top:2px solid #7b0000;
-  margin:15px 0;
 }
 p{
   font-size:16px;
@@ -38,6 +33,7 @@ p{
   justify-content:space-between;
   margin-top:40px;
 }
+
 .btn{
   display:block;
   margin:12px auto;
@@ -71,34 +67,35 @@ p{
 
 <body>
 
-<div class="paper" id="cert">
-  <h1>प्रमाण पत्र</h1>
-  <hr>
+<div class="letter" id="app">
+  <h1>नियुक्ति पत्र</h1>
 
   <p>
-    यह प्रमाणित किया जाता है कि <b id="name"></b>
-    (पिता/अभिभावक: <b id="father"></b>)
-    को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
-    <b id="level"></b> स्तर पर <b id="post"></b>
-    के पद पर नियुक्त / स्वीकृत किया जाता है।
+    श्री <b id="name"></b> (पिता/अभिभावक: <b id="father"></b>)  
+    को यह सूचित किया जाता है कि आपको
+    <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
+    <b id="level"></b> स्तर पर
+    <b id="post"></b>  
+    (<b id="dept"></b>)
+    के पद पर नियुक्त किया जाता है।
   </p>
 
   <p>
-    सदस्य आईडी: <b id="mid"></b>
+    आपकी सदस्य आईडी: <b id="mid"></b>
   </p>
 
   <div class="footer-row">
     <div>दिनांक: <span id="date"></span></div>
-    <div>अधिकृत हस्ताक्षर</div>
+    <div>हस्ताक्षर / मुहर</div>
   </div>
 </div>
 
 <!-- ACTION BUTTONS -->
 <button class="btn no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
-<button class="btn no-print" onclick="download()">⬇️ Download Certificate</button>
+<button class="btn no-print" onclick="download()">⬇️ Download Appointment</button>
 
 <a id="idcard" class="btn gray no-print" target="_blank">🪪 View ID Card</a>
-<a id="appointment" class="btn gray no-print" target="_blank">📄 Appointment Letter</a>
+<a id="certificate" class="btn gray no-print" target="_blank">📜 View Certificate</a>
 <a id="verify" class="btn gray no-print" target="_blank">🔍 Verify Online</a>
 
 <button class="btn whatsapp no-print" onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
@@ -122,19 +119,20 @@ fetch("data/members.json")
   father.innerText = member.father;
   level.innerText = member.level;
   post.innerText = member.post;
+  dept.innerText = member.department || "";
   mid.innerText = member.member_id;
   date.innerText = new Date().toLocaleDateString("hi-IN");
 
   document.getElementById("idcard").href = member.id_card;
-  document.getElementById("appointment").href = member.appointment;
+  document.getElementById("certificate").href = member.certificate;
   document.getElementById("verify").href =
     "https://jbrrms.in/verify.html?id=" + member.member_id;
 });
 
 function download(){
-  html2canvas(document.getElementById("cert")).then(c=>{
+  html2canvas(document.getElementById("app")).then(c=>{
     const a = document.createElement("a");
-    a.download = "JBRRMS_Certificate_" + id + ".png";
+    a.download = "JBRRMS_Appointment_" + id + ".png";
     a.href = c.toDataURL();
     a.click();
   });
@@ -144,9 +142,10 @@ function shareWhatsApp(){
   if(!member) return;
 
   const msg =
-`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
+`मैं जय भवानी राष्ट्रीय राजपूत महासभा का नियुक्त सदस्य हूँ ✅
 
 नाम: ${member.name}
+पद: ${member.post}
 Member ID: ${member.member_id}
 
 Verify Online 👇
