@@ -12,7 +12,7 @@
     "department": "जिला कार्यकारिणी",
 
     "id_card": "https://jbrrms.in/idcard.html?id=JBRRMS-2025-001",
-    "certificate": "PASTE_CERTIFICATE_PDF_LINK",
-    "appointment": "PASTE_APPOINTMENT_PDF_LINK"
+    "certificate": "https://jbrrms.in/certificate.html?id=JBRRMS-2025-001",
+    "appointment": "https://jbrrms.in/appointment.html?id=JBRRMS-2025-001"
   }
 ]
