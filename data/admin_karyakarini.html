@@ -6,64 +6,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#f4f4f4;
-  margin:0;
-}
-header{
-  background:#7b0000;
-  color:#fff;
-  padding:15px;
-  text-align:center;
-}
+body{font-family:Arial;background:#f4f4f4;margin:0}
+header{background:#7b0000;color:#fff;padding:15px;text-align:center}
 .container{
-  max-width:1000px;
-  margin:20px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
+  max-width:1100px;margin:20px auto;
+  background:#fff;padding:20px;border-radius:10px
 }
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  border:1px solid #ddd;
-  padding:8px;
-  font-size:14px;
-  text-align:center;
-}
-th{
-  background:#eee;
-}
-img{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  object-fit:cover;
-}
-input,select{
-  width:100%;
-  padding:6px;
-}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #ddd;padding:8px;font-size:14px;text-align:center}
+th{background:#eee}
+img{width:50px;height:50px;border-radius:50%;object-fit:cover}
+input,select{width:100%;padding:6px}
 button{
-  padding:6px 10px;
-  border:none;
-  border-radius:4px;
-  cursor:pointer;
+  padding:6px 10px;border:none;border-radius:4px;
+  cursor:pointer;font-size:13px
 }
-.edit{background:#007bff;color:#fff}
-.save{background:#28a745;color:#fff}
+.up,.down{background:#ffc107}
 .delete{background:#dc3545;color:#fff}
-.up{background:#ffc107}
-.down{background:#ffc107}
-.footer{
-  text-align:center;
-  font-size:13px;
-  color:#555;
-  margin:30px 0 10px;
-}
+.add{background:#28a745;color:#fff}
+.footer{text-align:center;font-size:13px;color:#555;margin:30px 0}
+textarea{width:100%;height:220px}
 </style>
 </head>
 
@@ -74,52 +36,105 @@ button{
 </header>
 
 <div class="container">
-  <p><b>नोट:</b> Edit करने के बाद JSON auto generate होगा – GitHub में paste करना होगा</p>
+<p><b>नोट:</b> सभी बदलाव browser में होंगे → नीचे Updated JSON copy करके GitHub में paste करें</p>
 
-  <table id="tbl">
-    <thead>
-      <tr>
-        <th>Order</th>
-        <th>Photo</th>
-        <th>Name</th>
-        <th>Post</th>
-        <th>Level</th>
-        <th>District</th>
-        <th>State</th>
-        <th>Mobile</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+<!-- ADD NEW MEMBER -->
+<h3>➕ नया कार्यकारणी सदस्य जोड़ें</h3>
+<table>
+<tr>
+<td><input id="n_name" placeholder="Name"></td>
+<td><input id="n_post" placeholder="Post"></td>
+<td>
+<select id="n_level">
+  <option>राष्ट्रीय</option>
+  <option>प्रदेश</option>
+  <option>जिला</option>
+</select>
+</td>
+<td><input id="n_district" placeholder="District"></td>
+<td><input id="n_state" placeholder="State"></td>
+<td><input id="n_mobile" placeholder="Mobile"></td>
+<td><input id="n_photo" placeholder="Photo URL"></td>
+<td><button class="add" onclick="addMember()">➕ Add</button></td>
+</tr>
+</table>
 
-  <h3>📦 Updated JSON (Copy & Paste)</h3>
-  <textarea id="jsonOut" style="width:100%;height:220px"></textarea>
+<hr>
+
+<!-- EXISTING MEMBERS -->
+<h3>✏️ Edit / Delete / Reorder</h3>
+<table id="tbl">
+<thead>
+<tr>
+<th>Order</th>
+<th>Photo</th>
+<th>Name</th>
+<th>Post</th>
+<th>Level</th>
+<th>District</th>
+<th>State</th>
+<th>Mobile</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<h3>📦 Updated JSON (Copy & Paste)</h3>
+<textarea id="jsonOut"></textarea>
 </div>
 
 <div class="footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>Admin use only
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin use only
 </div>
 
 <script>
-let data = [];
+let data=[];
 
 fetch("data/karyakarini.json")
 .then(r=>r.json())
 .then(j=>{
-  data = j.karyakarini.sort((a,b)=>a.order-b.order);
+  data=j.karyakarini.sort((a,b)=>a.order-b.order);
   render();
 });
 
-function render(){
-  const tb = document.querySelector("#tbl tbody");
-  tb.innerHTML = "";
+function nextId(){
+  return "KAR-" + String(data.length+1).padStart(3,"0");
+}
 
+function addMember(){
+  const m={
+    id: nextId(),
+    name: n_name.value,
+    post: n_post.value,
+    level: n_level.value,
+    district: n_district.value,
+    state: n_state.value,
+    mobile: n_mobile.value,
+    photo: n_photo.value,
+    order: data.length+1,
+    active:true
+  };
+  if(!m.name || !m.post){
+    alert("Name और Post जरूरी है");
+    return;
+  }
+  data.push(m);
+  clearNew();
+  render();
+}
+
+function clearNew(){
+  n_name.value=n_post.value=n_district.value=n_state.value=n_mobile.value=n_photo.value="";
+}
+
+function render(){
+  const tb=document.querySelector("#tbl tbody");
+  tb.innerHTML="";
   data.forEach((m,i)=>{
     if(!m.active) return;
-
-    tb.innerHTML += `
+    tb.innerHTML+=`
     <tr>
       <td>${m.order}</td>
       <td><img src="${m.photo||'https://via.placeholder.com/50'}"></td>
@@ -140,42 +155,28 @@ function render(){
         <button class="down" onclick="moveDown(${i})">⬇</button>
         <button class="delete" onclick="del(${i})">❌</button>
       </td>
-    </tr>
-    `;
+    </tr>`;
   });
 
-  document.getElementById("jsonOut").value =
+  document.getElementById("jsonOut").value=
 JSON.stringify({
-  last_updated: new Date().toISOString().split("T")[0],
-  organization: "जय भवानी राष्ट्रीय राजपूत महासभा",
-  karyakarini: data
+  last_updated:new Date().toISOString().split("T")[0],
+  organization:"जय भवानी राष्ट्रीय राजपूत महासभा",
+  karyakarini:data
 },null,2);
 }
 
-function upd(i,k,v){
-  data[i][k]=v;
-  render();
-}
-
-function del(i){
-  if(confirm("Delete this member?")){
-    data[i].active=false;
-    render();
-  }
-}
-
+function upd(i,k,v){data[i][k]=v;render();}
+function del(i){if(confirm("Delete?")){data[i].active=false;render();}}
 function moveUp(i){
   if(i==0) return;
   [data[i].order,data[i-1].order]=[data[i-1].order,data[i].order];
-  data.sort((a,b)=>a.order-b.order);
-  render();
+  data.sort((a,b)=>a.order-b.order);render();
 }
-
 function moveDown(i){
   if(i==data.length-1) return;
   [data[i].order,data[i+1].order]=[data[i+1].order,data[i].order];
-  data.sort((a,b)=>a.order-b.order);
-  render();
+  data.sort((a,b)=>a.order-b.order);render();
 }
 </script>
 
