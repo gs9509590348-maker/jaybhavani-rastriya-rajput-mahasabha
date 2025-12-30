@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Bulk WhatsApp | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0}
+.box{
+  max-width:1000px;margin:30px auto;background:#fff;
+  padding:20px;border-radius:10px
+}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #ccc;padding:6px}
+th{background:#eee}
+.btn{padding:8px 14px;background:#25D366;color:#fff;border:none;border-radius:6px}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>📲 Bulk WhatsApp Sender</h2>
+
+<table id="tbl">
+<thead>
+<tr>
+<th>Send</th><th>Name</th><th>Mobile</th><th>Post</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<button class="btn" onclick="send()">Send Selected</button>
+</div>
+
+<script>
+let members=[];
+
+fetch("data/members.json").then(r=>r.json()).then(d=>{
+  members=d;
+  const tb=document.querySelector("#tbl tbody");
+  d.forEach((m,i)=>{
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><input type="checkbox" data-i="${i}"></td>
+      <td>${m.name}</td>
+      <td>${m.mobile}</td>
+      <td>${m.post}</td>`;
+    tb.appendChild(tr);
+  });
+});
+
+function send(){
+  document.querySelectorAll("input[type=checkbox]:checked")
+  .forEach(cb=>{
+    const m=members[cb.dataset.i];
+    const msg=
+`🙏 जय भवानी | जय राजपूताना 🚩
+
+आपका सदस्यता विवरण जारी हो गया है ✅
+Member ID: ${m.member_id}
+
+Verify 👇
+https://jbrrms.in/verify.html?id=${m.member_id}`;
+
+    window.open(
+      "https://wa.me/91"+m.mobile+"?text="+encodeURIComponent(msg),
+      "_blank"
+    );
+  });
+}
+</script>
+
+</body>
+</html>
