@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Bulk Add Members | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  font-family:Arial;
+  background:#f4f4f4;
+  margin:0;
+}
+.container{
+  max-width:900px;
+  margin:30px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:10px;
+}
+h2{text-align:center;color:#7b0000}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+th,td{
+  border:1px solid #ccc;
+  padding:6px;
+  text-align:left;
+}
+th{background:#f0f0f0}
+
+input{
+  width:100%;
+  padding:4px;
+  font-size:12px;
+}
+
+.btn{
+  margin:10px 5px;
+  padding:10px 16px;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.gray{background:#555}
+
+textarea{
+  width:100%;
+  height:220px;
+  margin-top:15px;
+  font-family:monospace;
+  font-size:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Bulk Add Members Tool</h2>
+
+<table id="tbl">
+<thead>
+<tr>
+<th>Member ID</th>
+<th>Name</th>
+<th>Father</th>
+<th>Mobile</th>
+<th>Post</th>
+<th>Department</th>
+<th>Level</th>
+<th>District</th>
+<th>State</th>
+</tr>
+</thead>
+<tbody></tbody>
+</table>
+
+<button class="btn" onclick="addRow()">➕ Add Row</button>
+<button class="btn gray" onclick="generate()">⚙️ Generate JSON</button>
+
+<h3>Generated JSON (Copy this)</h3>
+<textarea id="out"></textarea>
+
+<p style="font-size:12px;color:#555">
+👉 इस JSON को <b>data/members.json</b> में paste करें  
+</p>
+</div>
+
+<script>
+const tbody = document.querySelector("#tbl tbody");
+
+function addRow(){
+  const r=document.createElement("tr");
+  r.innerHTML=`
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>
+  <td><input></td>`;
+  tbody.appendChild(r);
+}
+addRow();
+
+function generate(){
+  const rows=[...tbody.querySelectorAll("tr")];
+  const data=[];
+  rows.forEach(r=>{
+    const c=[...r.querySelectorAll("input")].map(i=>i.value.trim());
+    if(!c[0]) return;
+
+    data.push({
+      member_id:c[0],
+      name:c[1],
+      father:c[2],
+      mobile:c[3],
+      post:c[4],
+      department:c[5],
+      level:c[6],
+      district:c[7],
+      state:c[8],
+      status:"Active",
+      id_card:`https://jbrrms.in/add_member_idcard.html?id=${c[0]}`,
+      certificate:`https://jbrrms.in/certificate.html?id=${c[0]}`,
+      appointment:`https://jbrrms.in/appointment.html?id=${c[0]}`
+    });
+  });
+  document.getElementById("out").value =
+    JSON.stringify(data,null,2);
+}
+</script>
+
+<footer style="text-align:center;font-size:13px;color:#555;margin:30px 0">
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
+<br>
+यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
+</footer>
+
+</body>
+</html>
