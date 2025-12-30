@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Member Verify | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial;background:#f5f5f5;margin:0}
+.container{max-width:420px;margin:40px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 10px #ccc}
+h2{text-align:center;color:#7b0000}
+input,button{width:100%;padding:10px;margin:8px 0;font-size:15px}
+button{background:#7b0000;color:#fff;border:none;cursor:pointer}
+.result{margin-top:15px}
+.card{border:1px solid #ddd;padding:10px;border-radius:6px}
+a{color:#7b0000;text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h2>Member Verify</h2>
+
+<input id="mid" placeholder="Member ID">
+<input id="mobile" placeholder="Mobile Number">
+<button onclick="verify()">Verify</button>
+
+<div id="out" class="result"></div>
+</div>
+
+<script>
+async function verify(){
+  const mid=document.getElementById("mid").value.trim();
+  const mob=document.getElementById("mobile").value.trim();
+  const out=document.getElementById("out");
+
+  if(!mid || !mob){
+    out.innerHTML="❌ सभी जानकारी भरें";
+    return;
+  }
+
+  const res=await fetch("data/members.json");
+  const data=await res.json();
+
+  const m=data.find(x=>x.member_id===mid && x.mobile===mob);
+
+  if(!m){
+    out.innerHTML="❌ Member not found";
+    return;
+  }
+
+  out.innerHTML=`
+  <div class="card">
+  <b>नाम:</b> ${m.name}<br>
+  <b>पद:</b> ${m.post}<br>
+  <b>Level:</b> ${m.level}<br>
+  <b>जिला:</b> ${m.district}<br><br>
+  <a href="${m.id_card}" target="_blank">🪪 ID Card</a><br>
+  <a href="${m.certificate}" target="_blank">📜 Certificate</a><br>
+  <a href="${m.appointment}" target="_blank">📨 Appointment</a>
+  </div>`;
+}
+</script>
+
+</body>
+</html>
