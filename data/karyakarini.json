@@ -1,0 +1,66 @@
+{
+  "last_updated": "2025-01-01",
+  "organization": "जय भवानी राष्ट्रीय राजपूत महासभा",
+  "karyakarini": [
+    {
+      "id": "KAR-001",
+      "name": "ठा. गोवर्धन सिंह जी",
+      "post": "संस्थापक",
+      "level": "राष्ट्रीय",
+      "district": "बरखेड़ी मिट्ठू",
+      "state": "मध्य प्रदेश",
+      "mobile": "9784823382",
+      "photo": "https://jbrrms.in/assets/leaders/govardhan-singh.jpg",
+      "order": 1,
+      "active": true
+    },
+    {
+      "id": "KAR-002",
+      "name": "शंकर सिंह जी राणा",
+      "post": "राष्ट्रीय अध्यक्ष",
+      "level": "राष्ट्रीय",
+      "district": "मोगरा",
+      "state": "मध्य प्रदेश",
+      "mobile": "9116568039",
+      "photo": "https://jbrrms.in/assets/leaders/shankar-singh.jpg",
+      "order": 2,
+      "active": true
+    },
+    {
+      "id": "KAR-003",
+      "name": "ठा. श्याम सिंह राठौड़",
+      "post": "प्रदेश अध्यक्ष",
+      "level": "प्रदेश",
+      "district": "डाबला मनोहर",
+      "state": "मध्य प्रदेश",
+      "mobile": "9165463190",
+      "photo": "https://jbrrms.in/assets/leaders/shyam-singh.jpg",
+      "order": 3,
+      "active": true
+    },
+    {
+      "id": "KAR-004",
+      "name": "पप्पू सिंह जी",
+      "post": "प्रदेश अध्यक्ष",
+      "level": "प्रदेश",
+      "district": "झरिका का खेड़ा",
+      "state": "राजस्थान",
+      "mobile": "9772710875",
+      "photo": "https://jbrrms.in/assets/leaders/pappu-singh.jpg",
+      "order": 4,
+      "active": true
+    },
+    {
+      "id": "KAR-005",
+      "name": "गोपाल सिंह राजपूत",
+      "post": "वेबसाइट हेल्पलाइन",
+      "level": "राष्ट्रीय",
+      "district": "हरनावदा गजा",
+      "state": "राजस्थान",
+      "mobile": "9166377972",
+      "photo": "https://jbrrms.in/assets/leaders/gopal-singh.jpg",
+      "order": 5,
+      "active": true
+    }
+  ]
+}
