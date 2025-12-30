@@ -6,26 +6,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{background:#eee;font-family:Arial;margin:0}
-.paper{
-  width:700px;max-width:95%;
-  margin:30px auto;background:#fff;
-  padding:30px;border:4px double #7b0000
+body{
+  background:#eee;
+  font-family:Arial, sans-serif;
+  margin:0;
 }
-h1{text-align:center;color:#7b0000;margin:0}
-hr{border:0;border-top:2px solid #7b0000;margin:15px 0}
-p{font-size:16px;line-height:1.6}
-.footer{display:flex;justify-content:space-between;margin-top:40px}
-
+.paper{
+  width:700px;
+  max-width:95%;
+  margin:30px auto;
+  background:#fff;
+  padding:30px;
+  border:4px double #7b0000;
+}
+h1{
+  text-align:center;
+  color:#7b0000;
+  margin:0;
+}
+hr{
+  border:0;
+  border-top:2px solid #7b0000;
+  margin:15px 0;
+}
+p{
+  font-size:16px;
+  line-height:1.6;
+}
+.footer-row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:40px;
+}
 .btn{
-  display:block;margin:12px auto;padding:10px 16px;
-  background:#7b0000;color:#fff;border:none;
-  border-radius:6px;text-decoration:none;
-  text-align:center;font-size:15px;
+  display:block;
+  margin:12px auto;
+  padding:10px 16px;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  text-decoration:none;
+  text-align:center;
+  font-size:15px;
   cursor:pointer;
 }
-.whatsapp{background:#25D366}
 .gray{background:#555}
+.whatsapp{background:#25D366}
+
+.site-footer{
+  text-align:center;
+  font-size:13px;
+  color:#555;
+  margin:40px 0 20px;
+  line-height:1.6;
+}
 
 @media print{
   .no-print{display:none}
@@ -42,17 +77,17 @@ p{font-size:16px;line-height:1.6}
 
   <p>
     यह प्रमाणित किया जाता है कि <b id="name"></b>
-    (पिता/अभिभावक: <b id="father"></b>)  
+    (पिता/अभिभावक: <b id="father"></b>)
     को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
     <b id="level"></b> स्तर पर <b id="post"></b>
-    के पद पर नियुक्त/स्वीकृत किया जाता है।
+    के पद पर नियुक्त / स्वीकृत किया जाता है।
   </p>
 
   <p>
     सदस्य आईडी: <b id="mid"></b>
   </p>
 
-  <div class="footer">
+  <div class="footer-row">
     <div>दिनांक: <span id="date"></span></div>
     <div>अधिकृत हस्ताक्षर</div>
   </div>
@@ -77,7 +112,7 @@ let member = null;
 fetch("data/members.json")
 .then(r=>r.json())
 .then(d=>{
-  member = d.find(x=>x.member_id === id);
+  member = d.find(x => x.member_id === id);
   if(!member){
     alert("Member not found");
     return;
@@ -98,9 +133,9 @@ fetch("data/members.json")
 
 function download(){
   html2canvas(document.getElementById("cert")).then(c=>{
-    const a=document.createElement("a");
-    a.download="JBRRMS_Certificate_"+id+".png";
-    a.href=c.toDataURL();
+    const a = document.createElement("a");
+    a.download = "JBRRMS_Certificate_" + id + ".png";
+    a.href = c.toDataURL();
     a.click();
   });
 }
@@ -123,6 +158,13 @@ https://jbrrms.in/verify.html?id=${member.member_id}`;
   );
 }
 </script>
+
+<footer class="site-footer">
+  © 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
+  <br>
+  यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।  
+  यह किसी सरकारी संस्था से संबद्ध नहीं है।
+</footer>
 
 </body>
 </html>
