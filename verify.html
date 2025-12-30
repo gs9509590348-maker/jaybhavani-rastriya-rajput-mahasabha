@@ -4,60 +4,116 @@
 <meta charset="UTF-8">
 <title>Member Verify | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:Arial;background:#f5f5f5;margin:0}
-.container{max-width:420px;margin:40px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 0 10px #ccc}
-h2{text-align:center;color:#7b0000}
-input,button{width:100%;padding:10px;margin:8px 0;font-size:15px}
-button{background:#7b0000;color:#fff;border:none;cursor:pointer}
-.result{margin-top:15px}
-.card{border:1px solid #ddd;padding:10px;border-radius:6px}
-a{color:#7b0000;text-decoration:none}
+body{
+  font-family: Arial, sans-serif;
+  background:#f4f4f4;
+  margin:0;
+}
+.box{
+  max-width:420px;
+  margin:60px auto;
+  background:#fff;
+  padding:25px;
+  border-radius:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+h2{
+  text-align:center;
+  color:#7b0000;
+}
+input{
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border:1px solid #ccc;
+  border-radius:5px;
+}
+button{
+  width:100%;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  padding:12px;
+  font-size:16px;
+  border-radius:5px;
+  cursor:pointer;
+}
+.result{
+  margin-top:20px;
+  padding:15px;
+  border:1px solid #ddd;
+  border-radius:8px;
+}
+.success{color:green}
+.error{color:red}
+a.btn{
+  display:inline-block;
+  margin-top:8px;
+  padding:8px 12px;
+  background:#7b0000;
+  color:#fff;
+  text-decoration:none;
+  border-radius:5px;
+  font-size:14px;
+}
 </style>
 </head>
+
 <body>
 
-<div class="container">
-<h2>Member Verify</h2>
+<div class="box">
+  <h2>Member Verification</h2>
 
-<input id="mid" placeholder="Member ID">
-<input id="mobile" placeholder="Mobile Number">
-<button onclick="verify()">Verify</button>
+  <input id="mid" placeholder="Member ID">
+  <input id="mobile" placeholder="Mobile Number">
+  <button onclick="verify()">Verify</button>
 
-<div id="out" class="result"></div>
+  <div id="out"></div>
 </div>
 
 <script>
 async function verify(){
-  const mid=document.getElementById("mid").value.trim();
-  const mob=document.getElementById("mobile").value.trim();
-  const out=document.getElementById("out");
+  const mid = document.getElementById("mid").value.trim();
+  const mob = document.getElementById("mobile").value.trim();
+  const out = document.getElementById("out");
+
+  out.innerHTML = "Checking...";
 
   if(!mid || !mob){
-    out.innerHTML="❌ सभी जानकारी भरें";
+    out.innerHTML = "<p class='error'>Please enter Member ID and Mobile</p>";
     return;
   }
 
-  const res=await fetch("data/members.json");
-  const data=await res.json();
+  const res = await fetch("data/members.json");
+  const data = await res.json();
 
-  const m=data.find(x=>x.member_id===mid && x.mobile===mob);
+  const m = data.find(x => x.member_id === mid && x.mobile === mob);
 
   if(!m){
-    out.innerHTML="❌ Member not found";
+    out.innerHTML = "<p class='error'>❌ Member not found</p>";
     return;
   }
 
-  out.innerHTML=`
-  <div class="card">
-  <b>नाम:</b> ${m.name}<br>
-  <b>पद:</b> ${m.post}<br>
-  <b>Level:</b> ${m.level}<br>
-  <b>जिला:</b> ${m.district}<br><br>
-  <a href="${m.id_card}" target="_blank">🪪 ID Card</a><br>
-  <a href="${m.certificate}" target="_blank">📜 Certificate</a><br>
-  <a href="${m.appointment}" target="_blank">📨 Appointment</a>
-  </div>`;
+  out.innerHTML = `
+    <div class="result">
+      <p class="success"><b>✅ Verified Member</b></p>
+      <p><b>Name:</b> ${m.name}</p>
+      <p><b>Father:</b> ${m.father}</p>
+      <p><b>Post:</b> ${m.post}</p>
+      <p><b>Level:</b> ${m.level}</p>
+      <p><b>Department:</b> ${m.department}</p>
+
+      <a class="btn" href="${m.id_card}" target="_blank">🪪 ID Card</a>
+      <a class="btn" href="${m.certificate}" target="_blank">📜 Certificate</a>
+      <a class="btn" href="${m.appointment}" target="_blank">📄 Appointment</a>
+
+      <a class="btn" style="background:#25D366"
+      href="https://wa.me/?text=My%20JBRRMS%20Member%20ID%20Verified%20✅%20${location.href}"
+      target="_blank">📲 Share on WhatsApp</a>
+    </div>
+  `;
 }
 </script>
 
