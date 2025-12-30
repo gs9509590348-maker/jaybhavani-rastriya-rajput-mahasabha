@@ -2,86 +2,76 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>जय भवानी राष्ट्रीय राजपूत महासभा | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | JBRRMS</title>
+
+<meta name="description" content="Official Website & Member Verification System of Jai Bhavani Rashtriya Rajput Mahasabha (JBRRMS)">
+<meta name="keywords" content="JBRRMS, Rajput Mahasabha, Member Verify, Rajput Organisation">
 
 <style>
-*{box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{margin:0;background:#f4f4f4;color:#222}
-a{text-decoration:none}
+*{box-sizing:border-box}
+body{margin:0;font-family:Segoe UI,Arial;background:#f4f4f4;color:#222}
 
 /* HEADER */
 header{
   background:linear-gradient(90deg,#7b0000,#b30000);
-  color:#fff;
-  text-align:center;
-  padding:35px 15px;
+  color:#fff;text-align:center;padding:28px 10px
 }
-header h1{margin:0;font-size:30px}
-header p{margin:8px 0 0;font-size:16px}
+header h1{margin:0;font-size:30px;font-weight:800}
+header p{margin-top:6px;font-size:15px}
 
 /* NAV */
 nav{
   background:#111;
-  display:flex;
-  justify-content:center;
-  flex-wrap:wrap;
+  display:flex;flex-wrap:wrap;justify-content:center;
+  position:sticky;top:0;z-index:999
 }
 nav a{
-  color:#fff;
-  padding:14px 16px;
-  font-size:15px;
+  color:#fff;text-decoration:none;
+  padding:12px 14px;font-size:14px
 }
 nav a:hover{background:#7b0000}
 
-/* HERO */
-.hero{
-  background:#fff;
-  text-align:center;
-  padding:40px 15px;
-}
-.hero h2{color:#7b0000;margin-bottom:10px}
-.hero p{font-size:16px;margin-bottom:20px}
+/* MAIN */
+.container{max-width:1150px;margin:auto;padding:20px}
 
+/* SECTION */
+.section{
+  background:#fff;
+  margin-bottom:22px;
+  border-radius:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08)
+}
+.section h2{
+  margin:0;padding:14px 18px;
+  background:#7b0000;color:#fff;
+  border-radius:10px 10px 0 0;
+  font-size:18px
+}
+.section .content{padding:18px}
+
+/* BUTTONS */
 .btn{
   display:inline-block;
   margin:6px;
-  padding:10px 16px;
+  padding:11px 18px;
   background:#7b0000;
   color:#fff;
-  border-radius:6px;
-  font-size:15px;
+  border-radius:7px;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600
 }
-.btn.whatsapp{background:#25D366}
+.btn.green{background:#1fa463}
+.btn.blue{background:#005bbb}
+.btn.black{background:#000}
+.btn:hover{opacity:.92}
 
-/* SECTIONS */
-section{
-  max-width:1000px;
-  margin:30px auto;
-  background:#fff;
-  padding:25px;
-  border-radius:10px;
-}
-section h3{
-  margin-top:0;
-  color:#7b0000;
-  border-bottom:2px solid #7b0000;
-  padding-bottom:6px;
-}
-
-/* QUICK BOX */
-.quick{
+/* GRID */
+.grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:15px;
-}
-.quick div{
-  background:#fafafa;
-  border:1px solid #ddd;
-  padding:20px;
-  text-align:center;
-  border-radius:8px;
-  font-size:15px;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px
 }
 
 /* FOOTER */
@@ -89,8 +79,8 @@ footer{
   text-align:center;
   font-size:13px;
   color:#555;
-  margin:40px 10px 20px;
-  line-height:1.6;
+  margin:45px 12px 25px;
+  line-height:1.6
 }
 </style>
 </head>
@@ -106,75 +96,87 @@ footer{
   <a href="index.html">Home</a>
   <a href="verify.html">Verify Member</a>
   <a href="directory.html">Member Directory</a>
-  <a href="#gallery">Gallery</a>
-  <a href="#events">Official Events</a>
+  <a href="karyakarini.html">कार्यकारणी</a>
+  <a href="events/gallery.html">Gallery</a>
+  <a href="events.html">Official Events</a>
+  <a href="admin_secure.html">Admin</a>
 </nav>
 
-<!-- HERO -->
-<div class="hero">
-  <h2>Welcome to JBRRMS</h2>
-  <p>जय भवानी राष्ट्रीय राजपूत महासभा की आधिकारिक वेबसाइट</p>
+<div class="container">
 
-  <a href="verify.html" class="btn">🔍 Member Verify</a>
-  <a href="directory.html" class="btn">📂 Public Member Directory</a>
-  <a href="bulk_add_members.html" class="btn">➕ Add Members (Admin)</a>
+<!-- HERO -->
+<div class="section">
+  <h2>Welcome to JBRRMS</h2>
+  <div class="content" style="text-align:center">
+    <p><b>जय भवानी राष्ट्रीय राजपूत महासभा</b> की आधिकारिक वेबसाइट एवं सदस्य सत्यापन प्रणाली</p>
+
+    <a class="btn" href="verify.html">🔍 Member Verify</a>
+    <a class="btn blue" href="directory.html">📂 Public Member Directory</a>
+    <a class="btn black" href="admin_secure.html">🔐 Admin Login</a>
+  </div>
 </div>
 
-<!-- QUICK SERVICES -->
-<section>
-  <h3>ऑनलाइन सुविधाएँ</h3>
-  <div class="quick">
-    <div>🪪 Digital Member ID Card</div>
-    <div>📜 Certificate Download</div>
-    <div>📄 Appointment Letter</div>
-    <div>📲 WhatsApp Sharing</div>
-    <div>📂 Member Directory</div>
-    <div>🔐 Admin Dashboard</div>
+<!-- SERVICES -->
+<div class="section">
+  <h2>ऑनलाइन सेवाएं</h2>
+  <div class="content grid">
+    <a class="btn" href="idcard_print.html">🆔 Digital Member ID</a>
+    <a class="btn" href="certificate.html">📜 Certificate Download</a>
+    <a class="btn" href="appointment.html">🧾 Appointment Letter</a>
+    <a class="btn" href="bulk_whatsapp.html">📲 WhatsApp Share</a>
+    <a class="btn" href="directory.html">👥 Member Directory</a>
+    <a class="btn black" href="admin_dashboard.html">⚙️ Admin Dashboard</a>
   </div>
-</section>
+</div>
 
-<!-- MEMBERSHIP -->
-<section>
-  <h3>सदस्यता से जुड़ें</h3>
-  <p>
-    जय भवानी राष्ट्रीय राजपूत महासभा से जुड़कर संगठन को मजबूत बनाएं।
-  </p>
+<!-- KARYAKARINI -->
+<div class="section">
+  <h2>कार्यकारणी समिति</h2>
+  <div class="content" style="text-align:center">
+    <p>राष्ट्रीय • प्रदेश • जिला स्तर की कार्यकारणी समिति</p>
+    <a class="btn" href="karyakarini.html">👥 कार्यकारणी देखें</a>
+  </div>
+</div>
 
-  <a href="https://docs.google.com/forms/d/e/1FAIpQLSdv8aK9SvqAUOES59Kd1vtGqdayTxE7wJEISdVvr15XT1doBQ/viewform"
-     class="btn">
-    📝 Membership Form
-  </a>
+<!-- JOIN -->
+<div class="section">
+  <h2>संगठन से जुड़ें</h2>
+  <div class="content" style="text-align:center">
+    <a class="btn" href="https://docs.google.com/forms/" target="_blank">📝 Membership Form</a>
+    <a class="btn green" href="https://wa.me/" target="_blank">💬 Official WhatsApp Group</a>
+  </div>
+</div>
 
-  <a href="https://chat.whatsapp.com/LKEnm3MPwS23hMtsuMVbpO"
-     class="btn whatsapp">
-    📲 Official WhatsApp Group
-  </a>
-</section>
-
-<!-- ABOUT -->
-<section id="about">
-  <h3>उद्देश्य एवं संकल्प</h3>
-  <ul>
-    <li>राजपूत समाज के स्वाभिमान की रक्षा</li>
-    <li>समाज को संगठित और सशक्त बनाना</li>
-    <li>युवाओं को नेतृत्व के लिए प्रेरित करना</li>
-    <li>सांस्कृतिक एवं सामाजिक संरक्षण</li>
-  </ul>
-</section>
+<!-- OBJECTIVE -->
+<div class="section">
+  <h2>उद्देश्य एवं संकल्प</h2>
+  <div class="content">
+    <ul>
+      <li>राजपूत समाज के स्वाभिमान एवं अधिकारों की रक्षा</li>
+      <li>समाज को एकजुट एवं संगठित बनाना</li>
+      <li>युवा नेतृत्व एवं राष्ट्र निर्माण</li>
+      <li>सांस्कृतिक एवं सामाजिक संरक्षण</li>
+    </ul>
+  </div>
+</div>
 
 <!-- CONTACT -->
-<section>
-  <h3>संपर्क</h3>
-  <p>
+<div class="section">
+  <h2>संपर्क</h2>
+  <div class="content">
     📞 हेल्पलाइन: +91 91663 77972<br>
     🌐 Website: https://jbrrms.in
-  </p>
-</section>
+  </div>
+</div>
+
+</div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।<br>
-यह किसी सरकारी संस्था से संबद्ध नहीं है।
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
+<br>
+यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।  
+<br>
+यह किसी भी सरकारी संस्था से संबद्ध नहीं है।
 </footer>
 
 </body>
