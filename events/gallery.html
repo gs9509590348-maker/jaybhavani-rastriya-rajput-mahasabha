@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Photo Events | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0}
+header{
+  background:#7b0000;color:#fff;
+  padding:20px;text-align:center
+}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:15px;
+  padding:20px;
+}
+.card{
+  background:#fff;border-radius:10px;
+  overflow:hidden;box-shadow:0 3px 10px rgba(0,0,0,.15)
+}
+.card img{width:100%;height:180px;object-fit:cover}
+.card div{padding:10px}
+.card h3{margin:0;color:#7b0000;font-size:16px}
+.card small{color:#555}
+a{text-decoration:none;color:inherit}
+footer{
+  text-align:center;font-size:13px;color:#555;
+  margin:40px 0
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>📸 Photo Events Gallery</h2>
+  <p>जय भवानी राष्ट्रीय राजपूत महासभा</p>
+</header>
+
+<div class="grid" id="events"></div>
+
+<footer>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
+</footer>
+
+<script>
+fetch("events/events.json")
+.then(r=>r.json())
+.then(list=>{
+  events.innerHTML = list.map(e=>`
+    <a href="event.html?id=${e.id}">
+      <div class="card">
+        <img src="${e.cover}">
+        <div>
+          <h3>${e.title}</h3>
+          <small>${e.date}</small>
+        </div>
+      </div>
+    </a>
+  `).join("");
+});
+</script>
+
+</body>
+</html>
