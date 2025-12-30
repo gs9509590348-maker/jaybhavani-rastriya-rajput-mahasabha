@@ -4,18 +4,13 @@
 <meta charset="UTF-8">
 <title>Photo Events | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
-header{
-  background:#7b0000;color:#fff;
-  padding:20px;text-align:center
-}
+header{background:#7b0000;color:#fff;text-align:center;padding:20px}
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-  gap:15px;
-  padding:20px;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:15px;padding:20px
 }
 .card{
   background:#fff;border-radius:10px;
@@ -26,18 +21,15 @@ header{
 .card h3{margin:0;color:#7b0000;font-size:16px}
 .card small{color:#555}
 a{text-decoration:none;color:inherit}
-footer{
-  text-align:center;font-size:13px;color:#555;
-  margin:40px 0
-}
+footer{text-align:center;font-size:13px;color:#555;margin:30px}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h2>📸 Photo Events Gallery</h2>
-  <p>जय भवानी राष्ट्रीय राजपूत महासभा</p>
+<h2>📸 Photo Events Gallery</h2>
+<p>जय भवानी राष्ट्रीय राजपूत महासभा</p>
 </header>
 
 <div class="grid" id="events"></div>
@@ -57,7 +49,7 @@ fetch("events/events.json")
         <img src="${e.cover}">
         <div>
           <h3>${e.title}</h3>
-          <small>${e.date}</small>
+          <small>📅 ${e.date} | 📍 ${e.place}</small>
         </div>
       </div>
     </a>
