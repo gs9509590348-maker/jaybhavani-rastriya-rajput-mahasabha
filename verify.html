@@ -110,15 +110,24 @@ async function verify(){
       <a class="btn" href="${m.appointment}" target="_blank">📄 Appointment</a>
 
       <a class="btn" style="background:#25D366"
-      href="https://wa.me/?text=My%20JBRRMS%20Member%20ID%20Verified%20✅%20${location.href}"
-      target="_blank">📲 Share on WhatsApp</a>
+         onclick="shareOnWhatsApp('${m.member_id}')">
+         📲 Share on WhatsApp
+      </a>
     </div>
   `;
+}
+
+function shareOnWhatsApp(memberId){
+  const msg =
+    "मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅\n\n" +
+    "Member ID: " + memberId + "\n\n" +
+    "Verify here 👇\n" +
+    "https://jbrrms.in/verify.html?id=" + memberId;
+
+  const url = "https://wa.me/?text=" + encodeURIComponent(msg);
+  window.open(url, "_blank");
 }
 </script>
 
 </body>
 </html>
-<a class="btn" style="background:#25D366"
-href="https://wa.me/?text=मैं%20जय%20भवानी%20राष्ट्रीय%20राजपूत%20महासभा%20का%20सत्यापित%20सदस्य%20हूँ%20✅%0AMember%20ID:%20${m.member_id}%0AVerify:%20https://jbrrms.in/verify.html?id=${m.member_id}"
-target="_blank">📲 Share on WhatsApp</a>
