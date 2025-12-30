@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Certificate | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{background:#eee;font-family:Arial}
+.paper{
+  width:700px;max-width:95%;
+  margin:30px auto;background:#fff;
+  padding:30px;border:4px double #7b0000
+}
+h1{text-align:center;color:#7b0000;margin:0}
+hr{border:0;border-top:2px solid #7b0000;margin:15px 0}
+p{font-size:16px;line-height:1.6}
+.footer{display:flex;justify-content:space-between;margin-top:40px}
+.btn{
+  display:block;margin:20px auto;padding:10px 16px;
+  background:#7b0000;color:#fff;border:none;border-radius:6px
+}
+</style>
+</head>
+<body>
+
+<div class="paper" id="cert">
+  <h1>प्रमाण पत्र</h1>
+  <hr>
+  <p>
+    यह प्रमाणित किया जाता है कि <b id="name"></b>
+    (पिता/अभिभावक: <b id="father"></b>)  
+    को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
+    <b id="level"></b> स्तर पर <b id="post"></b>
+    के पद पर नियुक्त/स्वीकृत किया जाता है।
+  </p>
+  <p>
+    सदस्य आईडी: <b id="mid"></b>
+  </p>
+
+  <div class="footer">
+    <div>दिनांक: <span id="date"></span></div>
+    <div>अधिकृत हस्ताक्षर</div>
+  </div>
+</div>
+
+<button class="btn" onclick="download()">⬇️ Download Certificate</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+const id=new URLSearchParams(location.search).get("id");
+fetch("data/members.json").then(r=>r.json()).then(d=>{
+  const m=d.find(x=>x.member_id===id);
+  if(!m){alert("Member not found");return;}
+  name.innerText=m.name;
+  father.innerText=m.father;
+  level.innerText=m.level;
+  post.innerText=m.post;
+  mid.innerText=m.member_id;
+  date.innerText=new Date().toLocaleDateString("hi-IN");
+});
+function download(){
+  html2canvas(document.getElementById("cert")).then(c=>{
+    const a=document.createElement("a");
+    a.download="JBRRMS_Certificate.png";
+    a.href=c.toDataURL();
+    a.click();
+  });
+}
+</script>
+
+</body>
+</html>
