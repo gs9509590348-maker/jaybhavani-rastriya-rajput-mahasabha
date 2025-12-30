@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>ID Card Print | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@media print{
+  body{margin:0}
+  .no-print{display:none}
+}
+body{font-family:Arial;background:#eee}
+.page{
+  width:210mm; min-height:297mm; background:#fff; margin:10px auto; padding:10mm;
+}
+.grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:10mm}
+.card{
+  border:2px solid #7b0000; border-radius:10px; padding:6mm; height:54mm;
+}
+.hdr{background:#7b0000;color:#fff;text-align:center;padding:3mm;border-radius:6px}
+.info{font-size:11px}
+.qr img{width:22mm}
+.watermark{
+  position:absolute; opacity:.08; font-size:48px; transform:rotate(-20deg);
+}
+</style>
+</head>
+<body>
+
+<div class="no-print" style="text-align:center;margin:10px">
+  <button onclick="window.print()">🖨️ Print / Save PDF</button>
+</div>
+
+<div class="page">
+  <div class="grid" id="cards"></div>
+</div>
+
+<script>
+const id = new URLSearchParams(location.search).get("id");
+fetch("data/members.json").then(r=>r.json()).then(d=>{
+  const list = id ? d.filter(x=>x.member_id===id) : d;
+  const wrap = document.getElementById("cards");
+  list.forEach(m=>{
+    const c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`
+      <div class="hdr">जय भवानी राष्ट्रीय राजपूत महासभा</div>
+      <div class="info">
+        <b>${m.name}</b><br>
+        ${m.post} (${m.level})<br>
+        ID: ${m.member_id}
+      </div>
+      <div class="qr">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jbrrms.in/verify.html?id=${m.member_id}">
+      </div>`;
+    wrap.appendChild(c);
+  });
+});
+</script>
+</body>
+</html>
