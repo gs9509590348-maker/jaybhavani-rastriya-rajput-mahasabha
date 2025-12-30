@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Edit Member | Admin – JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial;background:#f4f4f4}
+.box{
+  max-width:500px;margin:30px auto;
+  background:#fff;padding:20px;
+  border:2px solid #7b0000;border-radius:8px
+}
+h2{text-align:center;color:#7b0000}
+input,select{
+  width:100%;padding:8px;margin:6px 0
+}
+button{
+  width:100%;padding:10px;
+  background:#7b0000;color:#fff;
+  border:none;border-radius:6px;
+  margin-top:10px
+}
+.note{font-size:13px;color:#555;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h2>🔐 Admin – Edit Member</h2>
+
+<input id="mid" placeholder="Enter Member ID">
+<button onclick="loadMember()">Load Member</button>
+
+<hr>
+
+<input id="name" placeholder="Name">
+<input id="father" placeholder="Father Name">
+<input id="post" placeholder="Post">
+<input id="level" placeholder="Level">
+<input id="photo" placeholder="Photo URL">
+
+<button onclick="saveData()">⬇️ Download Updated members.json</button>
+
+<p class="note">
+⚠️ Download file को <b>data/members.json</b> से GitHub में replace करें
+</p>
+</div>
+
+<script>
+let members=[], index=-1;
+
+fetch("data/members.json")
+.then(r=>r.json())
+.then(d=>members=d);
+
+function loadMember(){
+  const id=document.getElementById("mid").value.trim();
+  index=members.findIndex(m=>m.member_id===id);
+  if(index<0){alert("Member not found");return;}
+
+  const m=members[index];
+  name.value=m.name||"";
+  father.value=m.father||"";
+  post.value=m.post||"";
+  level.value=m.level||"";
+  photo.value=m.photo||"";
+}
+
+function saveData(){
+  if(index<0){alert("Load member first");return;}
+
+  members[index].name=name.value;
+  members[index].father=father.value;
+  members[index].post=post.value;
+  members[index].level=level.value;
+  members[index].photo=photo.value;
+
+  const blob=new Blob(
+    [JSON.stringify(members,null,2)],
+    {type:"application/json"}
+  );
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="members.json";
+  a.click();
+}
+</script>
+
+</body>
+</html>
