@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Admin Dashboard | JBRRMS</title>
+
+<!-- AUTO REDIRECT TO SECURE ADMIN -->
+<meta http-equiv="refresh" content="0; url=admin_secure.html">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f4f4;
+  text-align:center;
+}
+.box{
+  margin-top:100px;
+  padding:20px;
+}
+h2{
+  color:#7b0000;
+}
+p{
+  color:#444;
+  font-size:14px;
+}
+a.btn{
+  display:inline-block;
+  margin-top:18px;
+  padding:10px 22px;
+  background:#7b0000;
+  color:#fff;
+  text-decoration:none;
+  border-radius:6px;
+  font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>🔐 Admin Dashboard</h2>
+  <p>आपको सुरक्षित Admin Panel पर भेजा जा रहा है…</p>
+  <p>अगर अपने आप redirect न हो तो नीचे क्लिक करें 👇</p>
+
+  <a class="btn" href="admin_secure.html">
+    Go to Admin Panel
+  </a>
+</div>
+
+</body>
+</html>
