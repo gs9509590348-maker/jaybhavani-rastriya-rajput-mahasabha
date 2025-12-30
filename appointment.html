@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <title>Appointment Letter | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{background:#eee;font-family:Arial}
 .letter{
@@ -14,16 +15,23 @@ body{background:#eee;font-family:Arial}
 h1{text-align:center;color:#7b0000;margin:0}
 p{font-size:16px;line-height:1.6}
 .footer{display:flex;justify-content:space-between;margin-top:40px}
+
 .btn{
-  display:block;margin:20px auto;padding:10px 16px;
-  background:#7b0000;color:#fff;border:none;border-radius:6px
+  display:block;margin:12px auto;padding:10px 16px;
+  background:#7b0000;color:#fff;border:none;
+  border-radius:6px;text-decoration:none;
+  text-align:center;font-size:15px;
 }
+.whatsapp{background:#25D366}
+.gray{background:#555}
 </style>
 </head>
+
 <body>
 
 <div class="letter" id="app">
   <h1>नियुक्ति पत्र</h1>
+
   <p>
     श्री <b id="name"></b> (पिता: <b id="father"></b>)  
     को यह सूचित किया जाता है कि आपको
@@ -45,27 +53,61 @@ p{font-size:16px;line-height:1.6}
 
 <button class="btn" onclick="download()">⬇️ Download Appointment</button>
 
+<a id="idcard" class="btn gray" target="_blank">🪪 View ID Card</a>
+<a id="certificate" class="btn gray" target="_blank">📜 View Certificate</a>
+
+<a class="btn whatsapp" onclick="shareWhatsApp()">📲 Share on WhatsApp</a>
+
+<a id="verify" class="btn gray" target="_blank">🔍 Verify Online</a>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <script>
-const id=new URLSearchParams(location.search).get("id");
-fetch("data/members.json").then(r=>r.json()).then(d=>{
-  const m=d.find(x=>x.member_id===id);
-  if(!m){alert("Member not found");return;}
-  name.innerText=m.name;
-  father.innerText=m.father;
-  level.innerText=m.level;
-  post.innerText=m.post;
-  dept.innerText=m.department;
-  mid.innerText=m.member_id;
-  date.innerText=new Date().toLocaleDateString("hi-IN");
+const id = new URLSearchParams(location.search).get("id");
+let member = null;
+
+fetch("data/members.json")
+.then(r=>r.json())
+.then(d=>{
+  member = d.find(x=>x.member_id === id);
+  if(!member){ alert("Member not found"); return; }
+
+  name.innerText = member.name;
+  father.innerText = member.father;
+  level.innerText = member.level;
+  post.innerText = member.post;
+  dept.innerText = member.department;
+  mid.innerText = member.member_id;
+  date.innerText = new Date().toLocaleDateString("hi-IN");
+
+  document.getElementById("idcard").href = member.id_card;
+  document.getElementById("certificate").href = member.certificate;
+  document.getElementById("verify").href =
+    "https://jbrrms.in/verify.html?id=" + member.member_id;
 });
+
 function download(){
   html2canvas(document.getElementById("app")).then(c=>{
     const a=document.createElement("a");
-    a.download="JBRRMS_Appointment.png";
+    a.download="JBRRMS_Appointment_"+id+".png";
     a.href=c.toDataURL();
     a.click();
   });
+}
+
+function shareWhatsApp(){
+  const msg =
+    "मैं जय भवानी राष्ट्रीय राजपूत महासभा का नियुक्त सदस्य हूँ ✅\n\n" +
+    "Name: " + member.name + "\n" +
+    "Post: " + member.post + "\n" +
+    "Member ID: " + member.member_id + "\n\n" +
+    "Verify Online 👇\n" +
+    "https://jbrrms.in/verify.html?id=" + member.member_id;
+
+  window.open(
+    "https://wa.me/?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
 }
 </script>
 
