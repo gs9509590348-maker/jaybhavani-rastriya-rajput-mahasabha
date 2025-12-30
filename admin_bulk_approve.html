@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Bulk Approve | Admin</title>
+</head>
+<body>
+
+<h2>🚀 Bulk Approve Members (GitHub Mode)</h2>
+
+<div id="list"></div>
+
+<button onclick="approveAll()">✅ Approve All</button>
+<button onclick="download()">⬇️ Download Updated JSON</button>
+
+<script>
+let members = [];
+
+fetch("data/members.json")
+.then(r=>r.json())
+.then(d=>{
+  members = d;
+  render();
+});
+
+function render(){
+  let html="";
+  members.forEach((m,i)=>{
+    if(m.status==="pending"){
+      html+=`<p>
+      <input type="checkbox" checked>
+      ${m.name} (${m.id})
+      </p>`;
+    }
+  });
+  document.getElementById("list").innerHTML=html;
+}
+
+function approveAll(){
+  members.forEach(m=>{
+    if(m.status==="pending") m.status="approved";
+  });
+  alert("Approved (Preview Mode)");
+}
+
+function download(){
+  const blob=new Blob([JSON.stringify(members,null,2)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="members.json";
+  a.click();
+}
+</script>
+
+</body>
+</html>
