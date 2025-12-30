@@ -58,6 +58,13 @@ a.btn{
   border-radius:5px;
   font-size:14px;
 }
+.footer{
+  text-align:center;
+  font-size:13px;
+  color:#555;
+  margin:40px 0 20px;
+  line-height:1.6;
+}
 </style>
 </head>
 
@@ -71,6 +78,11 @@ a.btn{
   <button onclick="verify()">Verify</button>
 
   <div id="out"></div>
+
+  <p style="font-size:12px;color:#666;text-align:center;margin-top:15px">
+    सदस्यों की जानकारी केवल सत्यापन हेतु उपयोग की जाती है।  
+    हम किसी भी प्रकार की व्यक्तिगत जानकारी साझा नहीं करते।
+  </p>
 </div>
 
 <script>
@@ -82,7 +94,7 @@ async function verify(){
   out.innerHTML = "Checking...";
 
   if(!mid || !mob){
-    out.innerHTML = "<p class='error'>Please enter Member ID and Mobile</p>";
+    out.innerHTML = "<p class='error'>कृपया Member ID और Mobile Number डालें</p>";
     return;
   }
 
@@ -92,7 +104,7 @@ async function verify(){
   const m = data.find(x => x.member_id === mid && x.mobile === mob);
 
   if(!m){
-    out.innerHTML = "<p class='error'>❌ Member not found</p>";
+    out.innerHTML = "<p class='error'>❌ Member नहीं मिला</p>";
     return;
   }
 
@@ -103,7 +115,8 @@ async function verify(){
       <p><b>Father:</b> ${m.father}</p>
       <p><b>Post:</b> ${m.post}</p>
       <p><b>Level:</b> ${m.level}</p>
-      <p><b>Department:</b> ${m.department}</p>
+      <p><b>Department:</b> ${m.department || "-"}</p>
+      <p><b>Status:</b> ${m.status || "Active"}</p>
 
       <a class="btn" href="${m.id_card}" target="_blank">🪪 ID Card</a>
       <a class="btn" href="${m.certificate}" target="_blank">📜 Certificate</a>
@@ -119,15 +132,26 @@ async function verify(){
 
 function shareOnWhatsApp(memberId){
   const msg =
-    "मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅\n\n" +
-    "Member ID: " + memberId + "\n\n" +
-    "Verify here 👇\n" +
-    "https://jbrrms.in/verify.html?id=" + memberId;
+`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
 
-  const url = "https://wa.me/?text=" + encodeURIComponent(msg);
-  window.open(url, "_blank");
+Member ID: ${memberId}
+
+Verify Online 👇
+https://jbrrms.in/verify.html?id=${memberId}`;
+
+  window.open(
+    "https://wa.me/?text=" + encodeURIComponent(msg),
+    "_blank"
+  );
 }
 </script>
+
+<footer class="footer">
+  © 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
+  <br>
+  यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।  
+  यह किसी सरकारी संस्था से संबद्ध नहीं है।
+</footer>
 
 </body>
 </html>
