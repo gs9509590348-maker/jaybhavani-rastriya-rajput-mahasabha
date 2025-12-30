@@ -2,63 +2,106 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Appointment Letter | JBRRMS</title>
+<title>Certificate | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{background:#eee;font-family:Arial}
-.letter{
-  width:700px;max-width:95%;
-  margin:30px auto;background:#fff;
-  padding:30px;border:2px solid #7b0000
+body{
+  background:#eee;
+  font-family:Arial, sans-serif;
+  margin:0;
 }
-h1{text-align:center;color:#7b0000;margin:0}
-p{font-size:16px;line-height:1.6}
-.footer{display:flex;justify-content:space-between;margin-top:40px}
-
+.paper{
+  width:700px;
+  max-width:95%;
+  margin:30px auto;
+  background:#fff;
+  padding:30px;
+  border:4px double #7b0000;
+}
+h1{
+  text-align:center;
+  color:#7b0000;
+  margin:0;
+}
+hr{
+  border:0;
+  border-top:2px solid #7b0000;
+  margin:15px 0;
+}
+p{
+  font-size:16px;
+  line-height:1.6;
+}
+.footer-row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:40px;
+}
 .btn{
-  display:block;margin:12px auto;padding:10px 16px;
-  background:#7b0000;color:#fff;border:none;
-  border-radius:6px;text-decoration:none;
-  text-align:center;font-size:15px;
+  display:block;
+  margin:12px auto;
+  padding:10px 16px;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  text-decoration:none;
+  text-align:center;
+  font-size:15px;
+  cursor:pointer;
 }
-.whatsapp{background:#25D366}
 .gray{background:#555}
+.whatsapp{background:#25D366}
+
+.site-footer{
+  text-align:center;
+  font-size:13px;
+  color:#555;
+  margin:40px 0 20px;
+  line-height:1.6;
+}
+
+@media print{
+  .no-print{display:none}
+  body{background:#fff}
+}
 </style>
 </head>
 
 <body>
 
-<div class="letter" id="app">
-  <h1>नियुक्ति पत्र</h1>
+<div class="paper" id="cert">
+  <h1>प्रमाण पत्र</h1>
+  <hr>
 
   <p>
-    श्री <b id="name"></b> (पिता: <b id="father"></b>)  
-    को यह सूचित किया जाता है कि आपको
-    <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
-    <b id="level"></b> स्तर पर
-    <b id="post"></b> (विभाग: <b id="dept"></b>)
-    के पद पर नियुक्त किया जाता है।
+    यह प्रमाणित किया जाता है कि <b id="name"></b>
+    (पिता/अभिभावक: <b id="father"></b>)
+    को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
+    <b id="level"></b> स्तर पर <b id="post"></b>
+    के पद पर नियुक्त / स्वीकृत किया जाता है।
   </p>
 
   <p>
-    आपकी सदस्य आईडी: <b id="mid"></b>
+    सदस्य आईडी: <b id="mid"></b>
   </p>
 
-  <div class="footer">
+  <div class="footer-row">
     <div>दिनांक: <span id="date"></span></div>
-    <div>हस्ताक्षर / मुहर</div>
+    <div>अधिकृत हस्ताक्षर</div>
   </div>
 </div>
 
-<button class="btn" onclick="download()">⬇️ Download Appointment</button>
+<!-- ACTION BUTTONS -->
+<button class="btn no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+<button class="btn no-print" onclick="download()">⬇️ Download Certificate</button>
 
-<a id="idcard" class="btn gray" target="_blank">🪪 View ID Card</a>
-<a id="certificate" class="btn gray" target="_blank">📜 View Certificate</a>
+<a id="idcard" class="btn gray no-print" target="_blank">🪪 View ID Card</a>
+<a id="appointment" class="btn gray no-print" target="_blank">📄 Appointment Letter</a>
+<a id="verify" class="btn gray no-print" target="_blank">🔍 Verify Online</a>
 
-<a class="btn whatsapp" onclick="shareWhatsApp()">📲 Share on WhatsApp</a>
-
-<a id="verify" class="btn gray" target="_blank">🔍 Verify Online</a>
+<button class="btn whatsapp no-print" onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -69,40 +112,45 @@ let member = null;
 fetch("data/members.json")
 .then(r=>r.json())
 .then(d=>{
-  member = d.find(x=>x.member_id === id);
-  if(!member){ alert("Member not found"); return; }
+  member = d.find(x => x.member_id === id);
+  if(!member){
+    alert("Member not found");
+    return;
+  }
 
   name.innerText = member.name;
   father.innerText = member.father;
   level.innerText = member.level;
   post.innerText = member.post;
-  dept.innerText = member.department;
   mid.innerText = member.member_id;
   date.innerText = new Date().toLocaleDateString("hi-IN");
 
   document.getElementById("idcard").href = member.id_card;
-  document.getElementById("certificate").href = member.certificate;
+  document.getElementById("appointment").href = member.appointment;
   document.getElementById("verify").href =
     "https://jbrrms.in/verify.html?id=" + member.member_id;
 });
 
 function download(){
-  html2canvas(document.getElementById("app")).then(c=>{
-    const a=document.createElement("a");
-    a.download="JBRRMS_Appointment_"+id+".png";
-    a.href=c.toDataURL();
+  html2canvas(document.getElementById("cert")).then(c=>{
+    const a = document.createElement("a");
+    a.download = "JBRRMS_Certificate_" + id + ".png";
+    a.href = c.toDataURL();
     a.click();
   });
 }
 
 function shareWhatsApp(){
+  if(!member) return;
+
   const msg =
-    "मैं जय भवानी राष्ट्रीय राजपूत महासभा का नियुक्त सदस्य हूँ ✅\n\n" +
-    "Name: " + member.name + "\n" +
-    "Post: " + member.post + "\n" +
-    "Member ID: " + member.member_id + "\n\n" +
-    "Verify Online 👇\n" +
-    "https://jbrrms.in/verify.html?id=" + member.member_id;
+`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
+
+नाम: ${member.name}
+Member ID: ${member.member_id}
+
+Verify Online 👇
+https://jbrrms.in/verify.html?id=${member.member_id}`;
 
   window.open(
     "https://wa.me/?text=" + encodeURIComponent(msg),
@@ -110,6 +158,13 @@ function shareWhatsApp(){
   );
 }
 </script>
+
+<footer class="site-footer">
+  © 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
+  <br>
+  यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।  
+  यह किसी सरकारी संस्था से संबद्ध नहीं है।
+</footer>
 
 </body>
 </html>
