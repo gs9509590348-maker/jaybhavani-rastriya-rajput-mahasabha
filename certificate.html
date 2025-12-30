@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{background:#eee;font-family:Arial}
+body{background:#eee;font-family:Arial;margin:0}
 .paper{
   width:700px;max-width:95%;
   margin:30px auto;background:#fff;
@@ -22,9 +22,15 @@ p{font-size:16px;line-height:1.6}
   background:#7b0000;color:#fff;border:none;
   border-radius:6px;text-decoration:none;
   text-align:center;font-size:15px;
+  cursor:pointer;
 }
 .whatsapp{background:#25D366}
 .gray{background:#555}
+
+@media print{
+  .no-print{display:none}
+  body{background:#fff}
+}
 </style>
 </head>
 
@@ -52,14 +58,15 @@ p{font-size:16px;line-height:1.6}
   </div>
 </div>
 
-<button class="btn" onclick="download()">⬇️ Download Certificate</button>
+<!-- ACTION BUTTONS -->
+<button class="btn no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
+<button class="btn no-print" onclick="download()">⬇️ Download Certificate</button>
 
-<a id="idcard" class="btn gray" target="_blank">🪪 View ID Card</a>
-<a id="appointment" class="btn gray" target="_blank">📄 Appointment Letter</a>
+<a id="idcard" class="btn gray no-print" target="_blank">🪪 View ID Card</a>
+<a id="appointment" class="btn gray no-print" target="_blank">📄 Appointment Letter</a>
+<a id="verify" class="btn gray no-print" target="_blank">🔍 Verify Online</a>
 
-<a class="btn whatsapp" onclick="shareWhatsApp()">📲 Share on WhatsApp</a>
-
-<a id="verify" class="btn gray" target="_blank">🔍 Verify Online</a>
+<button class="btn whatsapp no-print" onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
@@ -71,7 +78,10 @@ fetch("data/members.json")
 .then(r=>r.json())
 .then(d=>{
   member = d.find(x=>x.member_id === id);
-  if(!member){ alert("Member not found"); return; }
+  if(!member){
+    alert("Member not found");
+    return;
+  }
 
   name.innerText = member.name;
   father.innerText = member.father;
@@ -96,12 +106,16 @@ function download(){
 }
 
 function shareWhatsApp(){
+  if(!member) return;
+
   const msg =
-    "मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅\n\n" +
-    "Name: " + member.name + "\n" +
-    "Member ID: " + member.member_id + "\n\n" +
-    "Verify Online 👇\n" +
-    "https://jbrrms.in/verify.html?id=" + member.member_id;
+`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
+
+नाम: ${member.name}
+Member ID: ${member.member_id}
+
+Verify Online 👇
+https://jbrrms.in/verify.html?id=${member.member_id}`;
 
   window.open(
     "https://wa.me/?text=" + encodeURIComponent(msg),
