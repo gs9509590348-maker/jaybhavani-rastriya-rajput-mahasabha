@@ -10,7 +10,8 @@
     "level": "District",
     "post": "जिला अध्यक्ष",
     "department": "जिला कार्यकारिणी",
-    "id_card": "PASTE_ID_CARD_PDF_LINK",
+
+    "id_card": "https://jbrrms.in/idcard.html?id=JBRRMS-2025-001",
     "certificate": "PASTE_CERTIFICATE_PDF_LINK",
     "appointment": "PASTE_APPOINTMENT_PDF_LINK"
   }
