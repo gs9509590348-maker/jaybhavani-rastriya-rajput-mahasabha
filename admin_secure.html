@@ -2,112 +2,169 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Secure Admin | JBRRMS</title>
+<title>Admin Control Room | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0}
-.box{
-  max-width:420px;margin:80px auto;background:#fff;
-  padding:25px;border-radius:10px;text-align:center
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:#f4f4f4;
 }
-input{width:100%;padding:10px;margin:10px 0}
-.btn{
-  width:100%;padding:10px;background:#7b0000;
-  color:#fff;border:none;border-radius:6px;cursor:pointer
+header{
+  background:#7b0000;
+  color:#fff;
+  text-align:center;
+  padding:18px;
 }
-.hidden{display:none}
+header h1{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:13px}
+
 .container{
-  max-width:1200px;margin:20px auto;background:#fff;
-  padding:15px;border-radius:8px
+  max-width:900px;
+  margin:20px auto;
+  padding:10px;
 }
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{border:1px solid #ccc;padding:6px}
-th{background:#eee}
-.footer{text-align:center;font-size:13px;color:#555;margin:30px 0}
+
+.section{
+  background:#fff;
+  margin-bottom:20px;
+  border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+.section h2{
+  margin:0;
+  padding:12px 15px;
+  background:#7b0000;
+  color:#fff;
+  border-radius:8px 8px 0 0;
+  font-size:16px;
+}
+.section .content{
+  padding:15px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+}
+
+a.btn{
+  display:block;
+  padding:12px;
+  text-align:center;
+  background:#7b0000;
+  color:#fff;
+  text-decoration:none;
+  border-radius:6px;
+  font-size:14px;
+}
+a.btn:hover{opacity:.9}
+
+a.gray{background:#555}
+a.green{background:#1fa463}
+a.blue{background:#0066cc}
+a.black{background:#000}
+
+footer{
+  text-align:center;
+  font-size:12px;
+  color:#555;
+  margin:30px 10px;
+}
+.note{
+  font-size:13px;
+  line-height:1.6;
+}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div class="box" id="loginBox">
-  <h3>🔐 Admin Login</h3>
-  <input type="password" id="pass" placeholder="Enter Password">
-  <button class="btn" onclick="login()">Login</button>
+<header>
+  <h1>🔐 Admin Control Room</h1>
+  <p>पूरा सिस्टम यहीं से कंट्रोल होगा</p>
+</header>
+
+<div class="container">
+
+<!-- MEMBER CONTROL -->
+<div class="section">
+  <h2>👤 Member Management</h2>
+  <div class="content">
+    <a class="btn" href="admin_edit_member.html">Edit / Delete Members</a>
+    <a class="btn" href="bulk_add_members.html">Bulk Add Members</a>
+    <a class="btn" href="bulk_csv_to_json.html">CSV → Members JSON</a>
+    <a class="btn blue" href="directory.html">View Public Directory</a>
+  </div>
 </div>
 
-<!-- DASHBOARD -->
-<div class="container hidden" id="dash">
-  <h2>Admin Dashboard</h2>
-  <input id="q" placeholder="Search member">
-  <button class="btn" onclick="search()">Search</button>
-
-  <table id="tbl">
-    <thead>
-      <tr>
-        <th>ID</th><th>Name</th><th>Post</th>
-        <th>District</th><th>State</th><th>Action</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <h3>Selected Member JSON</h3>
-  <textarea id="json" style="width:100%;height:160px;font-family:monospace"></textarea>
+<!-- KARYAKARINI -->
+<div class="section">
+  <h2>🧑‍💼 कार्यकारणी समिति</h2>
+  <div class="content">
+    <a class="btn" href="admin_karyakarini.html">Add / Edit कार्यकारणी</a>
+    <a class="btn blue" href="karyakarini.html">View कार्यकारणी (Public)</a>
+  </div>
 </div>
 
-<div class="footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा
+<!-- EVENTS -->
+<div class="section">
+  <h2>📸 Events / Gallery</h2>
+  <div class="content">
+    <a class="btn" href="admin_events.html">Add / Edit Events</a>
+    <a class="btn blue" href="gallery.html">Photo Gallery</a>
+    <a class="btn blue" href="events.html">Official Events</a>
+  </div>
 </div>
 
-<script>
-const PASSWORD="JBRRMS@123"; // 🔑 CHANGE THIS
-let members=[];
+<!-- DOCUMENTS -->
+<div class="section">
+  <h2>🧾 Documents</h2>
+  <div class="content">
+    <a class="btn" href="idcard_print.html">Member ID Card</a>
+    <a class="btn" href="certificate.html">Certificate</a>
+    <a class="btn" href="appointment.html">Appointment Letter</a>
+  </div>
+</div>
 
-function login(){
-  if(document.getElementById("pass").value===PASSWORD){
-    loginBox.classList.add("hidden");
-    dash.classList.remove("hidden");
-    load();
-  }else{
-    alert("Wrong Password");
-  }
-}
+<!-- COMMUNICATION -->
+<div class="section">
+  <h2>📲 Communication</h2>
+  <div class="content">
+    <a class="btn green" href="bulk_whatsapp.html">Bulk WhatsApp Tool</a>
+  </div>
+</div>
 
-function load(){
-  fetch("data/members.json").then(r=>r.json()).then(d=>{
-    members=d; render(d);
-  });
-}
+<!-- SYSTEM -->
+<div class="section">
+  <h2>⚙️ System</h2>
+  <div class="content">
+    <a class="btn black" href="index.html">🏠 Back to Website</a>
+    <a class="btn gray" href="verify.html">🔍 Verify Page</a>
+  </div>
+</div>
 
-function render(list){
-  const tb=document.querySelector("#tbl tbody");
-  tb.innerHTML="";
-  list.forEach(m=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${m.member_id}</td>
-      <td>${m.name}</td>
-      <td>${m.post}</td>
-      <td>${m.district||""}</td>
-      <td>${m.state||""}</td>
-      <td>
-        <button onclick='select(${JSON.stringify(m)})'>View</button>
-      </td>`;
-    tb.appendChild(tr);
-  });
-}
+<!-- INFO -->
+<div class="section">
+  <h2>ℹ️ Important</h2>
+  <div class="content">
+    <div class="note">
+      ✔ GitHub Pages = Hosting only<br>
+      ✔ Data JSON files से आता है<br>
+      ✔ Save = GitHub Commit<br><br>
+      ❌ Public edit नहीं कर सकता<br>
+      🔐 Admin = Control Room
+    </div>
+  </div>
+</div>
 
-function search(){
-  const q=document.getElementById("q").value.toLowerCase();
-  render(members.filter(m=>JSON.stringify(m).toLowerCase().includes(q)));
-}
+</div>
 
-function select(m){
-  json.value=JSON.stringify(m,null,2);
-}
-</script>
+<footer>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
+<br>
+यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
+</footer>
 
 </body>
 </html>
