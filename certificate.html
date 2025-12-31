@@ -8,7 +8,7 @@
 <style>
 body{
   background:#eee;
-  font-family:Arial, sans-serif;
+  font-family:Mangal, Arial, sans-serif;
   margin:0;
 }
 .paper{
@@ -24,6 +24,11 @@ h1{
   color:#7b0000;
   margin:0;
 }
+.sub{
+  text-align:center;
+  font-size:14px;
+  margin-bottom:15px;
+}
 hr{
   border:0;
   border-top:2px solid #7b0000;
@@ -31,13 +36,15 @@ hr{
 }
 p{
   font-size:16px;
-  line-height:1.6;
+  line-height:1.8;
 }
 .footer-row{
   display:flex;
   justify-content:space-between;
   margin-top:40px;
+  font-size:15px;
 }
+
 .btn{
   display:block;
   margin:12px auto;
@@ -72,25 +79,46 @@ p{
 <body>
 
 <div class="paper" id="cert">
-  <h1>प्रमाण पत्र</h1>
+
+  <h1>☀️<br>प्रमाण पत्र</h1>
+  <div class="sub">
+    जय भवानी राष्ट्रीय राजपूत महासभा<br>
+    (राष्ट्रीय स्तर का सामाजिक संगठन)
+  </div>
+
   <hr>
 
   <p>
-    यह प्रमाणित किया जाता है कि <b id="name"></b>
-    (पिता/अभिभावक: <b id="father"></b>)
-    को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
-    <b id="level"></b> स्तर पर <b id="post"></b>
-    के पद पर नियुक्त / स्वीकृत किया जाता है।
+    यह प्रमाणित किया जाता है कि<br><br>
+
+    श्री <b id="name"></b><br>
+    पिता/अभिभावक : <b id="father"></b><br><br>
+
+    को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में<br>
+    <b><span id="level"></span></b> स्तर पर<br>
+    <b><span id="post"></span></b> के पद पर<br><br>
+
+    नियुक्त / स्वीकृत किया गया है।
   </p>
 
   <p>
-    सदस्य आईडी: <b id="mid"></b>
+    सदस्य आईडी : <b id="mid"></b>
   </p>
 
   <div class="footer-row">
-    <div>दिनांक: <span id="date"></span></div>
-    <div>अधिकृत हस्ताक्षर</div>
+    <div>
+      दिनांक : <span id="date"></span>
+    </div>
+    <div style="text-align:right">
+      (यह प्रमाण पत्र पूर्णतः डिजिटल है)<br>
+      QR Verify द्वारा मान्य
+    </div>
   </div>
+
+  <p style="text-align:center;font-weight:bold;margin-top:30px">
+    जय भवानी | जय राजपूताना 🚩
+  </p>
+
 </div>
 
 <!-- ACTION BUTTONS -->
@@ -118,15 +146,19 @@ fetch("data/members.json")
     return;
   }
 
-  name.innerText = member.name;
-  father.innerText = member.father;
-  level.innerText = member.level;
-  post.innerText = member.post;
-  mid.innerText = member.member_id;
+  name.innerText = member.name || "";
+  father.innerText = member.father || "";
+  level.innerText = member.level || "";
+  post.innerText = member.post || "";
+  mid.innerText = member.member_id || "";
   date.innerText = new Date().toLocaleDateString("hi-IN");
 
-  document.getElementById("idcard").href = member.id_card;
-  document.getElementById("appointment").href = member.appointment;
+  document.getElementById("idcard").href =
+    "idcard.html?id=" + member.member_id;
+
+  document.getElementById("appointment").href =
+    "appointment.html?id=" + member.member_id;
+
   document.getElementById("verify").href =
     "https://jbrrms.in/verify.html?id=" + member.member_id;
 });
