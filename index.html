@@ -2,12 +2,9 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS | Official Secure Portal</title>
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- PWA BASIC -->
 <meta name="theme-color" content="#7b0000">
-<link rel="manifest" href="manifest.json">
 
 <style>
 :root{
@@ -15,7 +12,7 @@
   --dark:#3b0000;
   --green:#128c7e;
   --blue:#1877f2;
-  --bg:#f1f3f6;
+  --bg:#f2f2f2;
   --text:#333;
   --card:#fff;
 }
@@ -27,106 +24,110 @@ body.dark{
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui,Arial;
+  font-family:Arial,system-ui;
   background:var(--bg);
   color:var(--text);
-  transition:.3s;
 }
 a{text-decoration:none;color:inherit}
 
 /* TOP BAR */
 .topbar{
   background:#000;color:#fff;
-  display:flex;justify-content:space-between;
+  display:flex;
+  justify-content:space-between;
   align-items:center;
-  padding:8px 12px;font-size:13px
-}
-.top-actions button{
-  margin-left:6px;
-  padding:4px 8px;
-  border:none;border-radius:6px;
-  cursor:pointer
+  padding:8px 12px;
+  font-size:13px;
 }
 
 /* HEADER */
 header{
   background:linear-gradient(135deg,var(--main),var(--dark));
-  color:#fff;text-align:center;
-  padding:22px 12px
+  color:#fff;
+  text-align:center;
+  padding:22px 12px;
 }
 header h2{margin:0;font-size:22px}
 header p{margin:6px 0 0;font-size:14px}
 
 /* NAV */
 .nav{
-  position:sticky;top:0;z-index:10;
+  position:sticky;top:0;z-index:99;
   display:flex;flex-wrap:wrap;
-  justify-content:center;gap:10px;
-  background:var(--card);
+  justify-content:center;
+  gap:8px;
+  background:#fff;
   padding:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.1)
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
 .nav a{
   border:1px solid var(--main);
-  padding:8px 14px;border-radius:20px;
-  color:var(--main);font-size:13px;
+  padding:8px 14px;
+  border-radius:20px;
+  color:var(--main);
+  font-size:13px;
 }
-.nav a.hide{display:none}
+.hide{display:none}
 
-/* HERO */
-.hero{
-  margin:14px;background:var(--card);
-  border-radius:14px;padding:16px;
-  box-shadow:0 6px 18px rgba(0,0,0,.1)
+/* SECTION */
+.section{
+  background:var(--card);
+  margin:14px;
+  border-radius:10px;
+  box-shadow:0 4px 14px rgba(0,0,0,.1);
+  overflow:hidden;
 }
+.section h3{
+  background:var(--main);
+  color:#fff;
+  margin:0;
+  padding:10px;
+  font-size:15px;
+}
+.section .content{
+  padding:14px;
+  font-size:14px;
+  line-height:1.6;
+}
+
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:12px;margin-top:12px
+  gap:12px;
 }
 
 /* BUTTON */
 .btn{
-  padding:12px;border-radius:10px;
-  color:#fff;text-align:center;
+  display:block;
+  padding:12px;
+  border-radius:8px;
+  color:#fff;
+  text-align:center;
   font-size:14px;
-  box-shadow:0 4px 10px rgba(0,0,0,.15)
 }
 .red{background:var(--main)}
 .green{background:var(--green)}
 .blue{background:var(--blue)}
 .black{background:#000}
 
-/* STATS */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;margin-top:14px
+/* NOTICE */
+.notice{
+  background:#fff8e1;
+  border-left:5px solid #ff9800;
+  padding:12px;
+  margin:14px;
+  border-radius:8px;
+  font-size:14px;
 }
-.stat{
-  background:var(--bg);
-  border-radius:10px;
-  padding:12px;text-align:center
-}
-.stat b{display:block;font-size:18px;color:var(--main)}
-
-/* SECTION */
-.section{
-  background:var(--card);
-  margin:14px;border-radius:12px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08)
-}
-.section h3{
-  background:var(--main);color:#fff;
-  margin:0;padding:12px;font-size:15px
-}
-.section .content{padding:14px;font-size:14px}
 
 /* FOOTER */
 footer{
-  background:#000;color:#ccc;
-  text-align:center;padding:14px;
-  font-size:12px;margin-top:20px
+  background:#000;
+  color:#ccc;
+  text-align:center;
+  padding:14px;
+  font-size:12px;
 }
 </style>
 </head>
@@ -136,7 +137,7 @@ footer{
 <!-- TOP BAR -->
 <div class="topbar">
   <span id="loginStatus">👤 Guest</span>
-  <div class="top-actions">
+  <div>
     <button onclick="toggleLang()">🌐</button>
     <button onclick="toggleTheme()">🌙</button>
   </div>
@@ -148,41 +149,102 @@ footer{
   <p id="tagline">स्वाभिमान · एकता · संगठन · राष्ट्र</p>
 </header>
 
-<!-- NAV -->
+<!-- NAVIGATION -->
 <div class="nav">
   <a href="index.html">Home</a>
-  <a href="member_login.html" class="memberOnly hide">Member</a>
-  <a href="verify.html">Verify</a>
-  <a href="directory.html">Directory</a>
+  <a href="member_login.html" class="memberOnly hide">Member Login</a>
+  <a href="verify.html">Verify Member</a>
+  <a href="directory.html">Member Directory</a>
   <a href="executive.html">कार्यकारिणी</a>
   <a href="gallery.html">Gallery</a>
   <a href="admin_login.html" class="adminOnly hide">Admin</a>
 </div>
 
-<!-- HERO -->
-<div class="hero">
-  <div class="grid">
-    <a class="btn red memberOnly hide" href="member_login.html">👤 Member Dashboard</a>
-    <a class="btn blue" href="verify.html">✔ Verify Member</a>
-    <a class="btn black adminOnly hide" href="admin_login.html">🔐 Admin Control</a>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><b id="mCount">2500+</b>Members</div>
-    <div class="stat"><b id="eCount">150+</b>Executives</div>
-    <div class="stat"><b id="sCount">8+</b>States</div>
-  </div>
+<!-- NOTICE -->
+<div class="notice">
+📢 सूचना: सभी सदस्य अपने <b>ID Card, Certificate एवं Appointment Letter</b>
+<b>Member Login</b> से डाउनलोड करें।
 </div>
 
-<!-- SERVICES -->
+<!-- OFFICIAL PORTAL -->
+<div class="section">
+<h3>🔰 Official Portal</h3>
+<div class="content grid">
+  <a class="btn red" href="verify.html">🔍 Member Verify</a>
+  <a class="btn blue" href="directory.html">👥 Public Member Directory</a>
+  <a class="btn black" href="admin_login.html">🔐 Admin Control Room</a>
+</div>
+</div>
+
+<!-- MEMBERSHIP PROCESS -->
+<div class="section">
+<h3>📝 सदस्यता प्रक्रिया (Membership Process)</h3>
+<div class="content">
+1️⃣ सदस्य Google Form भरता है<br>
+2️⃣ जानकारी Google Sheet में सुरक्षित होती है<br>
+3️⃣ Admin द्वारा सत्यापन किया जाता है<br>
+4️⃣ Approved होने पर Member ID बनती है<br>
+5️⃣ ID Card, Certificate एवं Appointment Letter जारी होता है
+<br><br>
+<a class="btn red" href="membership.html">Membership Form भरें</a>
+</div>
+</div>
+
+<!-- ONLINE SERVICES -->
 <div class="section">
 <h3>ऑनलाइन सेवाएं</h3>
 <div class="content grid">
-  <a class="btn red memberOnly hide" href="member_login.html">🪪 ID Card</a>
+  <a class="btn red memberOnly hide" href="member_login.html">🪪 Digital ID Card</a>
   <a class="btn red memberOnly hide" href="member_login.html">📜 Certificate</a>
-  <a class="btn red memberOnly hide" href="member_login.html">📄 Appointment</a>
-  <a class="btn green" href="#">📲 WhatsApp</a>
-  <a class="btn blue" href="directory.html">👥 Directory</a>
+  <a class="btn red memberOnly hide" href="member_login.html">📄 Appointment Letter</a>
+  <a class="btn green" href="#">📲 WhatsApp Support</a>
+  <a class="btn blue" href="directory.html">👥 Member Directory</a>
+  <a class="btn black adminOnly hide" href="admin.html">⚙ Admin Panel</a>
+</div>
+</div>
+
+<!-- EXECUTIVE -->
+<div class="section">
+<h3>👑 कार्यकारिणी समिति</h3>
+<div class="content">
+राष्ट्रीय · प्रदेश · जिला · युवा स्तर की कार्यकारिणी  
+Google Sheet से स्वतः अपडेट होती है।
+<br><br>
+<a class="btn red" href="executive.html">कार्यकारिणी देखें</a>
+</div>
+</div>
+
+<!-- FACEBOOK -->
+<div class="section">
+<h3>📘 Official Facebook Page</h3>
+<div class="content">
+संगठन की सभी आधिकारिक सूचनाएं केवल इसी Facebook Page पर साझा की जाती हैं।
+किसी भी फर्जी पेज से सावधान रहें।
+<br><br>
+<a class="btn blue" target="_blank"
+href="https://www.facebook.com/share/1DoKwLJ5Wr/">Official Facebook Page देखें</a>
+</div>
+</div>
+
+<!-- HOW SYSTEM WORKS -->
+<div class="section">
+<h3>⚙️ वेबसाइट कैसे काम करती है</h3>
+<div class="content">
+✔ यह वेबसाइट Google Form + Google Sheet आधारित है<br>
+✔ बिना Admin Approval कोई Member Valid नहीं होता<br>
+✔ सभी ID / Certificate डिजिटल व सत्यापित हैं<br>
+✔ फर्जी दस्तावेज़ बनना असंभव है
+</div>
+</div>
+
+<!-- CONTACT -->
+<div class="section">
+<h3>📞 संपर्क / हेल्पलाइन</h3>
+<div class="content">
+<b>वेबसाइट सहायता:</b> गोपाल सिंह राजपूत<br>
+<b>मोबाइल:</b> 9166377972<br>
+<b>Email:</b> support@jbrrms.in<br>
+<b>समय:</b> सुबह 10 बजे से शाम 6 बजे तक
 </div>
 </div>
 
@@ -192,7 +254,7 @@ footer{
 </footer>
 
 <script>
-// ROLE DETECTION
+/* ROLE DETECTION */
 const member = localStorage.getItem("jbr_member");
 const admin  = sessionStorage.getItem("admin");
 
@@ -205,17 +267,12 @@ if(admin==="1"){
   document.querySelectorAll(".adminOnly").forEach(e=>e.classList.remove("hide"));
 }
 
-// THEME
+/* THEME */
 function toggleTheme(){
   document.body.classList.toggle("dark");
-  localStorage.setItem("theme",
-    document.body.classList.contains("dark")?"dark":"light");
-}
-if(localStorage.getItem("theme")==="dark"){
-  document.body.classList.add("dark");
 }
 
-// LANGUAGE
+/* LANGUAGE */
 let lang="hi";
 function toggleLang(){
   lang = lang==="hi"?"en":"hi";
