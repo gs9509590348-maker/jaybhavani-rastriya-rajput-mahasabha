@@ -3,42 +3,102 @@
 <head>
 <meta charset="UTF-8">
 <title>Member Login | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:Arial;background:#eee}
-.box{background:#fff;margin:80px auto;padding:20px;max-width:420px;border-radius:8px;text-align:center}
-input,button{width:95%;padding:10px;margin:5px}
-button{background:#7b0000;color:#fff;border:none}
+body{
+  font-family:Arial, sans-serif;
+  background:#eee;
+  margin:0;
+}
+.box{
+  background:#fff;
+  margin:80px auto;
+  padding:25px;
+  max-width:420px;
+  border-radius:10px;
+  text-align:center;
+  box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+h2{color:#7b0000}
+input{
+  width:95%;
+  padding:10px;
+  margin:6px 0;
+  font-size:15px;
+}
+button{
+  width:100%;
+  padding:12px;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:16px;
+  cursor:pointer;
+}
+button:hover{opacity:.9}
+#msg{margin-top:10px;font-size:14px}
+.error{color:red}
+.success{color:green}
 </style>
 </head>
+
 <body>
 
 <div class="box">
-<h2>🔐 Member Login</h2>
-<input id="mid" placeholder="Member ID">
-<input id="mob" placeholder="Mobile Number">
-<button onclick="login()">Login</button>
-<p id="msg"></p>
+  <h2>🔐 Member Login</h2>
+
+  <input id="mid" placeholder="Member ID">
+  <input id="mob" placeholder="Mobile Number">
+  <button onclick="login()">Login</button>
+
+  <p id="msg"></p>
 </div>
 
 <script>
 async function login(){
-  const mid = mid.value.trim();
-  const mob = mob.value.trim();
+  const midVal = document.getElementById("mid").value.trim();
+  const mobVal = document.getElementById("mob").value.trim();
   const msg = document.getElementById("msg");
 
-  const res = await fetch("data/members.json");
-  const data = await res.json();
+  if(!midVal || !mobVal){
+    msg.innerHTML = "<span class='error'>❌ सभी जानकारी भरें</span>";
+    return;
+  }
 
-  const m = data.find(x =>
-    x.Member_ID == mid &&
-    String(x.Mobile) == String(mob) &&
-    x.Status == "Approved"
-  );
+  msg.innerText = "⏳ Checking...";
 
-  if(!m){ msg.innerHTML="❌ Member not found"; return; }
+  try{
+    const res = await fetch("data/members.json");
+    const data = await res.json();
 
-  localStorage.setItem("JBRRMS_MEMBER", JSON.stringify(m));
-  location.href="member_dashboard.html";
+    const m = data.find(x =>
+      (x.member_id || x.memberId) == midVal &&
+      String(x.mobile) == String(mobVal) &&
+      (x.status||"").toLowerCase() === "approved"
+    );
+
+    if(!m){
+      msg.innerHTML =
+        "<span class='error'>❌ Member नहीं मिला या Approved नहीं है</span>";
+      return;
+    }
+
+    // save session
+    localStorage.setItem("jbr_member", JSON.stringify(m));
+
+    msg.innerHTML =
+      "<span class='success'>✅ Login Successful</span>";
+
+    setTimeout(()=>{
+      location.href = "member_dashboard.html";
+    }, 600);
+
+  }catch(e){
+    msg.innerHTML =
+      "<span class='error'>❌ Data load error</span>";
+  }
 }
 </script>
 
