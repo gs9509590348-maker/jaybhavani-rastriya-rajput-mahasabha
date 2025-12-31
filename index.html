@@ -2,199 +2,249 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>जय भवानी राष्ट्रीय राजपूत महासभा | JBRRMS</title>
-
-<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – Official Member Verification & Organisation Website">
-<meta name="keywords" content="JBRRMS, Rajput Mahasabha, Member Verify, Rajput Organisation">
-
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Segoe UI,Arial;background:#f4f4f4;color:#222}
-
-/* HEADER */
-header{
-  background:linear-gradient(90deg,#7b0000,#b30000);
-  color:#fff;
-  text-align:center;
-  padding:26px 10px
+body{
+  margin:0;
+  font-family:Arial, Helvetica, sans-serif;
+  background:#f4f4f4;
+  line-height:1.7;
 }
-header h1{margin:0;font-size:30px;font-weight:800}
-header p{margin-top:6px;font-size:15px}
+header{
+  background:#7b0000;
+  color:#fff;
+  padding:30px 15px;
+  text-align:center;
+}
+header h1{margin:0;font-size:26px}
+header p{margin:8px 0 0;font-size:15px}
 
-/* NAV */
+.lang-btn{
+  margin-top:10px;
+  padding:6px 12px;
+  border:none;
+  background:#fff;
+  color:#7b0000;
+  font-weight:bold;
+  cursor:pointer;
+  border-radius:4px;
+}
+
 nav{
-  background:#111;
+  background:#fff;
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
-  position:sticky;
-  top:0;
-  z-index:999
+  box-shadow:0 2px 6px rgba(0,0,0,.1);
 }
 nav a{
-  color:#fff;
-  text-decoration:none;
-  padding:12px 14px;
-  font-size:14px
-}
-nav a:hover{background:#7b0000}
-
-/* MAIN */
-.container{max-width:1150px;margin:auto;padding:20px}
-
-/* SECTION */
-.section{
-  background:#fff;
-  margin-bottom:22px;
-  border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08)
-}
-.section h2{
-  margin:0;
-  padding:14px 18px;
-  background:#7b0000;
-  color:#fff;
-  border-radius:10px 10px 0 0;
-  font-size:18px
-}
-.section .content{padding:18px}
-
-/* BUTTONS */
-.btn{
-  display:inline-block;
+  padding:12px 18px;
   margin:6px;
-  padding:11px 18px;
+  text-decoration:none;
+  color:#7b0000;
+  font-weight:bold;
+  border:2px solid #7b0000;
+  border-radius:6px;
+}
+nav a:hover{
   background:#7b0000;
   color:#fff;
-  border-radius:7px;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:600
 }
-.btn.green{background:#1fa463}
-.btn.blue{background:#005bbb}
-.btn.black{background:#000}
-.btn:hover{opacity:.92}
 
-/* GRID */
+.section{
+  max-width:1200px;
+  margin:30px auto;
+  padding:15px;
+}
+.card{
+  background:#fff;
+  padding:25px;
+  margin-bottom:30px;
+  border-radius:8px;
+  box-shadow:0 0 10px rgba(0,0,0,.08);
+}
+.card h2{
+  color:#7b0000;
+  margin-top:0;
+}
+
+.notice{
+  background:#fff3cd;
+  border-left:6px solid #ff9800;
+  padding:15px;
+}
+
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:14px
+  gap:15px;
+}
+.grid a{
+  text-align:center;
+  padding:18px;
+  background:#7b0000;
+  color:#fff;
+  text-decoration:none;
+  border-radius:8px;
+  font-size:16px;
+}
+.grid a:hover{opacity:.9}
+
+.leaders{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:15px;
+}
+.leader{
+  border:1px solid #ddd;
+  padding:15px;
+  border-radius:8px;
+  text-align:center;
+}
+.leader b{
+  display:block;
+  color:#7b0000;
+  margin-bottom:5px;
 }
 
-/* FOOTER */
 footer{
+  background:#222;
+  color:#fff;
   text-align:center;
-  font-size:13px;
-  color:#555;
-  margin:45px 12px 25px;
-  line-height:1.6
+  padding:18px;
+  font-size:14px;
 }
+small{color:#555}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
-  <p>स्वाभिमान • एकता • संगठन • राष्ट्र</p>
+  <h1>🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩</h1>
+  <p id="tagline">राजपूत समाज की एकता • स्वाभिमान • संगठन</p>
+  <button class="lang-btn" onclick="toggleLang()">हिंदी / English</button>
 </header>
 
 <nav>
-  <a href="index.html">Home</a>
-  <a href="verify.html">Verify Member</a>
-  <a href="directory.html">Member Directory</a>
-  <a href="karyakarini.html">कार्यकारणी</a>
-  <a href="gallery.html">Gallery</a>
-  <a href="admin_dashboard.html">Admin</a>
+  <a href="member_login.html">🔐 Member Login</a>
+  <a href="verify.html">🔍 Member Verify</a>
+  <a href="directory.html">📂 Member Directory</a>
+  <a href="karyakarini.html">👑 Executive</a>
+  <a href="gallery.html">📸 Gallery</a>
+  <a href="admin_secure.html">🔐 Admin Login</a>
 </nav>
 
-<div class="container">
-
-<!-- HERO -->
 <div class="section">
-  <h2>Official Portal</h2>
-  <div class="content" style="text-align:center">
-    <p>
-      <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> की  
-      आधिकारिक वेबसाइट एवं सदस्य सत्यापन प्रणाली
-    </p>
 
-    <a class="btn" href="verify.html">🔍 Member Verify</a>
-    <a class="btn blue" href="directory.html">📂 Public Member Directory</a>
-    <a class="btn black" href="admin_dashboard.html">🔐 Admin Control Room</a>
+<!-- Notice -->
+<div class="card notice">
+  <b>📢 सूचना:</b>
+  सभी सदस्य अपने ID Card, Certificate एवं Appointment Letter
+  Member Login से डाउनलोड करें।
+</div>
+
+<!-- About -->
+<div class="card">
+  <h2 id="about_h">📖 संगठन का परिचय</h2>
+  <p id="about_p">
+    जय भवानी राष्ट्रीय राजपूत महासभा एक राष्ट्रीय सामाजिक संगठन है,
+    जो राजपूत समाज के स्वाभिमान, एकता, संगठन और अधिकारों की रक्षा
+    एवं सुदृढ़ीकरण हेतु कार्य करता है।
+  </p>
+</div>
+
+<!-- Objectives -->
+<div class="card">
+  <h2 id="obj_h">🎯 उद्देश्य एवं संकल्प</h2>
+  <ul id="obj_l">
+    <li>राजपूत समाज के सम्मान एवं स्वाभिमान की रक्षा</li>
+    <li>समाज को संगठित एवं सशक्त बनाना</li>
+    <li>युवा नेतृत्व को आगे लाना</li>
+    <li>शिक्षा, रोजगार एवं सामाजिक न्याय</li>
+    <li>राष्ट्रहित में सक्रिय भूमिका</li>
+  </ul>
+</div>
+
+<!-- Executive -->
+<div class="card">
+  <h2>👑 राष्ट्रीय कार्यकारिणी (संक्षिप्त)</h2>
+  <div class="leaders">
+    <div class="leader"><b>ठा. गोवर्धन सिंह</b>संस्थापक</div>
+    <div class="leader"><b>शंकर सिंह राणा</b>राष्ट्रीय अध्यक्ष (युवा)</div>
+    <div class="leader"><b>श्याम सिंह राठौड़</b>प्रदेश अध्यक्ष (म.प्र.)</div>
+    <div class="leader"><b>पप्पू सिंह</b>प्रदेश अध्यक्ष (राजस्थान)</div>
   </div>
 </div>
 
-<!-- SERVICES -->
-<div class="section">
-  <h2>ऑनलाइन सेवाएं</h2>
-  <div class="content grid">
-    <a class="btn" href="idcard_print.html">🆔 Digital Member ID</a>
-    <a class="btn" href="certificate.html">📜 Certificate</a>
-    <a class="btn" href="appointment.html">🧾 Appointment Letter</a>
-    <a class="btn" href="bulk_whatsapp.html">📲 WhatsApp Share</a>
-    <a class="btn" href="directory.html">👥 Member Directory</a>
-    <a class="btn black" href="admin_dashboard.html">⚙️ Admin Panel</a>
+<!-- Member Services -->
+<div class="card">
+  <h2>🧾 सदस्य सेवाएँ</h2>
+  <div class="grid">
+    <a href="member_login.html">🔐 Member Dashboard</a>
+    <a href="idcard_print.html">🆔 ID Card</a>
+    <a href="certificate.html">📄 Certificate</a>
+    <a href="appointment.html">📜 Appointment Letter</a>
+    <a href="verify.html">✅ Verification</a>
   </div>
 </div>
 
-<!-- KARYAKARINI -->
-<div class="section">
-  <h2>कार्यकारणी समिति</h2>
-  <div class="content" style="text-align:center">
-    <p>राष्ट्रीय • प्रदेश • जिला स्तर की कार्यकारणी</p>
-    <a class="btn" href="karyakarini.html">👥 कार्यकारणी देखें</a>
+<!-- Admin -->
+<div class="card">
+  <h2>🛠️ प्रशासनिक सेवाएँ</h2>
+  <div class="grid">
+    <a href="admin_dashboard.html">📊 Admin Dashboard</a>
+    <a href="admin_edit_member.html">✏️ Edit Member</a>
+    <a href="admin_bulk_approve.html">✅ Bulk Approve</a>
+    <a href="bulk_add_members.html">➕ Bulk Add</a>
+    <a href="bulk_csv_to_json.html">📤 CSV → JSON</a>
+    <a href="bulk_whatsapp.html">📲 WhatsApp Panel</a>
   </div>
 </div>
 
-<!-- JOIN -->
-<div class="section">
-  <h2>संगठन से जुड़ें</h2>
-  <div class="content" style="text-align:center">
-    <a class="btn" href="https://docs.google.com/forms/" target="_blank">
-      📝 Membership Form
-    </a>
-    <a class="btn green" href="https://wa.me/" target="_blank">
-      💬 Official WhatsApp Group
-    </a>
-  </div>
-</div>
-
-<!-- OBJECTIVE -->
-<div class="section">
-  <h2>उद्देश्य एवं संकल्प</h2>
-  <div class="content">
-    <ul>
-      <li>राजपूत समाज के स्वाभिमान एवं अधिकारों की रक्षा</li>
-      <li>समाज को एकजुट एवं संगठित बनाना</li>
-      <li>युवा नेतृत्व एवं राष्ट्र निर्माण</li>
-      <li>सांस्कृतिक एवं सामाजिक संरक्षण</li>
-    </ul>
-  </div>
-</div>
-
-<!-- CONTACT -->
-<div class="section">
-  <h2>संपर्क</h2>
-  <div class="content">
-    📞 हेल्पलाइन: +91 91663 77972<br>
-    🌐 Website: https://jbrrms.in
-  </div>
+<!-- Contact -->
+<div class="card">
+  <h2>📞 संपर्क / हेल्पलाइन</h2>
+  <p>
+    <b>वेबसाइट सहायता:</b> गोपाल सिंह राजपूत<br>
+    <b>मोबाइल:</b> 9166377972<br>
+    <b>Email:</b> support@jbrrms.in
+  </p>
+  <small>कार्य समय: सुबह 10 बजे से शाम 6 बजे तक</small>
 </div>
 
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>
-यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।  
-<br>
-यह किसी सरकारी संस्था से संबद्ध नहीं है।
+  © 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+  All Rights Reserved
 </footer>
+
+<script>
+let hindi=true;
+function toggleLang(){
+  hindi=!hindi;
+  document.getElementById("tagline").innerText = hindi ?
+    "राजपूत समाज की एकता • स्वाभिमान • संगठन" :
+    "Rajput Community • Unity • Pride • Organisation";
+
+  document.getElementById("about_h").innerText = hindi ?
+    "📖 संगठन का परिचय" : "📖 About Organisation";
+
+  document.getElementById("about_p").innerText = hindi ?
+    "जय भवानी राष्ट्रीय राजपूत महासभा एक राष्ट्रीय सामाजिक संगठन है, जो राजपूत समाज के स्वाभिमान, एकता, संगठन और अधिकारों की रक्षा एवं सुदृढ़ीकरण हेतु कार्य करता है।" :
+    "JBRRMS is a national social organisation working for unity, pride, organisation and rights of the Rajput community.";
+
+  document.getElementById("obj_h").innerText = hindi ?
+    "🎯 उद्देश्य एवं संकल्प" : "🎯 Objectives & Vision";
+
+  document.getElementById("obj_l").innerHTML = hindi ?
+    "<li>राजपूत समाज के सम्मान एवं स्वाभिमान की रक्षा</li><li>समाज को संगठित एवं सशक्त बनाना</li><li>युवा नेतृत्व को आगे लाना</li><li>शिक्षा, रोजगार एवं सामाजिक न्याय</li><li>राष्ट्रहित में सक्रिय भूमिका</li>" :
+    "<li>Protect pride and honour of Rajput community</li><li>Unite and empower society</li><li>Promote youth leadership</li><li>Education, employment and social justice</li><li>Active role in nation building</li>";
+}
+</script>
 
 </body>
 </html>
