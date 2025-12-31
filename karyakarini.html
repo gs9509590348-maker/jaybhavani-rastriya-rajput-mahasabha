@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>कार्यकारिणी | जय भवानी राष्ट्रीय राजपूत महासभा</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0}
+header{background:#7b0000;color:#fff;padding:16px;text-align:center}
+.section{max-width:1100px;margin:18px auto;background:#fff;padding:18px;border-radius:10px}
+h2{color:#7b0000;margin:6px 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{border:1px solid #ddd;border-radius:12px;padding:14px;text-align:center;position:relative;background:#fafafa}
+.card img{width:90px;height:90px;border-radius:50%;object-fit:cover;margin-bottom:8px}
+.badge{position:absolute;top:10px;left:10px;padding:4px 8px;border-radius:6px;font-size:12px;color:#fff}
+.founder{background:#c9a227}
+.national{background:#7b0000}
+.state{background:#004aad}
+.youth{background:#28a745}
+.name{font-weight:bold}
+.post{font-size:14px;margin:4px 0}
+.place{font-size:12px;color:#555}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>👑 कार्यकारिणी समिति</h1>
+</header>
+
+<div class="section">
+<h2>⭐ संस्थापक</h2>
+<div class="grid" id="founder"></div>
+</div>
+
+<div class="section">
+<h2>🔴 राष्ट्रीय कार्यकारिणी</h2>
+<div class="grid" id="national"></div>
+</div>
+
+<div class="section">
+<h2>🔵 प्रदेश कार्यकारिणी</h2>
+<div class="grid" id="state"></div>
+</div>
+
+<div class="section">
+<h2>🟢 युवा कार्यकारिणी</h2>
+<div class="grid" id="youth"></div>
+</div>
+
+<script>
+fetch("data/karyakarini.json")
+.then(r=>r.json())
+.then(d=>{
+  const list = d.karyakarini.filter(x=>x.active).sort((a,b)=>a.order-b.order);
+
+  list.forEach(m=>{
+    let target="state", badge="state", label=m.level;
+
+    if(m.post==="संस्थापक"){
+      target="founder"; badge="founder"; label="Founder";
+    }else if(m.post.includes("युवा")){
+      target="youth"; badge="youth"; label="युवा";
+    }else if(m.level==="राष्ट्रीय"){
+      target="national"; badge="national"; label="राष्ट्रीय";
+    }
+
+    document.getElementById(target).innerHTML += `
+      <div class="card">
+        <div class="badge ${badge}">${label}</div>
+        <img src="${m.photo||'https://via.placeholder.com/90'}">
+        <div class="name">${m.name}</div>
+        <div class="post">${m.post}</div>
+        <div class="place">${m.district} ${m.state}</div>
+        <div class="place">📞 ${m.mobile||''}</div>
+      </div>`;
+  });
+});
+</script>
+
+</body>
+</html>
