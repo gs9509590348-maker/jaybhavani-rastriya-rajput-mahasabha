@@ -1,138 +1,54 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<title>कार्यकारिणी | JBRRMS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0}
-header{
-  background:#7b0000;color:#fff;
-  padding:18px;text-align:center
-}
-header h2{margin:0}
-.filters{
-  display:flex;gap:8px;flex-wrap:wrap;
-  justify-content:center;
-  padding:12px;background:#fff
-}
-.filters button{
-  padding:6px 12px;border:1px solid #7b0000;
-  background:#fff;color:#7b0000;
-  border-radius:20px;cursor:pointer
-}
-.filters button.active{
-  background:#7b0000;color:#fff
-}
-.grid{
-  max-width:1100px;margin:20px auto;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:15px;padding:10px
-}
-.card{
-  background:#fff;border-radius:10px;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-  text-align:center;padding:15px
-}
-.card img{
-  width:90px;height:90px;border-radius:50%;
-  object-fit:cover;border:2px solid #7b0000
-}
-.card h3{margin:10px 0 4px;color:#7b0000}
-.badge{
-  display:inline-block;
-  padding:3px 8px;
-  border-radius:12px;
-  font-size:12px;
-  margin-bottom:6px
-}
-.national{background:#000;color:#fff}
-.state{background:#0066cc;color:#fff}
-.youth{background:#1fa463;color:#fff}
-.small{font-size:13px;color:#555}
-footer{
-  text-align:center;font-size:13px;
-  color:#555;margin:30px 10px
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <h2>🧑‍💼 कार्यकारिणी समिति</h2>
-  <p>जय भवानी राष्ट्रीय राजपूत महासभा</p>
-</header>
-
-<div class="filters">
-  <button class="active" onclick="filterBy('all',this)">All</button>
-  <button onclick="filterBy('राष्ट्रीय',this)">राष्ट्रीय</button>
-  <button onclick="filterBy('प्रदेश',this)">प्रदेश</button>
-  <button onclick="filterBy('युवा',this)">युवा</button>
-</div>
-
-<div class="grid" id="out"></div>
-
-<footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह पेज केवल संगठनात्मक जानकारी हेतु है।
-</footer>
-
-<script>
-let all=[];
-
-fetch("data/karyakarini.json")
-.then(r=>r.json())
-.then(j=>{
-  all = j.karyakarini
-    .filter(x=>x.active)
-    .sort((a,b)=>a.order-b.order);
-  render(all);
-});
-
-function render(list){
-  const out=document.getElementById("out");
-  out.innerHTML="";
-  list.forEach(m=>{
-    let badge="", badgeCls="";
-    if(m.post.includes("युवा")){
-      badge="युवा"; badgeCls="youth";
-    }else if(m.level==="राष्ट्रीय"){
-      badge="राष्ट्रीय"; badgeCls="national";
-    }else{
-      badge="प्रदेश"; badgeCls="state";
+{
+  "last_updated": "2025-01-01",
+  "organization": "जय भवानी राष्ट्रीय राजपूत महासभा",
+  "karyakarini": [
+    {
+      "id": "KAR-000",
+      "name": "ठा. गोवर्धन सिंह जी",
+      "post": "संस्थापक",
+      "level": "राष्ट्रीय",
+      "district": "बरखेड़ी मिट्ठू",
+      "state": "मध्य प्रदेश",
+      "mobile": "9784823382",
+      "photo": "https://jbrrms.in/assets/leaders/govardhan-singh.jpg",
+      "order": 0,
+      "active": true
+    },
+    {
+      "id": "KAR-001",
+      "name": "शंकर सिंह जी राणा",
+      "post": "राष्ट्रीय युवा अध्यक्ष",
+      "level": "राष्ट्रीय",
+      "district": "मोगरा",
+      "state": "मध्य प्रदेश",
+      "mobile": "9116568039",
+      "photo": "https://jbrrms.in/assets/leaders/shankar-singh.jpg",
+      "order": 1,
+      "active": true
+    },
+    {
+      "id": "KAR-002",
+      "name": "पप्पू सिंह जी",
+      "post": "प्रदेश अध्यक्ष",
+      "level": "प्रदेश",
+      "district": "झरिका का खेड़ा",
+      "state": "राजस्थान",
+      "mobile": "9772710875",
+      "photo": "https://jbrrms.in/assets/leaders/pappu-singh.jpg",
+      "order": 2,
+      "active": true
+    },
+    {
+      "id": "KAR-003",
+      "name": "ठा. श्याम सिंह राठौड़",
+      "post": "युवा प्रदेश अध्यक्ष",
+      "level": "प्रदेश",
+      "district": "डाबला मनोहर",
+      "state": "मध्य प्रदेश",
+      "mobile": "9165463190",
+      "photo": "https://jbrrms.in/assets/leaders/shyam-singh.jpg",
+      "order": 3,
+      "active": true
     }
-
-    out.innerHTML+=`
-    <div class="card">
-      <img src="${m.photo||'https://via.placeholder.com/100'}">
-      <h3>${m.name}</h3>
-      <span class="badge ${badgeCls}">${badge}</span>
-      <div class="small">
-        <b>${m.post}</b><br>
-        ${m.district||""} ${m.state?(", "+m.state):""}
-      </div>
-    </div>`;
-  });
+  ]
 }
-
-function filterBy(type,btn){
-  document.querySelectorAll(".filters button")
-    .forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-
-  if(type==="all"){ render(all); return; }
-
-  if(type==="युवा"){
-    render(all.filter(x=>x.post.includes("युवा")));
-    return;
-  }
-
-  render(all.filter(x=>x.level===type));
-}
-</script>
-
-</body>
-</html>
