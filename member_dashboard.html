@@ -3,39 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <title>Member Dashboard | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{font-family:Arial;background:#f4f4f4}
-.card{background:#fff;margin:20px auto;padding:20px;max-width:500px;border-radius:8px}
-a{display:block;margin:8px 0;color:#7b0000;font-weight:bold}
-button{padding:10px;width:100%}
+body{
+  font-family:Arial, sans-serif;
+  background:#f4f4f4;
+  margin:0;
+}
+.card{
+  background:#fff;
+  margin:40px auto;
+  padding:25px;
+  max-width:520px;
+  border-radius:10px;
+  box-shadow:0 4px 15px rgba(0,0,0,.15);
+}
+h2{color:#7b0000;margin-top:0}
+hr{margin:15px 0}
+a{
+  display:block;
+  margin:8px 0;
+  color:#7b0000;
+  font-weight:bold;
+  text-decoration:none;
+}
+a:hover{text-decoration:underline}
+button{
+  padding:12px;
+  width:100%;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  font-size:15px;
+  cursor:pointer;
+  margin-top:15px;
+}
+.small{
+  font-size:13px;
+  color:#555;
+  margin-top:10px;
+}
 </style>
 </head>
+
 <body>
 
 <div class="card" id="out"></div>
 
 <script>
-const m = JSON.parse(localStorage.getItem("JBRRMS_MEMBER"));
-if(!m) location.href="member_login.html";
+const m = JSON.parse(localStorage.getItem("jbr_member"));
 
-out.innerHTML = `
-<h2>✅ Welcome ${m.Full_Name}</h2>
-<b>Member ID:</b> ${m.Member_ID}<br>
-<b>Post:</b> ${m.Post || ""}<br>
-<b>Level:</b> ${m.Level || ""}<hr>
+if(!m){
+  location.href = "member_login.html";
+}
 
-<a href="idcard_print.html" target="_blank">🆔 ID Card</a>
-<a href="certificate.html" target="_blank">📄 Certificate</a>
-<a href="appointment.html" target="_blank">📜 Appointment Letter</a>
-<a href="verify.html" target="_blank">🔍 Verification Page</a>
-<a href="directory.html" target="_blank">📂 Member Directory</a>
+const mid = m.member_id || m.memberId;
 
-<button onclick="logout()">Logout</button>
+document.getElementById("out").innerHTML = `
+  <h2>✅ Welcome ${m.name || ""}</h2>
+
+  <p>
+    <b>Member ID:</b> ${mid}<br>
+    <b>Post:</b> ${m.post || ""}<br>
+    <b>Level:</b> ${m.level || ""}<br>
+    <b>District:</b> ${m.district || ""}<br>
+    <b>State:</b> ${m.state || ""}
+  </p>
+
+  <hr>
+
+  <a href="idcard.html?id=${mid}" target="_blank">🪪 View ID Card</a>
+  <a href="certificate.html?id=${mid}" target="_blank">📄 Certificate</a>
+  <a href="appointment.html?id=${mid}" target="_blank">📜 Appointment Letter</a>
+  <a href="verify.html?id=${mid}" target="_blank">🔍 Verification Page</a>
+  <a href="directory.html" target="_blank">📂 Member Directory</a>
+
+  <button onclick="logout()">🚪 Logout</button>
+
+  <div class="small">
+    ⚠️ यह dashboard केवल logged-in सदस्य के लिए है
+  </div>
 `;
 
 function logout(){
-  localStorage.clear();
-  location.href="member_login.html";
+  localStorage.removeItem("jbr_member");
+  location.href = "member_login.html";
 }
 </script>
 
