@@ -20,7 +20,7 @@ input{
   margin:10px 0;font-size:14px
 }
 table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{border:1px solid #ccc;padding:6px}
+th,td{border:1px solid #ccc;padding:6px;text-align:left}
 th{background:#eee}
 .footer{
   text-align:center;font-size:13px;
@@ -82,36 +82,46 @@ Mobile नंबर / व्यक्तिगत जानकारी सा�
 </div>
 
 <script>
-let members=[];
+let members = [];
 
-fetch("data/members.json")
-.then(r=>r.json())
-.then(d=>{
-  // केवल approved members
-  members = d.filter(m =>
-    (m.status||"").toLowerCase()==="approved"
-  );
+/* 🔗 GOOGLE APPS SCRIPT LIVE API */
+const API =
+"https://script.google.com/macros/s/AKfycbzc6Nc1K1QZiQeDLpx5YOWLIpdLp6oI7PHoTc4Pwas5ccJRYP-_tV2p8gJIj-kgURAwkg/exec?action=approved";
+
+/* LOAD DATA */
+fetch(API)
+.then(res => res.json())
+.then(data => {
+  members = data || [];
   render(members);
 })
-.catch(()=>{
-  alert("❌ members.json load नहीं हुआ");
+.catch(err => {
+  console.error(err);
+  alert("❌ Server से data load नहीं हुआ");
 });
 
+/* RENDER TABLE */
 function render(list){
-  const tb=document.getElementById("tbl");
-  tb.innerHTML="";
+  const tb = document.getElementById("tbl");
+  tb.innerHTML = "";
+
+  if(!list.length){
+    tb.innerHTML = "<tr><td colspan='8'>No approved members</td></tr>";
+    return;
+  }
+
   list.forEach(m=>{
     const mid = m.member_id || m.memberId || "";
     if(!mid) return;
 
-    tb.innerHTML+=`
+    tb.innerHTML += `
     <tr>
       <td>${mid}</td>
-      <td>${m.name||""}</td>
-      <td>${m.post||""}</td>
-      <td>${m.level||""}</td>
-      <td>${m.district||""}</td>
-      <td>${m.state||""}</td>
+      <td>${m.name || ""}</td>
+      <td>${m.post || ""}</td>
+      <td>${m.level || ""}</td>
+      <td>${m.district || ""}</td>
+      <td>${m.state || ""}</td>
       <td><span class="badge">APPROVED</span></td>
       <td>
         <a class="btn" target="_blank"
@@ -123,8 +133,9 @@ function render(list){
   });
 }
 
-document.getElementById("q").addEventListener("input",e=>{
-  const q=e.target.value.toLowerCase();
+/* SEARCH */
+document.getElementById("q").addEventListener("input", e=>{
+  const q = e.target.value.toLowerCase();
   render(
     members.filter(m=>{
       const mid = (m.member_id||m.memberId||"").toLowerCase();
