@@ -2,13 +2,13 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Appointment Letter | JBRRMS</title>
+<title>नियुक्ति पत्र | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
   background:#eee;
-  font-family:Arial, sans-serif;
+  font-family:Mangal, Arial, sans-serif;
   margin:0;
 }
 .letter{
@@ -24,14 +24,20 @@ h1{
   color:#7b0000;
   margin:0;
 }
+.sub{
+  text-align:center;
+  font-size:14px;
+  margin-bottom:20px;
+}
 p{
   font-size:16px;
-  line-height:1.6;
+  line-height:1.8;
 }
 .footer-row{
   display:flex;
   justify-content:space-between;
   margin-top:40px;
+  font-size:15px;
 }
 
 .btn{
@@ -68,26 +74,56 @@ p{
 <body>
 
 <div class="letter" id="app">
-  <h1>नियुक्ति पत्र</h1>
+
+  <h1>☀️<br>नियुक्ति पत्र</h1>
+  <div class="sub">
+    जय भवानी राष्ट्रीय राजपूत महासभा<br>
+    (राष्ट्रीय स्तर का सामाजिक संगठन)
+  </div>
 
   <p>
-    श्री <b id="name"></b> (पिता/अभिभावक: <b id="father"></b>)  
-    को यह सूचित किया जाता है कि आपको
-    <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
-    <b id="level"></b> स्तर पर
-    <b id="post"></b>  
-    (<b id="dept"></b>)
-    के पद पर नियुक्त किया जाता है।
+    यह अत्यंत हर्ष का विषय है कि<br><br>
+
+    श्री <b id="name"></b><br>
+    पिता/अभिभावक : <b id="father"></b><br><br>
+
+    को संगठन के प्रति निष्ठा, सेवा भावना
+    एवं सक्रिय योगदान को देखते हुए<br><br>
+
+    <b>"<span id="post"></span>"</b><br>
+    <b><span id="level"></span></b> स्तर<br>
+    विभाग : <b><span id="dept"></span></b><br>
+    जिला / प्रदेश : <b><span id="area"></span></b><br><br>
+
+    पर <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में
+    नियुक्त किया जाता है।
   </p>
 
   <p>
-    आपकी सदस्य आईडी: <b id="mid"></b>
+    आपसे अपेक्षा है कि आप संगठन के नियमों,
+    अनुशासन एवं उद्देश्यों के अनुरूप
+    पूर्ण निष्ठा से कार्य करेंगे।
+  </p>
+
+  <p>
+    आपकी सदस्य आईडी : <b id="mid"></b>
   </p>
 
   <div class="footer-row">
-    <div>दिनांक: <span id="date"></span></div>
-    <div>हस्ताक्षर / मुहर</div>
+    <div>
+      नियुक्ति तिथि : <span id="date"></span><br>
+      स्थान : __________
+    </div>
+    <div style="text-align:right">
+      (यह पत्र पूर्णतः डिजिटल है)<br>
+      QR Verify द्वारा मान्य
+    </div>
   </div>
+
+  <p style="text-align:center;font-weight:bold;margin-top:30px">
+    जय भवानी | जय राजपूताना 🚩
+  </p>
+
 </div>
 
 <!-- ACTION BUTTONS -->
@@ -95,7 +131,6 @@ p{
 <button class="btn no-print" onclick="download()">⬇️ Download Appointment</button>
 
 <a id="idcard" class="btn gray no-print" target="_blank">🪪 View ID Card</a>
-<a id="certificate" class="btn gray no-print" target="_blank">📜 View Certificate</a>
 <a id="verify" class="btn gray no-print" target="_blank">🔍 Verify Online</a>
 
 <button class="btn whatsapp no-print" onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
@@ -115,16 +150,19 @@ fetch("data/members.json")
     return;
   }
 
-  name.innerText = member.name;
-  father.innerText = member.father;
-  level.innerText = member.level;
-  post.innerText = member.post;
+  name.innerText = member.name || "";
+  father.innerText = member.father || "";
+  level.innerText = member.level || "";
+  post.innerText = member.post || "";
   dept.innerText = member.department || "";
-  mid.innerText = member.member_id;
+  area.innerText =
+    (member.district || "") + " / " + (member.state || "");
+  mid.innerText = member.member_id || "";
   date.innerText = new Date().toLocaleDateString("hi-IN");
 
-  document.getElementById("idcard").href = member.id_card;
-  document.getElementById("certificate").href = member.certificate;
+  document.getElementById("idcard").href =
+    "idcard.html?id=" + member.member_id;
+
   document.getElementById("verify").href =
     "https://jbrrms.in/verify.html?id=" + member.member_id;
 });
