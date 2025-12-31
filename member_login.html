@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Member Login | JBRRMS</title>
+<style>
+body{font-family:Arial;background:#eee}
+.box{background:#fff;margin:80px auto;padding:20px;max-width:420px;border-radius:8px;text-align:center}
+input,button{width:95%;padding:10px;margin:5px}
+button{background:#7b0000;color:#fff;border:none}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>🔐 Member Login</h2>
+<input id="mid" placeholder="Member ID">
+<input id="mob" placeholder="Mobile Number">
+<button onclick="login()">Login</button>
+<p id="msg"></p>
+</div>
+
+<script>
+async function login(){
+  const mid = mid.value.trim();
+  const mob = mob.value.trim();
+  const msg = document.getElementById("msg");
+
+  const res = await fetch("data/members.json");
+  const data = await res.json();
+
+  const m = data.find(x =>
+    x.Member_ID == mid &&
+    String(x.Mobile) == String(mob) &&
+    x.Status == "Approved"
+  );
+
+  if(!m){ msg.innerHTML="❌ Member not found"; return; }
+
+  localStorage.setItem("JBRRMS_MEMBER", JSON.stringify(m));
+  location.href="member_dashboard.html";
+}
+</script>
+
+</body>
+</html>
