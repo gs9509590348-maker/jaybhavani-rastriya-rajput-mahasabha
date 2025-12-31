@@ -82,48 +82,19 @@ footer{
 <!-- 🔘 ACTION BUTTONS -->
 <div class="actions">
 
-  <!-- MEMBER / EVENT UPLOAD FORM -->
   <a href="https://docs.google.com/forms/d/e/1FAIpQLSdv8aK9SvqAUOES59Kd1vtGqdayTxE7wJEISdVvr15XT1doBQ/viewform"
      target="_blank">
      📤 Photo / Event Upload
   </a>
 
-  <!-- ADMIN ONLY -->
-  <a class="alt"
-     href="admin_dashboard.html"
-     target="_blank">
+  <a class="alt" href="admin_gallery.html" target="_blank">
      🛠️ Admin Edit
   </a>
 
 </div>
 
 <!-- 🖼️ GALLERY -->
-<div class="grid">
-
-  <div class="card">
-    <img src="events/e1.jpg">
-    <div class="info">
-      <b>राष्ट्रीय बैठक</b><br>
-      दिनांक: 12-01-2025
-    </div>
-  </div>
-
-  <div class="card">
-    <img src="events/e2.jpg">
-    <div class="info">
-      <b>युवा सम्मेलन</b><br>
-      मध्य प्रदेश
-    </div>
-  </div>
-
-  <div class="card">
-    <img src="events/e3.jpg">
-    <div class="info">
-      <b>संगठन विस्तार कार्यक्रम</b>
-    </div>
-  </div>
-
-</div>
+<div class="grid"></div>
 
 <footer>
   © <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा
@@ -131,6 +102,25 @@ footer{
 
 <script>
 document.getElementById("yr").innerText = new Date().getFullYear();
+
+/* LOAD GALLERY FROM JSON */
+fetch("gallery.json")
+.then(r => r.json())
+.then(data => {
+  const g = document.querySelector(".grid");
+  g.innerHTML = "";
+  data.forEach(p => {
+    g.innerHTML += `
+      <div class="card">
+        <img src="${p.img}">
+        <div class="info">
+          <b>${p.title}</b><br>
+          ${p.date || ""} ${p.place || ""}
+        </div>
+      </div>
+    `;
+  });
+});
 </script>
 
 </body>
