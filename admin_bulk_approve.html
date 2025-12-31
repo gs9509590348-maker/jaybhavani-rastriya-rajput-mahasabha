@@ -1,50 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Bulk Approve | Admin</title>
+<title>Bulk Approve Members | Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial;background:#f4f4f4;margin:0}
+header{
+  background:#7b0000;color:#fff;
+  text-align:center;padding:15px
+}
+.container{
+  max-width:900px;margin:20px auto;
+  background:#fff;padding:20px;border-radius:10px
+}
+.notice{
+  background:#fff3cd;border-left:5px solid #ff9800;
+  padding:10px;font-size:13px;margin-bottom:15px
+}
+.member{
+  padding:8px;border-bottom:1px solid #eee;
+  display:flex;gap:8px;align-items:center
+}
+.member small{color:#555}
+.actions{margin:15px 0;text-align:center}
+button{
+  padding:10px 14px;margin:5px;
+  border:none;border-radius:6px;
+  font-size:14px;cursor:pointer
+}
+.approve{background:#28a745;color:#fff}
+.download{background:#7b0000;color:#fff}
+.count{text-align:center;font-size:14px;margin-bottom:10px}
+footer{text-align:center;font-size:12px;color:#555;margin:20px}
+</style>
 </head>
+
 <body>
 
-<h2>🚀 Bulk Approve Members (GitHub Mode)</h2>
+<header>
+  <h2>🚀 Bulk Approve Members</h2>
+  <p>Admin Panel (GitHub Pages Mode)</p>
+</header>
+
+<div class="container">
+
+<div class="notice">
+⚠️ <b>Important:</b> यह GitHub Static Mode है।  
+Approve करने के बाद <b>Updated members.json</b> डाउनलोड होगा।  
+उस फ़ाइल को GitHub repo में replace करना ज़रूरी है।
+</div>
+
+<div class="count">
+Pending Members: <b id="pendingCount">0</b>
+</div>
 
 <div id="list"></div>
 
-<button onclick="approveAll()">✅ Approve All</button>
-<button onclick="download()">⬇️ Download Updated JSON</button>
+<div class="actions">
+  <button class="approve" onclick="approveSelected()">✅ Approve Selected</button>
+  <button class="download" onclick="download()">⬇️ Download Updated JSON</button>
+</div>
+
+</div>
+
+<footer>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Use Only
+</footer>
 
 <script>
 let members = [];
 
 fetch("data/members.json")
-.then(r=>r.json())
-.then(d=>{
-  members = d;
-  render();
-});
+  .then(r=>r.json())
+  .then(d=>{
+    members = d;
+    render();
+  })
+  .catch(()=>{
+    alert("❌ members.json load नहीं हुआ");
+  });
 
 function render(){
-  let html="";
+  const list=document.getElementById("list");
+  list.innerHTML="";
+  let pending=0;
+
   members.forEach((m,i)=>{
-    if(m.status==="pending"){
-      html+=`<p>
-      <input type="checkbox" checked>
-      ${m.name} (${m.id})
-      </p>`;
+    if((m.status||"pending")==="pending"){
+      pending++;
+      const mid = m.member_id || m.memberId || "N/A";
+      list.innerHTML+=`
+      <div class="member">
+        <input type="checkbox" data-i="${i}" checked>
+        <div>
+          <b>${m.name || "No Name"}</b><br>
+          <small>ID: ${mid} | ${m.post || ""}</small>
+        </div>
+      </div>`;
     }
   });
-  document.getElementById("list").innerHTML=html;
+
+  document.getElementById("pendingCount").innerText = pending;
+
+  if(pending===0){
+    list.innerHTML="<p>✅ कोई Pending Member नहीं है</p>";
+  }
 }
 
-function approveAll(){
-  members.forEach(m=>{
-    if(m.status==="pending") m.status="approved";
+function approveSelected(){
+  const checks=document.querySelectorAll("input[type=checkbox]:checked");
+  if(checks.length===0){
+    alert("कोई Member select नहीं है");
+    return;
+  }
+
+  checks.forEach(c=>{
+    const i = c.getAttribute("data-i");
+    members[i].status = "approved";
   });
-  alert("Approved (Preview Mode)");
+
+  alert("✅ Selected members Approved (Preview)");
+  render();
 }
 
 function download(){
-  const blob=new Blob([JSON.stringify(members,null,2)],{type:"application/json"});
+  const blob=new Blob(
+    [JSON.stringify(members,null,2)],
+    {type:"application/json"}
+  );
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   a.download="members.json";
