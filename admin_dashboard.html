@@ -6,59 +6,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family:Arial;
-  background:#f4f4f4;
-  margin:0;
-}
+body{font-family:Arial;background:#f4f4f4;margin:0}
 .header{
-  background:#7b0000;
-  color:#fff;
-  padding:15px;
-  text-align:center;
+  background:#7b0000;color:#fff;
+  padding:15px;text-align:center
 }
 .container{
-  max-width:1200px;
-  margin:20px auto;
-  background:#fff;
-  padding:15px;
-  border-radius:8px;
+  max-width:1200px;margin:20px auto;
+  background:#fff;padding:15px;border-radius:10px
 }
-h2{color:#7b0000;margin-top:0}
-
+h3{color:#7b0000;margin-top:0}
 input{
-  padding:8px;
-  width:100%;
-  margin:6px 0;
+  padding:8px;width:100%;margin:6px 0
 }
 .btn{
-  padding:8px 14px;
-  background:#7b0000;
-  color:#fff;
-  border:none;
-  border-radius:5px;
-  cursor:pointer;
-  margin:5px 0;
+  padding:6px 10px;border:none;
+  border-radius:5px;cursor:pointer;
+  font-size:13px;margin:2px
 }
-.gray{background:#555}
+.red{background:#7b0000;color:#fff}
+.gray{background:#555;color:#fff}
+.green{background:#28a745;color:#fff}
+.blue{background:#1877f2;color:#fff}
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px;
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #ccc;padding:6px;text-align:center}
+th{background:#f0f0f0}
+.badge{
+  padding:2px 6px;border-radius:4px;
+  font-size:12px;color:#fff
 }
-th,td{
-  border:1px solid #ccc;
-  padding:6px;
-}
-th{
-  background:#f0f0f0;
+.approved{background:#28a745}
+.pending{background:#dc3545}
+
+textarea{
+  width:100%;height:200px;
+  font-family:monospace
 }
 .footer{
-  text-align:center;
-  font-size:13px;
-  color:#555;
-  margin:30px 0;
+  text-align:center;font-size:12px;
+  color:#555;margin:30px 0
 }
 </style>
 </head>
@@ -67,42 +54,40 @@ th{
 
 <div class="header">
   <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-  <p>Admin Dashboard (Static)</p>
+  <p>Admin Dashboard (GitHub Static Mode)</p>
 </div>
 
 <div class="container">
 
 <h3>🔍 Search Member</h3>
-<input id="q" placeholder="Search by Name / Member ID / Post">
-<button class="btn" onclick="search()">Search</button>
+<input id="q" placeholder="Search by Name / Member ID / Post / District">
+<button class="btn red" onclick="search()">Search</button>
 <button class="btn gray" onclick="reset()">Reset</button>
 
 <h3>📋 Members List</h3>
-<table id="tbl">
+<table>
 <thead>
 <tr>
-<th>Member ID</th>
+<th>ID</th>
 <th>Name</th>
 <th>Post</th>
 <th>Level</th>
 <th>District</th>
-<th>State</th>
 <th>Status</th>
 <th>Actions</th>
 </tr>
 </thead>
-<tbody></tbody>
+<tbody id="tbl"></tbody>
 </table>
 
-<h3>🧾 Selected Member JSON</h3>
-<textarea id="json" style="width:100%;height:180px;font-family:monospace"></textarea>
+<h3>🧾 Selected Member JSON (Copy / Edit)</h3>
+<textarea id="json"></textarea>
 
 </div>
 
 <div class="footer">
 © 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>
-यह डैशबोर्ड केवल आंतरिक उपयोग हेतु है।
+<br>Admin Internal Use Only
 </div>
 
 <script>
@@ -116,46 +101,48 @@ fetch("data/members.json")
 });
 
 function render(list){
-  const tb=document.querySelector("#tbl tbody");
+  const tb=document.getElementById("tbl");
   tb.innerHTML="";
-  list.forEach(m=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
+  list.forEach((m,i)=>{
+    const status=(m.status||"pending").toLowerCase();
+    tb.innerHTML+=`
+    <tr>
       <td>${m.member_id||""}</td>
       <td>${m.name||""}</td>
       <td>${m.post||""}</td>
       <td>${m.level||""}</td>
       <td>${m.district||""}</td>
-      <td>${m.state||""}</td>
-      <td>${m.status||"Active"}</td>
       <td>
-        <button class="btn" onclick='select(${JSON.stringify(m)})'>View JSON</button>
-        <a class="btn gray" target="_blank"
-           href="https://jbrrms.in/verify.html?id=${m.member_id}">
-           Verify
-        </a>
+        <span class="badge ${status}">
+          ${status.toUpperCase()}
+        </span>
       </td>
-    `;
-    tb.appendChild(tr);
+      <td>
+        <button class="btn blue" onclick="select(${i})">JSON</button>
+        <a class="btn gray" target="_blank"
+           href="verify.html?id=${m.member_id}">Verify</a>
+        <a class="btn green" target="_blank"
+           href="idcard_print.html?id=${m.member_id}">ID</a>
+      </td>
+    </tr>`;
   });
 }
 
 function search(){
   const q=document.getElementById("q").value.toLowerCase();
-  const f=members.filter(m=>
+  render(members.filter(m=>
     JSON.stringify(m).toLowerCase().includes(q)
-  );
-  render(f);
+  ));
 }
 
 function reset(){
-  document.getElementById("q").value="";
+  q.value="";
   render(members);
 }
 
-function select(m){
-  document.getElementById("json").value=
-    JSON.stringify(m,null,2);
+function select(i){
+  document.getElementById("json").value =
+    JSON.stringify(members[i],null,2);
 }
 </script>
 
