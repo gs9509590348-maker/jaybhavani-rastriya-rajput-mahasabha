@@ -102,31 +102,42 @@ async function verify(){
   out.innerHTML = "⏳ Checking...";
 
   try{
-    const res = await fetch("members.json");
+    const res = await fetch("data/members.json");
     const data = await res.json();
 
     const m = data.find(x =>
       (x.member_id || x.memberId) == mid &&
-      String(x.mobile) == String(mob)
+      String(x.mobile) == String(mob) &&
+      (x.status||"").toLowerCase() === "approved"
     );
 
     if(!m){
-      out.innerHTML = "<p class='error'>❌ Member नहीं मिला</p>";
+      out.innerHTML =
+        "<p class='error'>❌ Member नहीं मिला या Approved नहीं है</p>";
       return;
     }
+
+    const midFinal = m.member_id || m.memberId;
+
+    const idCard =
+      m.id_card || m.ID_Card_Link || `idcard.html?id=${midFinal}`;
+    const cert =
+      m.certificate || m.Certificate_Link || `certificate.html?id=${midFinal}`;
+    const appoint =
+      m.appointment || m.Appointment_Link || `appointment.html?id=${midFinal}`;
 
     out.innerHTML = `
     <div class="result">
       <p class="success">✅ Verified Member</p>
-      <p><b>Name:</b> ${m.name}</p>
-      <p><b>Father:</b> ${m.father}</p>
-      <p><b>Post:</b> ${m.post}</p>
-      <p><b>Level:</b> ${m.level}</p>
-      <p><b>Status:</b> ${m.status || "Active"}</p>
+      <p><b>Name:</b> ${m.name||""}</p>
+      <p><b>Father:</b> ${m.father||""}</p>
+      <p><b>Post:</b> ${m.post||""}</p>
+      <p><b>Level:</b> ${m.level||""}</p>
+      <p><b>Status:</b> APPROVED</p>
 
-      <a class="btn" href="${m.id_card}" target="_blank">ID Card</a>
-      <a class="btn" href="${m.certificate}" target="_blank">Certificate</a>
-      <a class="btn" href="${m.appointment}" target="_blank">Appointment</a>
+      <a class="btn" href="${idCard}" target="_blank">🪪 ID Card</a>
+      <a class="btn" href="${cert}" target="_blank">📜 Certificate</a>
+      <a class="btn" href="${appoint}" target="_blank">📄 Appointment</a>
     </div>`;
   }catch(e){
     out.innerHTML = "<p class='error'>❌ Data load error</p>";
