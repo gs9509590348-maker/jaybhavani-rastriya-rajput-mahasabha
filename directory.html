@@ -6,61 +6,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family:Arial, sans-serif;
-  background:#f4f4f4;
-  margin:0;
-}
+body{font-family:Arial,sans-serif;background:#f4f4f4;margin:0}
 .header{
-  background:#7b0000;
-  color:#fff;
-  padding:15px;
-  text-align:center;
+  background:#7b0000;color:#fff;
+  padding:15px;text-align:center
 }
 .container{
-  max-width:1100px;
-  margin:20px auto;
-  background:#fff;
-  padding:15px;
-  border-radius:8px;
+  max-width:1100px;margin:20px auto;
+  background:#fff;padding:15px;border-radius:8px
 }
 input{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-  font-size:14px;
+  width:100%;padding:10px;
+  margin:10px 0;font-size:14px
 }
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:13px;
-}
-th,td{
-  border:1px solid #ccc;
-  padding:6px;
-  text-align:left;
-}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid #ccc;padding:6px}
 th{background:#eee}
 .footer{
-  text-align:center;
-  font-size:13px;
-  color:#555;
-  margin:30px 0;
+  text-align:center;font-size:13px;
+  color:#555;margin:30px 0
 }
 .badge{
-  padding:3px 6px;
-  border-radius:4px;
-  font-size:12px;
-  background:#7b0000;
-  color:#fff;
+  padding:3px 6px;border-radius:4px;
+  font-size:12px;background:#28a745;color:#fff
 }
 a.btn{
-  padding:5px 10px;
-  background:#555;
-  color:#fff;
-  border-radius:4px;
-  text-decoration:none;
-  font-size:12px;
+  padding:5px 10px;background:#555;
+  color:#fff;border-radius:4px;
+  text-decoration:none;font-size:12px
+}
+.note{
+  font-size:12px;color:#666;margin-top:10px
 }
 </style>
 </head>
@@ -74,10 +50,10 @@ a.btn{
 
 <div class="container">
 
-<h3>🔍 सदस्य खोजें (Name / Post / District / State)</h3>
-<input id="q" placeholder="Search here...">
+<h3>🔍 सदस्य खोजें</h3>
+<input id="q" placeholder="Name / Member ID / Post / District / State">
 
-<table id="tbl">
+<table>
 <thead>
 <tr>
 <th>Member ID</th>
@@ -90,10 +66,10 @@ a.btn{
 <th>Verify</th>
 </tr>
 </thead>
-<tbody></tbody>
+<tbody id="tbl"></tbody>
 </table>
 
-<p style="font-size:12px;color:#666;margin-top:10px">
+<p class="note">
 ⚠️ यह सूची केवल सत्यापन हेतु है।  
 Mobile नंबर / व्यक्तिगत जानकारी सार्वजनिक रूप से प्रदर्शित नहीं की जाती।
 </p>
@@ -101,8 +77,7 @@ Mobile नंबर / व्यक्तिगत जानकारी सा�
 </div>
 
 <div class="footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
 यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
 </div>
 
@@ -112,43 +87,55 @@ let members=[];
 fetch("data/members.json")
 .then(r=>r.json())
 .then(d=>{
-  members=d.filter(m=>m.status!=="Inactive");
+  // केवल approved members
+  members = d.filter(m =>
+    (m.status||"").toLowerCase()==="approved"
+  );
   render(members);
+})
+.catch(()=>{
+  alert("❌ members.json load नहीं हुआ");
 });
 
 function render(list){
-  const tb=document.querySelector("#tbl tbody");
+  const tb=document.getElementById("tbl");
   tb.innerHTML="";
   list.forEach(m=>{
-    const tr=document.createElement("tr");
-    tr.innerHTML=`
-      <td>${m.member_id||""}</td>
+    const mid = m.member_id || m.memberId || "";
+    if(!mid) return;
+
+    tb.innerHTML+=`
+    <tr>
+      <td>${mid}</td>
       <td>${m.name||""}</td>
       <td>${m.post||""}</td>
       <td>${m.level||""}</td>
       <td>${m.district||""}</td>
       <td>${m.state||""}</td>
-      <td><span class="badge">${m.status||"Active"}</span></td>
+      <td><span class="badge">APPROVED</span></td>
       <td>
         <a class="btn" target="_blank"
-           href="https://jbrrms.in/verify.html?id=${m.member_id}">
+           href="verify.html?id=${mid}">
            Verify
         </a>
       </td>
-    `;
-    tb.appendChild(tr);
+    </tr>`;
   });
 }
 
 document.getElementById("q").addEventListener("input",e=>{
   const q=e.target.value.toLowerCase();
   render(
-    members.filter(m=>
-      (m.name||"").toLowerCase().includes(q) ||
-      (m.post||"").toLowerCase().includes(q) ||
-      (m.district||"").toLowerCase().includes(q) ||
-      (m.state||"").toLowerCase().includes(q)
-    )
+    members.filter(m=>{
+      const mid = (m.member_id||m.memberId||"").toLowerCase();
+      return (
+        (m.name||"").toLowerCase().includes(q) ||
+        mid.includes(q) ||
+        (m.post||"").toLowerCase().includes(q) ||
+        (m.district||"").toLowerCase().includes(q) ||
+        (m.state||"").toLowerCase().includes(q)
+      );
+    })
   );
 });
 </script>
