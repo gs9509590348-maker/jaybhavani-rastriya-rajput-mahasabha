@@ -6,50 +6,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family:Arial;
-  background:#f4f4f4;
-  margin:0;
-}
+body{font-family:Arial;background:#f4f4f4;margin:0}
 .box{
-  max-width:900px;
-  margin:30px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:10px;
+  max-width:900px;margin:30px auto;
+  background:#fff;padding:20px;border-radius:10px
 }
 h2{text-align:center;color:#7b0000}
-
-input[type=file]{
-  margin:10px 0;
-}
+input[type=file]{margin:10px 0}
 .btn{
-  padding:10px 16px;
-  background:#7b0000;
-  color:#fff;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
+  padding:10px 16px;background:#7b0000;
+  color:#fff;border:none;border-radius:6px;cursor:pointer
 }
 textarea{
-  width:100%;
-  height:260px;
-  margin-top:15px;
-  font-family:monospace;
-  font-size:12px;
+  width:100%;height:280px;margin-top:15px;
+  font-family:monospace;font-size:12px
 }
-.note{
-  font-size:13px;
-  color:#555;
-  margin-top:10px;
-}
+.note{font-size:13px;color:#555;margin-top:10px;line-height:1.6}
 </style>
 </head>
 
 <body>
 
 <div class="box">
-<h2>CSV → JSON Bulk Members Tool</h2>
+<h2>📄 CSV → JSON Bulk Members Tool</h2>
 
 <p><b>Step-1:</b> CSV file upload करें</p>
 <input type="file" id="csv" accept=".csv">
@@ -57,55 +36,73 @@ textarea{
 <p><b>Step-2:</b> Generate JSON</p>
 <button class="btn" onclick="parseCSV()">Generate JSON</button>
 
-<h3>Generated JSON (Copy this)</h3>
+<h3>Generated JSON (Copy & Paste)</h3>
 <textarea id="out"></textarea>
 
 <div class="note">
-<b>CSV Columns Order:</b><br>
-Member_ID, Name, Father, Mobile, Post, Department, Level, District, State
+<b>CSV Columns Order (Header required):</b><br>
+Member_ID, Name, Father, Mobile, Post, Department, Level, District, State, Photo_URL
+<br><br>
+👉 Generated JSON को <b>data/members.json</b> में paste करें<br>
+👉 Status default <b>pending</b> रहेगा (Bulk Approve से approve करें)
 </div>
 </div>
 
 <script>
 function parseCSV(){
   const file=document.getElementById("csv").files[0];
-  if(!file){alert("CSV file select करें");return;}
+  if(!file){
+    alert("❌ CSV file select करें");
+    return;
+  }
 
   const reader=new FileReader();
   reader.onload=e=>{
-    const lines=e.target.result.split(/\r?\n/);
+    const text=e.target.result.trim();
+    const lines=text.split(/\r?\n/);
     const data=[];
-    lines.forEach((l,i)=>{
-      if(i===0 || !l.trim()) return;
-      const c=l.split(",").map(x=>x.trim());
-      if(!c[0]) return;
+    const today=new Date().toISOString().split("T")[0];
+
+    // assume first row is header
+    for(let i=1;i<lines.length;i++){
+      const line=lines[i];
+      if(!line.trim()) continue;
+
+      // simple CSV split (safe for normal admin CSV)
+      const c=line.split(",").map(x=>x.trim());
+      if(!c[0]) continue;
 
       data.push({
-        member_id:c[0],
-        name:c[1],
-        father:c[2],
-        mobile:c[3],
-        post:c[4],
-        department:c[5],
-        level:c[6],
-        district:c[7],
-        state:c[8],
-        status:"Active",
-        id_card:`https://jbrrms.in/add_member_idcard.html?id=${c[0]}`,
-        certificate:`https://jbrrms.in/certificate.html?id=${c[0]}`,
-        appointment:`https://jbrrms.in/appointment.html?id=${c[0]}`
+        member_id: c[0],
+        name: c[1] || "",
+        father: c[2] || "",
+        mobile: c[3] || "",
+        post: c[4] || "",
+        department: c[5] || "",
+        level: c[6] || "",
+        district: c[7] || "",
+        state: c[8] || "",
+        photo: c[9] || "",
+        status: "pending",
+        created_at: today
       });
-    });
+    }
+
+    if(!data.length){
+      alert("❌ CSV में valid data नहीं मिला");
+      return;
+    }
+
     document.getElementById("out").value =
       JSON.stringify(data,null,2);
   };
+
   reader.readAsText(file);
 }
 </script>
 
 <footer style="text-align:center;font-size:13px;color:#555;margin:30px 0">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
 यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
 </footer>
 
