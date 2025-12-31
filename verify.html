@@ -6,149 +6,91 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{
-  font-family: Arial, sans-serif;
-  background:#f4f4f4;
-  margin:0;
-}
-.box{
-  max-width:420px;
-  margin:60px auto;
-  background:#fff;
-  padding:25px;
-  border-radius:10px;
-  box-shadow:0 4px 15px rgba(0,0,0,.15);
-}
-h2{
-  text-align:center;
-  color:#7b0000;
-  margin-bottom:20px;
-}
-input{
-  width:100%;
-  padding:10px;
-  margin:10px 0;
-  border:1px solid #ccc;
-  border-radius:5px;
-  font-size:15px;
-}
-button{
-  width:100%;
-  padding:12px;
-  background:#7b0000;
-  color:#fff;
-  border:none;
-  border-radius:5px;
-  font-size:16px;
-  cursor:pointer;
-}
-button:hover{opacity:.9}
-.result{
-  margin-top:20px;
-  padding:15px;
-  border:1px solid #ddd;
-  border-radius:8px;
-}
-.success{color:green;font-weight:bold}
-.error{color:red;font-weight:bold}
-.btn{
-  display:inline-block;
-  margin:6px 4px;
-  padding:8px 12px;
-  background:#7b0000;
-  color:#fff;
-  text-decoration:none;
-  border-radius:5px;
-  font-size:14px;
-}
-.footer{
-  text-align:center;
-  font-size:13px;
-  color:#555;
-  margin:40px 20px;
-  line-height:1.6;
-}
+body{font-family:Arial;background:#f4f4f4;margin:0}
+.header{background:#7b0000;color:#fff;padding:15px;text-align:center}
+.container{max-width:500px;margin:30px auto;background:#fff;padding:20px;border-radius:10px}
+h3{color:#7b0000;margin-top:0}
+input{width:100%;padding:10px;margin:8px 0;font-size:14px}
+.btn{padding:10px;border:none;border-radius:6px;font-size:14px;cursor:pointer;width:100%}
+.green{background:#28a745;color:#fff}
+.blue{background:#1877f2;color:#fff}
+.card{margin-top:15px;border:1px solid #ddd;padding:12px;border-radius:8px;background:#fafafa}
+.label{font-size:13px;color:#555}
+.value{font-weight:bold;margin-bottom:6px}
+.footer{text-align:center;font-size:12px;color:#555;margin:30px 0}
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Member Verification</h2>
-
-  <input id="mid" placeholder="Member ID">
-  <input id="mobile" placeholder="Mobile Number">
-  <button onclick="verify()">Verify</button>
-
-  <div id="out"></div>
-
-  <p style="font-size:12px;color:#666;text-align:center;margin-top:15px">
-    कृपया Member ID और वही Mobile Number डालें  
-    जो सदस्यता के समय दिया गया था
-  </p>
+<div class="header">
+  <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+  <p>Member Verification</p>
 </div>
 
-<script>
-async function verify(){
-  const mid = document.getElementById("mid").value.trim();
-  const mob = document.getElementById("mobile").value.trim();
-  const out = document.getElementById("out");
+<div class="container">
+  <h3>🔐 सदस्य सत्यापन</h3>
 
-  if(!mid || !mob){
-    out.innerHTML = "<p class='error'>❌ Member ID और Mobile Number जरूरी है</p>";
-    return;
-  }
+  <input id="mid" placeholder="Member ID (जैसे JBRRMS-2025-001)">
+  <input id="mob" placeholder="Mobile Number (10 अंक)">
 
-  out.innerHTML = "⏳ Checking...";
+  <button class="btn green" onclick="verify()">Verify Member</button>
 
-  try{
-    const res = await fetch("data/members.json");
-    const data = await res.json();
-
-    const m = data.find(x =>
-      (x.member_id || x.memberId) == mid &&
-      String(x.mobile) == String(mob) &&
-      (x.status||"").toLowerCase() === "approved"
-    );
-
-    if(!m){
-      out.innerHTML =
-        "<p class='error'>❌ Member नहीं मिला या Approved नहीं है</p>";
-      return;
-    }
-
-    const midFinal = m.member_id || m.memberId;
-
-    const idCard =
-      m.id_card || m.ID_Card_Link || `idcard.html?id=${midFinal}`;
-    const cert =
-      m.certificate || m.Certificate_Link || `certificate.html?id=${midFinal}`;
-    const appoint =
-      m.appointment || m.Appointment_Link || `appointment.html?id=${midFinal}`;
-
-    out.innerHTML = `
-    <div class="result">
-      <p class="success">✅ Verified Member</p>
-      <p><b>Name:</b> ${m.name||""}</p>
-      <p><b>Father:</b> ${m.father||""}</p>
-      <p><b>Post:</b> ${m.post||""}</p>
-      <p><b>Level:</b> ${m.level||""}</p>
-      <p><b>Status:</b> APPROVED</p>
-
-      <a class="btn" href="${idCard}" target="_blank">🪪 ID Card</a>
-      <a class="btn" href="${cert}" target="_blank">📜 Certificate</a>
-      <a class="btn" href="${appoint}" target="_blank">📄 Appointment</a>
-    </div>`;
-  }catch(e){
-    out.innerHTML = "<p class='error'>❌ Data load error</p>";
-  }
-}
-</script>
+  <div id="out"></div>
+</div>
 
 <div class="footer">
 © 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह वेबसाइट केवल सत्यापन हेतु है
+Official Verification Page
 </div>
+
+<script>
+const API = "https://script.google.com/macros/s/AKfycbzc6Nc1K1QZiQeDLpx5YOWLIpdLp6oI7PHoTc4Pwas5ccJRYP-_tV2p8gJIj-kgURAwkg/exec";
+
+function verify(){
+  const mid = document.getElementById("mid").value.trim();
+  const mob = document.getElementById("mob").value.trim();
+  const out = document.getElementById("out");
+
+  if(!mid || !mob){
+    out.innerHTML = "<p style='color:red'>❌ Member ID और Mobile जरूरी है</p>";
+    return;
+  }
+
+  out.innerHTML = "⏳ Verifying...";
+
+  fetch(`${API}?action=verify&id=${encodeURIComponent(mid)}&mobile=${encodeURIComponent(mob)}`)
+  .then(r=>r.json())
+  .then(m=>{
+    if(!m || !m.member_id){
+      out.innerHTML = "<p style='color:red'>❌ Member Verify नहीं हुआ</p>";
+      return;
+    }
+
+    out.innerHTML = `
+    <div class="card">
+      <div class="label">Status</div>
+      <div class="value" style="color:green">✅ VERIFIED MEMBER</div>
+
+      <div class="label">Name</div>
+      <div class="value">${m.name}</div>
+
+      <div class="label">Post</div>
+      <div class="value">${m.post}</div>
+
+      <div class="label">District / State</div>
+      <div class="value">${m.district}, ${m.state}</div>
+
+      <a class="btn blue" target="_blank" href="${m.id_card}">🆔 View ID Card</a>
+      <br><br>
+      <a class="btn blue" target="_blank" href="${m.appointment}">📄 Appointment Letter</a>
+    </div>`;
+  })
+  .catch(()=>{
+    out.innerHTML = "<p style='color:red'>❌ Server Error</p>";
+  });
+}
+</script>
 
 </body>
 </html>
