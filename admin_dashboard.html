@@ -16,15 +16,12 @@ input{padding:8px;width:100%;margin:6px 0;font-size:13px}
 .gray{background:#555;color:#fff}
 .green{background:#28a745;color:#fff}
 .blue{background:#1877f2;color:#fff}
-table{width:100%;border-collapse:collapse;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
 th,td{border:1px solid #ccc;padding:6px;text-align:center}
 th{background:#f0f0f0}
 .badge{padding:2px 6px;border-radius:4px;font-size:12px;color:#fff}
 .approved{background:#28a745}
 .pending{background:#dc3545}
-textarea{width:100%;height:200px;font-family:monospace;font-size:12px}
-.gitem{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fafafa;border:1px solid #ddd;padding:8px;margin:6px 0}
-.gitem img{width:80px;height:60px;object-fit:cover;border-radius:4px}
 .footer{text-align:center;font-size:12px;color:#555;margin:30px 0}
 </style>
 </head>
@@ -33,7 +30,7 @@ textarea{width:100%;height:200px;font-family:monospace;font-size:12px}
 
 <div class="header">
   <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-  <p>Admin Dashboard (GitHub Static Mode)</p>
+  <p>ALL-IN-ONE MASTER ADMIN DASHBOARD</p>
 </div>
 
 <div class="container">
@@ -42,32 +39,25 @@ textarea{width:100%;height:200px;font-family:monospace;font-size:12px}
 <input id="q" placeholder="Search by Name / Member ID / Post / District">
 <button class="btn red" onclick="search()">Search</button>
 <button class="btn gray" onclick="reset()">Reset</button>
+<button class="btn green" onclick="bulkApprove()">✔ Bulk Approve</button>
 
 <h3>📋 Members List</h3>
 <table>
 <thead>
 <tr>
-<th>ID</th><th>Name</th><th>Post</th><th>Level</th>
-<th>District</th><th>Status</th><th>Actions</th>
+<th>Select</th>
+<th>ID</th>
+<th>Name (Edit)</th>
+<th>Post (Edit)</th>
+<th>Level</th>
+<th>District</th>
+<th>Status</th>
+<th>Actions</th>
+<th>Documents</th>
 </tr>
 </thead>
 <tbody id="tbl"></tbody>
 </table>
-
-<h3>🧾 Selected Member JSON</h3>
-<textarea id="json"></textarea>
-
-<hr>
-
-<h3>📸 Gallery – Edit / Delete</h3>
-<button class="btn green" onclick="downloadGallery()">⬇️ Download gallery.json</button>
-<div id="galleryBox"></div>
-
-<hr>
-
-<h3>🧑‍💼 कार्यकारिणी – Edit / Delete</h3>
-<button class="btn green" onclick="downloadKaryakarini()">⬇️ Download karyakarini.json</button>
-<div id="karyakariniBox"></div>
 
 </div>
 
@@ -77,75 +67,107 @@ Admin Internal Use Only
 </div>
 
 <script>
-/* ===== MEMBERS ===== */
-let members=[];
-fetch("data/members.json").then(r=>r.json()).then(d=>{members=d;render(d)});
-function render(list){
+/* ================= CONFIG ================= */
+const API  = "https://script.google.com/macros/s/AKfycbzc6Nc1K1QZiQeDLpx5YOWLIpdLp6oI7PHoTc4Pwas5ccJRYP-_tV2p8gJIj-kgURAwkg/exec";
+const PASS = "JBRRMS@123";
+
+/* ================= ADMIN LOGIN ================= */
+(function(){
+  const p = prompt("🔐 Enter Admin Password");
+  if(p !== PASS){
+    alert("❌ Wrong Password");
+    document.body.innerHTML = "";
+  }
+})();
+
+let members = [];
+
+/* ================= LOAD MEMBERS ================= */
+loadMembers();
+function loadMembers(){
+  fetch(`${API}?action=adminList&pass=${PASS}`)
+  .then(r=>r.json())
+  .then(d=>{
+    members = d;
+    renderMembers(d);
+  })
+  .catch(()=>alert("❌ Server Error"));
+}
+
+/* ================= RENDER ================= */
+function renderMembers(list){
   tbl.innerHTML="";
-  list.forEach((m,i)=>{
+  if(!list.length){
+    tbl.innerHTML="<tr><td colspan='9'>No members</td></tr>";
+    return;
+  }
+
+  list.forEach(m=>{
     const s=(m.status||"pending").toLowerCase();
     tbl.innerHTML+=`
     <tr>
+      <td><input type="checkbox" class="chk" value="${m.row}"></td>
       <td>${m.member_id||""}</td>
-      <td>${m.name||""}</td>
-      <td>${m.post||""}</td>
+      <td contenteditable onblur="edit('${m.row}','name',this.innerText)">${m.name||""}</td>
+      <td contenteditable onblur="edit('${m.row}','post',this.innerText)">${m.post||""}</td>
       <td>${m.level||""}</td>
       <td>${m.district||""}</td>
-      <td><span class="badge ${s}">${s}</span></td>
-      <td><button class="btn blue" onclick="json.value=JSON.stringify(members[${i}],null,2)">JSON</button></td>
+      <td><span class="badge ${s}">${s.toUpperCase()}</span></td>
+      <td>
+        <button class="btn green" onclick="approve('${m.row}','${m.mobile||""}')">Approve</button>
+        <button class="btn red" onclick="reject('${m.row}')">Reject</button>
+        <button class="btn gray" onclick="del('${m.row}')">Delete</button>
+      </td>
+      <td>
+        <button class="btn blue" onclick="doc('${m.member_id}','id')">ID Card</button>
+        <button class="btn blue" onclick="doc('${m.member_id}','appointment')">Appointment</button>
+      </td>
     </tr>`;
   });
 }
-function search(){render(members.filter(m=>JSON.stringify(m).toLowerCase().includes(q.value.toLowerCase())))}
-function reset(){q.value="";render(members)}
 
-/* ===== GALLERY ===== */
-let gallery=[];
-fetch("gallery.json").then(r=>r.json()).then(d=>{gallery=d;renderGallery()});
-function renderGallery(){
-  galleryBox.innerHTML="";
-  gallery.forEach((p,i)=>{
-    galleryBox.innerHTML+=`
-    <div class="gitem">
-      <img src="${p.img}">
-      <input value="${p.title}" oninput="gallery[${i}].title=this.value">
-      <input value="${p.date||''}" oninput="gallery[${i}].date=this.value">
-      <input value="${p.place||''}" oninput="gallery[${i}].place=this.value">
-      <button class="btn red" onclick="gallery.splice(${i},1);renderGallery()">❌</button>
-    </div>`;
-  });
-}
-function downloadGallery(){
-  downloadJSON(gallery,"gallery.json");
+/* ================= ACTIONS ================= */
+function action(type,row,extra=""){
+  fetch(`${API}?action=${type}&row=${row}&pass=${PASS}&extra=${encodeURIComponent(extra)}`)
+  .then(()=>loadMembers());
 }
 
-/* ===== KARYAKARINI ===== */
-let karyakarini=[];
-fetch("karyakarini.json").then(r=>r.json()).then(d=>{karyakarini=d;renderK()});
-function renderK(){
-  karyakariniBox.innerHTML="";
-  karyakarini.forEach((p,i)=>{
-    karyakariniBox.innerHTML+=`
-    <div class="gitem">
-      <img src="${p.photo||''}">
-      <input value="${p.name||''}" oninput="karyakarini[${i}].name=this.value">
-      <input value="${p.post||''}" oninput="karyakarini[${i}].post=this.value">
-      <input value="${p.level||''}" oninput="karyakarini[${i}].level=this.value">
-      <input value="${p.district||''}" oninput="karyakarini[${i}].district=this.value">
-      <button class="btn red" onclick="karyakarini.splice(${i},1);renderK()">❌</button>
-    </div>`;
-  });
+function approve(row,mobile=""){
+  if(confirm("Approve member?")){
+    action("approve",row);
+    if(mobile) whatsapp(mobile);
+  }
 }
-function downloadKaryakarini(){
-  downloadJSON(karyakarini,"karyakarini.json");
+function reject(row){ if(confirm("Reject?")) action("reject",row); }
+function del(row){ if(confirm("❌ Delete permanently?")) action("delete",row); }
+
+/* ================= BULK APPROVE ================= */
+function bulkApprove(){
+  document.querySelectorAll(".chk:checked")
+  .forEach(c=>action("approve",c.value));
 }
 
-/* ===== COMMON ===== */
-function downloadJSON(data,name){
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
-  a.download=name;
-  a.click();
+/* ================= INLINE EDIT ================= */
+function edit(row,field,val){
+  action("edit",row,field+"|"+val);
+}
+
+/* ================= SEARCH ================= */
+function search(){
+  const qv=q.value.toLowerCase();
+  renderMembers(members.filter(m=>JSON.stringify(m).toLowerCase().includes(qv)));
+}
+function reset(){ q.value=""; renderMembers(members); }
+
+/* ================= WHATSAPP ================= */
+function whatsapp(mob){
+  const msg="आपका सदस्यता आवेदन स्वीकृत हो गया है – JBRRMS";
+  window.open(`https://wa.me/91${mob}?text=${encodeURIComponent(msg)}`,"_blank");
+}
+
+/* ================= DOCUMENT ================= */
+function doc(mid,type){
+  window.open(`${API}?action=${type}&mid=${mid}&pass=${PASS}`,"_blank");
 }
 </script>
 
