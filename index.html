@@ -10,21 +10,15 @@
 :root{
   --main:#7b0000;
   --dark:#3b0000;
-  --green:#128c7e;
-  --blue:#1877f2;
   --bg:#f2f2f2;
-  --text:#333;
-  --card:#fff;
-}
-body.dark{
-  --bg:#121212;
-  --text:#e0e0e0;
-  --card:#1f1f1f;
+  --card:#ffffff;
+  --text:#222;
+  --muted:#666;
 }
 *{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Arial,system-ui;
+  font-family:system-ui,-apple-system,Segoe UI,Arial;
   background:var(--bg);
   color:var(--text);
 }
@@ -32,266 +26,165 @@ a{text-decoration:none;color:inherit}
 
 /* TOP BAR */
 .topbar{
-  background:#000;color:#fff;
+  background:#000;
+  color:#fff;
+  padding:6px 12px;
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  padding:8px 12px;
   font-size:13px;
-}
-.topbar button{
-  background:#222;
-  color:#fff;
-  border:none;
-  padding:4px 8px;
-  border-radius:4px;
-  margin-left:4px;
 }
 
 /* HEADER */
 header{
-  background:linear-gradient(135deg,var(--main),var(--dark));
+  background:linear-gradient(135deg,var(--dark),var(--main));
   color:#fff;
   text-align:center;
-  padding:22px 12px;
+  padding:28px 14px;
 }
-header h2{margin:0;font-size:22px}
+header h1{margin:0;font-size:24px}
 header p{margin:6px 0 0;font-size:14px}
 
 /* NAV */
-.nav{
-  position:sticky;top:0;z-index:99;
-  display:flex;flex-wrap:wrap;
-  justify-content:center;
-  gap:8px;
+nav{
   background:#fff;
+  border-bottom:1px solid #ddd;
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
   padding:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
 }
-.nav a{
-  border:1px solid var(--main);
-  padding:8px 14px;
-  border-radius:20px;
-  color:var(--main);
-  font-size:13px;
-}
-.hide{display:none}
-
-/* SECTION */
-.section{
-  background:var(--card);
-  margin:14px;
-  border-radius:10px;
-  box-shadow:0 4px 14px rgba(0,0,0,.1);
-  overflow:hidden;
-}
-.section h3{
+nav a{
   background:var(--main);
   color:#fff;
-  margin:0;
-  padding:10px;
-  font-size:15px;
-}
-.section .content{
-  padding:14px;
+  padding:10px 14px;
+  border-radius:8px;
   font-size:14px;
-  line-height:1.6;
 }
+nav a.alt{background:#333}
 
-/* GRID */
+/* CONTENT */
+.container{
+  max-width:1100px;
+  margin:20px auto;
+  padding:0 12px;
+}
+.section{margin:26px 0}
+.section h2{
+  margin:0 0 14px;
+  color:var(--main);
+}
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:12px;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;
 }
-
-/* BUTTON */
+.card{
+  background:var(--card);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+.card h3{margin:0 0 8px;color:var(--main)}
+.card p{margin:0 0 14px;font-size:14px;color:var(--muted)}
 .btn{
-  display:block;
-  padding:12px;
+  display:inline-block;
+  padding:10px 14px;
   border-radius:8px;
+  background:var(--main);
   color:#fff;
-  text-align:center;
-  font-size:14px;
-}
-.red{background:var(--main)}
-.green{background:var(--green)}
-.blue{background:var(--blue)}
-.black{background:#000}
-
-/* NOTICE */
-.notice{
-  background:#fff8e1;
-  border-left:5px solid #ff9800;
-  padding:12px;
-  margin:14px;
-  border-radius:8px;
   font-size:14px;
 }
 
 /* FOOTER */
 footer{
-  background:#000;
-  color:#ccc;
+  background:#111;
+  color:#ddd;
   text-align:center;
-  padding:14px;
-  font-size:12px;
+  padding:18px 12px;
+  font-size:13px;
 }
+footer a{color:#fff;text-decoration:underline}
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
-  <span id="loginStatus">👤 Guest</span>
-  <div>
-    <button onclick="toggleLang()">🌐</button>
-    <button onclick="toggleTheme()">🌙</button>
-  </div>
+  <span>📞 हेल्पलाइन: 91966377972</span>
+  <span>जय भवानी | जय राजपूताना 🚩</span>
 </div>
 
-<!-- HEADER -->
 <header>
-  <h2 id="title">🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩</h2>
-  <p id="tagline">स्वाभिमान · एकता · संगठन · राष्ट्र</p>
+  <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
+  <p>स्वाभिमान • एकता • संगठन • राष्ट्र सेवा</p>
 </header>
 
-<!-- NAVIGATION -->
-<div class="nav">
-  <a href="index.html">Home</a>
-  <a href="member_login.html" class="memberOnly hide">Member Login</a>
-  <a href="verify.html">Verify Member</a>
-  <a href="directory.html">Member Directory</a>
-  <a href="executive.html">कार्यकारिणी</a>
-  <a href="gallery.html">Gallery</a>
-  <a href="admin_login.html" class="adminOnly hide">Admin</a>
-</div>
+<nav>
+  <a href="karyakarini.html">👥 कार्यकारिणी</a>
+  <a href="directory.html">📂 सदस्य निर्देशिका</a>
+  <a class="alt" href="member_dashboard.html">🔐 Member Dashboard</a>
+  <a class="alt" href="idcard_print.html">🆔 ID Card</a>
+  <a class="alt" href="certificate.html">📜 Certificate</a>
+  <a href="appointment.html">📄 Appointment</a>
+  <a href="admin_secure.html" target="_blank">🛠️ Admin Login</a>
+</nav>
 
-<!-- NOTICE -->
-<div class="notice">
-📢 सूचना: सभी सदस्य अपने <b>ID Card, Certificate एवं Appointment Letter</b>
-<b>Member Login</b> से डाउनलोड करें।
-</div>
+<div class="container">
 
-<!-- OFFICIAL PORTAL -->
-<div class="section">
-<h3>🔰 Official Portal</h3>
-<div class="content grid">
-  <a class="btn red" href="verify.html">🔍 Member Verify</a>
-  <a class="btn blue" href="directory.html">👥 Public Member Directory</a>
-  <a class="btn black" href="admin_login.html">🔐 Admin Control Room</a>
-</div>
-</div>
+  <div class="section">
+    <h2>🎯 उद्देश्य</h2>
+    <div class="card">
+      <p>
+        जय भवानी राष्ट्रीय राजपूत महासभा का उद्देश्य राजपूत समाज के
+        स्वाभिमान, एकता और संगठन को सशक्त करना है।
+        यह मंच समाज को संगठित कर राष्ट्र निर्माण में सक्रिय भूमिका निभाता है।
+      </p>
+    </div>
+  </div>
 
-<!-- MEMBERSHIP PROCESS -->
-<div class="section">
-<h3>📝 सदस्यता प्रक्रिया (Membership Process)</h3>
-<div class="content">
-1️⃣ सदस्य Google Form भरता है<br>
-2️⃣ जानकारी Google Sheet में सुरक्षित होती है<br>
-3️⃣ Admin द्वारा सत्यापन किया जाता है<br>
-4️⃣ Approved होने पर Member ID बनती है<br>
-5️⃣ ID Card, Certificate एवं Appointment Letter जारी होता है
-<br><br>
-<a class="btn red" href="membership.html">Membership Form भरें</a>
-</div>
-</div>
+  <div class="section">
+    <h2>🚀 सेवाएँ</h2>
+    <div class="grid">
 
-<!-- ONLINE SERVICES -->
-<div class="section">
-<h3>ऑनलाइन सेवाएं</h3>
-<div class="content grid">
-  <a class="btn red memberOnly hide" href="member_login.html">🪪 Digital ID Card</a>
-  <a class="btn red memberOnly hide" href="member_login.html">📜 Certificate</a>
-  <a class="btn red memberOnly hide" href="member_login.html">📄 Appointment Letter</a>
-  <a class="btn green" href="#">📲 WhatsApp Support</a>
-  <a class="btn blue" href="directory.html">👥 Member Directory</a>
-  <a class="btn black adminOnly hide" href="admin.html">⚙ Admin Panel</a>
-</div>
-</div>
+      <div class="card">
+        <h3>👥 कार्यकारिणी</h3>
+        <p>राष्ट्रीय, प्रदेश एवं जिला कार्यकारिणी की सूची।</p>
+        <a class="btn" href="karyakarini.html">देखें</a>
+      </div>
 
-<!-- EXECUTIVE -->
-<div class="section">
-<h3>👑 कार्यकारिणी समिति</h3>
-<div class="content">
-राष्ट्रीय · प्रदेश · जिला · युवा स्तर की कार्यकारिणी  
-Google Sheet से स्वतः अपडेट होती है।
-<br><br>
-<a class="btn red" href="executive.html">कार्यकारिणी देखें</a>
-</div>
-</div>
+      <div class="card">
+        <h3>📂 सदस्य निर्देशिका</h3>
+        <p>सभी सदस्यों की searchable directory।</p>
+        <a class="btn" href="directory.html">Open</a>
+      </div>
 
-<!-- FACEBOOK -->
-<div class="section">
-<h3>📘 Official Facebook Page</h3>
-<div class="content">
-संगठन की सभी आधिकारिक सूचनाएं केवल इसी Facebook Page पर साझा की जाती हैं।
-किसी भी फर्जी पेज से सावधान रहें।
-<br><br>
-<a class="btn blue" target="_blank"
-href="https://www.facebook.com/share/1DoKwLJ5Wr/">Official Facebook Page देखें</a>
-</div>
-</div>
+      <div class="card">
+        <h3>🆔 ID Card / Certificate</h3>
+        <p>सदस्य अपना ID Card और Certificate डाउनलोड करें।</p>
+        <a class="btn" href="member_dashboard.html">Member Area</a>
+      </div>
 
-<!-- HOW SYSTEM WORKS -->
-<div class="section">
-<h3>⚙️ वेबसाइट कैसे काम करती है</h3>
-<div class="content">
-✔ यह वेबसाइट Google Form + Google Sheet आधारित है<br>
-✔ बिना Admin Approval कोई Member Valid नहीं होता<br>
-✔ सभी ID / Certificate डिजिटल व सत्यापित हैं<br>
-✔ फर्जी दस्तावेज़ बनना असंभव है
-</div>
-</div>
+      <div class="card">
+        <h3>🛠️ Admin Panel</h3>
+        <p>Approval, Bulk Actions, WhatsApp, CSV tools।</p>
+        <a class="btn" href="admin_dashboard.html">Admin Dashboard</a>
+      </div>
 
-<!-- CONTACT -->
-<div class="section">
-<h3>📞 संपर्क / हेल्पलाइन</h3>
-<div class="content">
-<b>वेबसाइट सहायता:</b> गोपाल सिंह राजपूत<br>
-<b>मोबाइल:</b> 9166377972<br>
-<b>Email:</b> support@jbrrms.in<br>
-<b>समय:</b> सुबह 10 बजे से शाम 6 बजे तक
-</div>
+    </div>
+  </div>
+
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह एक सामाजिक संगठन की आधिकारिक वेबसाइट है
+  <p>
+    © <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा  
+    | <a href="directory.html">Member Directory</a>
+  </p>
 </footer>
 
 <script>
-/* ROLE DETECTION */
-const member = localStorage.getItem("jbr_member");
-const admin  = sessionStorage.getItem("admin");
-
-if(member){
-  loginStatus.innerText="👤 Member Logged In";
-  document.querySelectorAll(".memberOnly").forEach(e=>e.classList.remove("hide"));
-}
-if(admin==="1"){
-  loginStatus.innerText="👑 Admin Logged In";
-  document.querySelectorAll(".adminOnly").forEach(e=>e.classList.remove("hide"));
-}
-
-/* THEME */
-function toggleTheme(){
-  document.body.classList.toggle("dark");
-}
-
-/* LANGUAGE */
-let lang="hi";
-function toggleLang(){
-  lang = lang==="hi"?"en":"hi";
-  if(lang==="en"){
-    title.innerText="🚩 Jai Bhavani Rashtriya Rajput Mahasabha 🚩";
-    tagline.innerText="Pride · Unity · Organisation · Nation";
-  }else{
-    title.innerText="🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩";
-    tagline.innerText="स्वाभिमान · एकता · संगठन · राष्ट्र";
-  }
-}
+document.getElementById("yr").innerText = new Date().getFullYear();
 </script>
 
 </body>
