@@ -2,8 +2,12 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>
+<title>JBRRMS | Official Secure Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- PWA BASIC -->
+<meta name="theme-color" content="#7b0000">
+<link rel="manifest" href="manifest.json">
 
 <style>
 :root{
@@ -11,135 +15,118 @@
   --dark:#3b0000;
   --green:#128c7e;
   --blue:#1877f2;
+  --bg:#f1f3f6;
+  --text:#333;
+  --card:#fff;
 }
-
+body.dark{
+  --bg:#121212;
+  --text:#e0e0e0;
+  --card:#1f1f1f;
+}
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui, -apple-system, BlinkMacSystemFont, Arial;
-  background:#f1f3f6;
-  color:#333;
+  font-family:system-ui,Arial;
+  background:var(--bg);
+  color:var(--text);
+  transition:.3s;
 }
-a{text-decoration:none}
+a{text-decoration:none;color:inherit}
 
 /* TOP BAR */
 .topbar{
-  background:#111;
-  color:#fff;
-  display:flex;
-  justify-content:space-between;
-  padding:8px 14px;
-  font-size:13px;
+  background:#000;color:#fff;
+  display:flex;justify-content:space-between;
+  align-items:center;
+  padding:8px 12px;font-size:13px
+}
+.top-actions button{
+  margin-left:6px;
+  padding:4px 8px;
+  border:none;border-radius:6px;
+  cursor:pointer
 }
 
 /* HEADER */
 header{
   background:linear-gradient(135deg,var(--main),var(--dark));
-  color:#fff;
-  text-align:center;
-  padding:26px 15px;
+  color:#fff;text-align:center;
+  padding:22px 12px
 }
-header h2{
-  margin:0;
-  font-size:22px;
-  letter-spacing:0.5px;
-}
-header p{
-  margin:6px 0 0;
-  font-size:14px;
-  opacity:.95;
-}
+header h2{margin:0;font-size:22px}
+header p{margin:6px 0 0;font-size:14px}
 
 /* NAV */
 .nav{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:10px;
-  background:#fff;
-  padding:14px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  position:sticky;top:0;z-index:10;
+  display:flex;flex-wrap:wrap;
+  justify-content:center;gap:10px;
+  background:var(--card);
+  padding:12px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1)
 }
 .nav a{
   border:1px solid var(--main);
-  padding:9px 14px;
-  border-radius:20px;
-  color:var(--main);
-  font-size:13px;
-  transition:.2s;
+  padding:8px 14px;border-radius:20px;
+  color:var(--main);font-size:13px;
 }
-.nav a:hover{
-  background:var(--main);
-  color:#fff;
-}
+.nav a.hide{display:none}
 
-/* SECTION */
-.section{
-  background:#fff;
-  margin:16px;
-  border-radius:12px;
-  overflow:hidden;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
+/* HERO */
+.hero{
+  margin:14px;background:var(--card);
+  border-radius:14px;padding:16px;
+  box-shadow:0 6px 18px rgba(0,0,0,.1)
 }
-.section h3{
-  background:var(--main);
-  color:#fff;
-  margin:0;
-  padding:12px 14px;
-  font-size:15px;
-}
-.section .content{
-  padding:16px;
-  font-size:14px;
-  line-height:1.6;
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;margin-top:12px
 }
 
 /* BUTTON */
 .btn{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  padding:12px 10px;
-  border-radius:10px;
-  color:#fff;
+  padding:12px;border-radius:10px;
+  color:#fff;text-align:center;
   font-size:14px;
-  font-weight:500;
-  box-shadow:0 4px 10px rgba(0,0,0,.15);
-  transition:.2s;
+  box-shadow:0 4px 10px rgba(0,0,0,.15)
 }
-.btn:hover{transform:translateY(-2px)}
-
 .red{background:var(--main)}
 .green{background:var(--green)}
-.black{background:#000}
 .blue{background:var(--blue)}
+.black{background:#000}
 
-/* GRID */
-.grid{
+/* STATS */
+.stats{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:12px;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;margin-top:14px
 }
-
-/* NOTICE */
-.notice{
-  background:#fff8e1;
-  border-left:6px solid #ff9800;
-  padding:14px;
-  margin:16px;
-  font-size:14px;
+.stat{
+  background:var(--bg);
   border-radius:10px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
+  padding:12px;text-align:center
 }
+.stat b{display:block;font-size:18px;color:var(--main)}
+
+/* SECTION */
+.section{
+  background:var(--card);
+  margin:14px;border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08)
+}
+.section h3{
+  background:var(--main);color:#fff;
+  margin:0;padding:12px;font-size:15px
+}
+.section .content{padding:14px;font-size:14px}
 
 /* FOOTER */
 footer{
-  background:#0f0f0f;
-  color:#bbb;
-  text-align:center;
-  padding:18px 10px;
-  font-size:12px;
-  margin-top:20px;
+  background:#000;color:#ccc;
+  text-align:center;padding:14px;
+  font-size:12px;margin-top:20px
 }
 </style>
 </head>
@@ -148,114 +135,97 @@ footer{
 
 <!-- TOP BAR -->
 <div class="topbar">
-  <span>🔒 Official Secure Portal</span>
   <span id="loginStatus">👤 Guest</span>
+  <div class="top-actions">
+    <button onclick="toggleLang()">🌐</button>
+    <button onclick="toggleTheme()">🌙</button>
+  </div>
 </div>
 
 <!-- HEADER -->
 <header>
-  <h2>🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩</h2>
-  <p>स्वाभिमान · एकता · संगठन · राष्ट्र</p>
+  <h2 id="title">🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩</h2>
+  <p id="tagline">स्वाभिमान · एकता · संगठन · राष्ट्र</p>
 </header>
 
 <!-- NAV -->
 <div class="nav">
-  <a href="member_login.html">🔐 Member Login</a>
-  <a href="verify.html">🔍 Verify Member</a>
-  <a href="directory.html">👥 Directory</a>
-  <a href="executive.html">👑 Executive</a>
-  <a href="gallery.html">🖼 Gallery</a>
-  <a href="admin_login.html">🔑 Admin</a>
+  <a href="index.html">Home</a>
+  <a href="member_login.html" class="memberOnly hide">Member</a>
+  <a href="verify.html">Verify</a>
+  <a href="directory.html">Directory</a>
+  <a href="executive.html">कार्यकारिणी</a>
+  <a href="gallery.html">Gallery</a>
+  <a href="admin_login.html" class="adminOnly hide">Admin</a>
 </div>
 
-<!-- NOTICE -->
-<div class="notice">
-📢 <b>सूचना:</b> केवल <b>Approved Members</b> ही Member Login के बाद  
-<b>ID Card, Certificate एवं Appointment Letter</b> डाउनलोड कर सकते हैं।
+<!-- HERO -->
+<div class="hero">
+  <div class="grid">
+    <a class="btn red memberOnly hide" href="member_login.html">👤 Member Dashboard</a>
+    <a class="btn blue" href="verify.html">✔ Verify Member</a>
+    <a class="btn black adminOnly hide" href="admin_login.html">🔐 Admin Control</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="mCount">2500+</b>Members</div>
+    <div class="stat"><b id="eCount">150+</b>Executives</div>
+    <div class="stat"><b id="sCount">8+</b>States</div>
+  </div>
 </div>
 
-<!-- INTRO -->
+<!-- SERVICES -->
 <div class="section">
-<h3>📘 संगठन का परिचय</h3>
-<div class="content">
-जय भवानी राष्ट्रीय राजपूत महासभा एक राष्ट्रीय सामाजिक संगठन है,
-जो राजपूत समाज के स्वाभिमान, एकता, संगठन और अधिकारों की रक्षा हेतु कार्य करता है।
-</div>
-</div>
-
-<!-- OBJECTIVES -->
-<div class="section">
-<h3>🎯 उद्देश्य एवं संकल्प</h3>
-<div class="content">
-<ul>
-<li>राजपूत समाज के सम्मान एवं स्वाभिमान की रक्षा</li>
-<li>समाज को संगठित एवं सशक्त बनाना</li>
-<li>युवा नेतृत्व को आगे लाना</li>
-<li>शिक्षा, रोजगार एवं सामाजिक न्याय</li>
-<li>राष्ट्रीय हित में सक्रिय भूमिका</li>
-</ul>
-</div>
-</div>
-
-<!-- MEMBER SERVICES -->
-<div class="section">
-<h3>🪪 सदस्य सेवाएँ</h3>
+<h3>ऑनलाइन सेवाएं</h3>
 <div class="content grid">
-  <a class="btn red" href="member_login.html">👤 Dashboard</a>
-  <a class="btn red" href="member_login.html">🪪 ID Card</a>
-  <a class="btn red" href="member_login.html">📜 Certificate</a>
-  <a class="btn red" href="member_login.html">📄 Appointment</a>
-  <a class="btn green" href="verify.html">✔ Verification</a>
-</div>
-</div>
-
-<!-- ADMIN -->
-<div class="section" id="adminSection" style="display:none">
-<h3>🛠 Admin Control (Secure)</h3>
-<div class="content grid">
-  <a class="btn black" href="admin.html">📊 Dashboard</a>
-  <a class="btn black" href="admin.html">✏️ Edit Member</a>
-  <a class="btn black" href="admin.html">✅ Bulk Approve</a>
-  <a class="btn black" href="admin.html">📲 WhatsApp Panel</a>
-</div>
-</div>
-
-<!-- CONNECT -->
-<div class="section">
-<h3>🔗 संगठन से जुड़ें</h3>
-<div class="content grid">
-  <a class="btn red" href="membership.html">📝 Membership Form</a>
-  <a class="btn blue" target="_blank"
-     href="https://www.facebook.com/share/1DoKwLJ5Wr/">📘 Facebook Page</a>
-</div>
-</div>
-
-<!-- CONTACT -->
-<div class="section">
-<h3>📞 संपर्क / हेल्पलाइन</h3>
-<div class="content">
-<b>वेबसाइट सहायता:</b> गोपाल सिंह राजपूत<br>
-<b>मोबाइल:</b> 9166377972<br>
-<b>Email:</b> support@jbrrms.in<br>
-<b>समय:</b> सुबह 10 बजे से शाम 6 बजे तक
+  <a class="btn red memberOnly hide" href="member_login.html">🪪 ID Card</a>
+  <a class="btn red memberOnly hide" href="member_login.html">📜 Certificate</a>
+  <a class="btn red memberOnly hide" href="member_login.html">📄 Appointment</a>
+  <a class="btn green" href="#">📲 WhatsApp</a>
+  <a class="btn blue" href="directory.html">👥 Directory</a>
 </div>
 </div>
 
 <footer>
 © 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-All Rights Reserved
+यह एक सामाजिक संगठन की आधिकारिक वेबसाइट है
 </footer>
 
 <script>
+// ROLE DETECTION
 const member = localStorage.getItem("jbr_member");
 const admin  = sessionStorage.getItem("admin");
 
 if(member){
-  document.getElementById("loginStatus").innerText="👤 Member Logged In";
+  loginStatus.innerText="👤 Member Logged In";
+  document.querySelectorAll(".memberOnly").forEach(e=>e.classList.remove("hide"));
 }
 if(admin==="1"){
-  document.getElementById("loginStatus").innerText="👑 Admin Logged In";
-  document.getElementById("adminSection").style.display="block";
+  loginStatus.innerText="👑 Admin Logged In";
+  document.querySelectorAll(".adminOnly").forEach(e=>e.classList.remove("hide"));
+}
+
+// THEME
+function toggleTheme(){
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme",
+    document.body.classList.contains("dark")?"dark":"light");
+}
+if(localStorage.getItem("theme")==="dark"){
+  document.body.classList.add("dark");
+}
+
+// LANGUAGE
+let lang="hi";
+function toggleLang(){
+  lang = lang==="hi"?"en":"hi";
+  if(lang==="en"){
+    title.innerText="🚩 Jai Bhavani Rashtriya Rajput Mahasabha 🚩";
+    tagline.innerText="Pride · Unity · Organisation · Nation";
+  }else{
+    title.innerText="🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩";
+    tagline.innerText="स्वाभिमान · एकता · संगठन · राष्ट्र";
+  }
 }
 </script>
 
