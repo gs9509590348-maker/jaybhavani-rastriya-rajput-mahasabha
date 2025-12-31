@@ -7,46 +7,25 @@
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
-.header{
-  background:#7b0000;color:#fff;
-  padding:15px;text-align:center
-}
-.container{
-  max-width:1200px;margin:20px auto;
-  background:#fff;padding:15px;border-radius:10px
-}
-h3{color:#7b0000;margin-top:0}
-input{
-  padding:8px;width:100%;margin:6px 0
-}
-.btn{
-  padding:6px 10px;border:none;
-  border-radius:5px;cursor:pointer;
-  font-size:13px;margin:2px
-}
+.header{background:#7b0000;color:#fff;padding:15px;text-align:center}
+.container{max-width:1200px;margin:20px auto;background:#fff;padding:15px;border-radius:10px}
+h3{color:#7b0000;margin-top:25px}
+input{padding:8px;width:100%;margin:6px 0;font-size:13px}
+.btn{padding:6px 10px;border:none;border-radius:5px;cursor:pointer;font-size:13px;margin:2px}
 .red{background:#7b0000;color:#fff}
 .gray{background:#555;color:#fff}
 .green{background:#28a745;color:#fff}
 .blue{background:#1877f2;color:#fff}
-
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{border:1px solid #ccc;padding:6px;text-align:center}
 th{background:#f0f0f0}
-.badge{
-  padding:2px 6px;border-radius:4px;
-  font-size:12px;color:#fff
-}
+.badge{padding:2px 6px;border-radius:4px;font-size:12px;color:#fff}
 .approved{background:#28a745}
 .pending{background:#dc3545}
-
-textarea{
-  width:100%;height:200px;
-  font-family:monospace
-}
-.footer{
-  text-align:center;font-size:12px;
-  color:#555;margin:30px 0
-}
+textarea{width:100%;height:200px;font-family:monospace;font-size:12px}
+.gitem{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#fafafa;border:1px solid #ddd;padding:8px;margin:6px 0}
+.gitem img{width:80px;height:60px;object-fit:cover;border-radius:4px}
+.footer{text-align:center;font-size:12px;color:#555;margin:30px 0}
 </style>
 </head>
 
@@ -68,81 +47,105 @@ textarea{
 <table>
 <thead>
 <tr>
-<th>ID</th>
-<th>Name</th>
-<th>Post</th>
-<th>Level</th>
-<th>District</th>
-<th>Status</th>
-<th>Actions</th>
+<th>ID</th><th>Name</th><th>Post</th><th>Level</th>
+<th>District</th><th>Status</th><th>Actions</th>
 </tr>
 </thead>
 <tbody id="tbl"></tbody>
 </table>
 
-<h3>🧾 Selected Member JSON (Copy / Edit)</h3>
+<h3>🧾 Selected Member JSON</h3>
 <textarea id="json"></textarea>
+
+<hr>
+
+<h3>📸 Gallery – Edit / Delete</h3>
+<button class="btn green" onclick="downloadGallery()">⬇️ Download gallery.json</button>
+<div id="galleryBox"></div>
+
+<hr>
+
+<h3>🧑‍💼 कार्यकारिणी – Edit / Delete</h3>
+<button class="btn green" onclick="downloadKaryakarini()">⬇️ Download karyakarini.json</button>
+<div id="karyakariniBox"></div>
 
 </div>
 
 <div class="footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>Admin Internal Use Only
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Internal Use Only
 </div>
 
 <script>
+/* ===== MEMBERS ===== */
 let members=[];
-
-fetch("data/members.json")
-.then(r=>r.json())
-.then(d=>{
-  members=d;
-  render(d);
-});
-
+fetch("data/members.json").then(r=>r.json()).then(d=>{members=d;render(d)});
 function render(list){
-  const tb=document.getElementById("tbl");
-  tb.innerHTML="";
+  tbl.innerHTML="";
   list.forEach((m,i)=>{
-    const status=(m.status||"pending").toLowerCase();
-    tb.innerHTML+=`
+    const s=(m.status||"pending").toLowerCase();
+    tbl.innerHTML+=`
     <tr>
       <td>${m.member_id||""}</td>
       <td>${m.name||""}</td>
       <td>${m.post||""}</td>
       <td>${m.level||""}</td>
       <td>${m.district||""}</td>
-      <td>
-        <span class="badge ${status}">
-          ${status.toUpperCase()}
-        </span>
-      </td>
-      <td>
-        <button class="btn blue" onclick="select(${i})">JSON</button>
-        <a class="btn gray" target="_blank"
-           href="verify.html?id=${m.member_id}">Verify</a>
-        <a class="btn green" target="_blank"
-           href="idcard_print.html?id=${m.member_id}">ID</a>
-      </td>
+      <td><span class="badge ${s}">${s}</span></td>
+      <td><button class="btn blue" onclick="json.value=JSON.stringify(members[${i}],null,2)">JSON</button></td>
     </tr>`;
   });
 }
+function search(){render(members.filter(m=>JSON.stringify(m).toLowerCase().includes(q.value.toLowerCase())))}
+function reset(){q.value="";render(members)}
 
-function search(){
-  const q=document.getElementById("q").value.toLowerCase();
-  render(members.filter(m=>
-    JSON.stringify(m).toLowerCase().includes(q)
-  ));
+/* ===== GALLERY ===== */
+let gallery=[];
+fetch("gallery.json").then(r=>r.json()).then(d=>{gallery=d;renderGallery()});
+function renderGallery(){
+  galleryBox.innerHTML="";
+  gallery.forEach((p,i)=>{
+    galleryBox.innerHTML+=`
+    <div class="gitem">
+      <img src="${p.img}">
+      <input value="${p.title}" oninput="gallery[${i}].title=this.value">
+      <input value="${p.date||''}" oninput="gallery[${i}].date=this.value">
+      <input value="${p.place||''}" oninput="gallery[${i}].place=this.value">
+      <button class="btn red" onclick="gallery.splice(${i},1);renderGallery()">❌</button>
+    </div>`;
+  });
+}
+function downloadGallery(){
+  downloadJSON(gallery,"gallery.json");
 }
 
-function reset(){
-  q.value="";
-  render(members);
+/* ===== KARYAKARINI ===== */
+let karyakarini=[];
+fetch("karyakarini.json").then(r=>r.json()).then(d=>{karyakarini=d;renderK()});
+function renderK(){
+  karyakariniBox.innerHTML="";
+  karyakarini.forEach((p,i)=>{
+    karyakariniBox.innerHTML+=`
+    <div class="gitem">
+      <img src="${p.photo||''}">
+      <input value="${p.name||''}" oninput="karyakarini[${i}].name=this.value">
+      <input value="${p.post||''}" oninput="karyakarini[${i}].post=this.value">
+      <input value="${p.level||''}" oninput="karyakarini[${i}].level=this.value">
+      <input value="${p.district||''}" oninput="karyakarini[${i}].district=this.value">
+      <button class="btn red" onclick="karyakarini.splice(${i},1);renderK()">❌</button>
+    </div>`;
+  });
+}
+function downloadKaryakarini(){
+  downloadJSON(karyakarini,"karyakarini.json");
 }
 
-function select(i){
-  document.getElementById("json").value =
-    JSON.stringify(members[i],null,2);
+/* ===== COMMON ===== */
+function downloadJSON(data,name){
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:"application/json"}));
+  a.download=name;
+  a.click();
 }
 </script>
 
