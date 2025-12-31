@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Member Dashboard | JBRRMS</title>
+<style>
+body{font-family:Arial;background:#f4f4f4}
+.card{background:#fff;margin:20px auto;padding:20px;max-width:500px;border-radius:8px}
+a{display:block;margin:8px 0;color:#7b0000;font-weight:bold}
+button{padding:10px;width:100%}
+</style>
+</head>
+<body>
+
+<div class="card" id="out"></div>
+
+<script>
+const m = JSON.parse(localStorage.getItem("JBRRMS_MEMBER"));
+if(!m) location.href="member_login.html";
+
+out.innerHTML = `
+<h2>✅ Welcome ${m.Full_Name}</h2>
+<b>Member ID:</b> ${m.Member_ID}<br>
+<b>Post:</b> ${m.Post || ""}<br>
+<b>Level:</b> ${m.Level || ""}<hr>
+
+<a href="idcard_print.html" target="_blank">🆔 ID Card</a>
+<a href="certificate.html" target="_blank">📄 Certificate</a>
+<a href="appointment.html" target="_blank">📜 Appointment Letter</a>
+<a href="verify.html" target="_blank">🔍 Verification Page</a>
+<a href="directory.html" target="_blank">📂 Member Directory</a>
+
+<button onclick="logout()">Logout</button>
+`;
+
+function logout(){
+  localStorage.clear();
+  location.href="member_login.html";
+}
+</script>
+
+</body>
+</html>
