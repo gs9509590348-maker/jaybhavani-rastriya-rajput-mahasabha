@@ -7,74 +7,45 @@
 
 <style>
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Segoe UI,Arial;
-  background:#f4f4f4;
-}
+body{margin:0;font-family:Segoe UI,Arial;background:#f4f4f4}
 header{
-  background:#7b0000;
-  color:#fff;
-  text-align:center;
-  padding:18px;
+  background:#7b0000;color:#fff;text-align:center;padding:18px
 }
 header h1{margin:0;font-size:22px}
 header p{margin:6px 0 0;font-size:13px}
 
-.container{
-  max-width:900px;
-  margin:20px auto;
-  padding:10px;
-}
+.container{max-width:900px;margin:20px auto;padding:10px}
 
 .section{
-  background:#fff;
-  margin-bottom:20px;
-  border-radius:8px;
-  box-shadow:0 2px 6px rgba(0,0,0,.1);
+  background:#fff;margin-bottom:20px;border-radius:8px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1)
 }
 .section h2{
-  margin:0;
-  padding:12px 15px;
-  background:#7b0000;
-  color:#fff;
-  border-radius:8px 8px 0 0;
-  font-size:16px;
+  margin:0;padding:12px 15px;background:#7b0000;color:#fff;
+  border-radius:8px 8px 0 0;font-size:16px
 }
 .section .content{
   padding:15px;
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-  gap:12px;
+  gap:12px
 }
 
 a.btn{
-  display:block;
-  padding:12px;
-  text-align:center;
-  background:#7b0000;
-  color:#fff;
-  text-decoration:none;
-  border-radius:6px;
-  font-size:14px;
+  display:block;padding:12px;text-align:center;
+  background:#7b0000;color:#fff;text-decoration:none;
+  border-radius:6px;font-size:14px
 }
 a.btn:hover{opacity:.9}
-
 a.gray{background:#555}
 a.green{background:#1fa463}
 a.blue{background:#0066cc}
 a.black{background:#000}
 
 footer{
-  text-align:center;
-  font-size:12px;
-  color:#555;
-  margin:30px 10px;
+  text-align:center;font-size:12px;color:#555;margin:30px 10px
 }
-.note{
-  font-size:13px;
-  line-height:1.6;
-}
+.note{font-size:13px;line-height:1.6}
 </style>
 </head>
 
@@ -92,8 +63,7 @@ footer{
   <h2>👤 Member Management</h2>
   <div class="content">
     <a class="btn" href="admin_edit_member.html">Edit / Delete Members</a>
-    <a class="btn" href="bulk_add_members.html">Bulk Add Members</a>
-    <a class="btn" href="bulk_csv_to_json.html">CSV → Members JSON</a>
+    <a class="btn" href="admin_bulk_approve.html">Bulk Approve Members</a>
     <a class="btn blue" href="directory.html">View Public Directory</a>
   </div>
 </div>
@@ -102,7 +72,7 @@ footer{
 <div class="section">
   <h2>🧑‍💼 कार्यकारणी समिति</h2>
   <div class="content">
-    <a class="btn" href="admin_karyakarini.html">Add / Edit कार्यकारणी</a>
+    <a class="btn" href="data/admin_karyakarini.html">Add / Edit कार्यकारणी</a>
     <a class="btn blue" href="karyakarini.html">View कार्यकारणी (Public)</a>
   </div>
 </div>
@@ -111,9 +81,7 @@ footer{
 <div class="section">
   <h2>📸 Events / Gallery</h2>
   <div class="content">
-    <a class="btn" href="admin_events.html">Add / Edit Events</a>
-    <a class="btn blue" href="gallery.html">Photo Gallery</a>
-    <a class="btn blue" href="events.html">Official Events</a>
+    <a class="btn blue" href="events/gallery.html">Photo Events Gallery</a>
   </div>
 </div>
 
@@ -127,20 +95,13 @@ footer{
   </div>
 </div>
 
-<!-- COMMUNICATION -->
-<div class="section">
-  <h2>📲 Communication</h2>
-  <div class="content">
-    <a class="btn green" href="bulk_whatsapp.html">Bulk WhatsApp Tool</a>
-  </div>
-</div>
-
 <!-- SYSTEM -->
 <div class="section">
   <h2>⚙️ System</h2>
   <div class="content">
-    <a class="btn black" href="index.html">🏠 Back to Website</a>
+    <a class="btn black" href="admin_dashboard.html">📊 Admin Dashboard</a>
     <a class="btn gray" href="verify.html">🔍 Verify Page</a>
+    <a class="btn black" href="index.html">🏠 Back to Website</a>
   </div>
 </div>
 
@@ -149,7 +110,7 @@ footer{
   <h2>ℹ️ Important</h2>
   <div class="content">
     <div class="note">
-      ✔ GitHub Pages = Hosting only<br>
+      ✔ GitHub Pages = Static Hosting<br>
       ✔ Data JSON files से आता है<br>
       ✔ Save = GitHub Commit<br><br>
       ❌ Public edit नहीं कर सकता<br>
@@ -161,8 +122,7 @@ footer{
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा  
-<br>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
 यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
 </footer>
 
