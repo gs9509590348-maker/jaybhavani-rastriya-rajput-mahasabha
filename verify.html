@@ -45,8 +45,10 @@ Official Verification Page
 </div>
 
 <script>
+/* ===== CONFIG ===== */
 const API = "https://script.google.com/macros/s/AKfycbzc6Nc1K1QZiQeDLpx5YOWLIpdLp6oI7PHoTc4Pwas5ccJRYP-_tV2p8gJIj-kgURAwkg/exec";
 
+/* ===== VERIFY FUNCTION ===== */
 function verify(){
   const mid = document.getElementById("mid").value.trim();
   const mob = document.getElementById("mob").value.trim();
@@ -57,38 +59,43 @@ function verify(){
     return;
   }
 
+  if(!/^\d{10}$/.test(mob)){
+    out.innerHTML = "<p style='color:red'>❌ Mobile Number 10 अंकों का होना चाहिए</p>";
+    return;
+  }
+
   out.innerHTML = "⏳ Verifying...";
 
   fetch(`${API}?action=verify&id=${encodeURIComponent(mid)}&mobile=${encodeURIComponent(mob)}`)
-  .then(r=>r.json())
-  .then(m=>{
-    if(!m || !m.member_id){
-      out.innerHTML = "<p style='color:red'>❌ Member Verify नहीं हुआ</p>";
-      return;
-    }
+    .then(r => r.json())
+    .then(m => {
 
-    out.innerHTML = `
-    <div class="card">
-      <div class="label">Status</div>
-      <div class="value" style="color:green">✅ VERIFIED MEMBER</div>
+      if(!m || !(m.member_id || m.memberId)){
+        out.innerHTML = "<p style='color:red'>❌ Member Verify नहीं हुआ</p>";
+        return;
+      }
 
-      <div class="label">Name</div>
-      <div class="value">${m.name}</div>
+      out.innerHTML = `
+      <div class="card">
+        <div class="label">Status</div>
+        <div class="value" style="color:green">✅ VERIFIED MEMBER</div>
 
-      <div class="label">Post</div>
-      <div class="value">${m.post}</div>
+        <div class="label">Name</div>
+        <div class="value">${m.name || "-"}</div>
 
-      <div class="label">District / State</div>
-      <div class="value">${m.district}, ${m.state}</div>
+        <div class="label">Post</div>
+        <div class="value">${m.post || "-"}</div>
 
-      <a class="btn blue" target="_blank" href="${m.id_card}">🆔 View ID Card</a>
-      <br><br>
-      <a class="btn blue" target="_blank" href="${m.appointment}">📄 Appointment Letter</a>
-    </div>`;
-  })
-  .catch(()=>{
-    out.innerHTML = "<p style='color:red'>❌ Server Error</p>";
-  });
+        <div class="label">District / State</div>
+        <div class="value">${m.district || "-"}, ${m.state || "-"}</div>
+
+        ${m.id_card ? `<a class="btn blue" target="_blank" href="${m.id_card}">🆔 View ID Card</a><br><br>` : ``}
+        ${m.appointment ? `<a class="btn blue" target="_blank" href="${m.appointment}">📄 Appointment Letter</a>` : ``}
+      </div>`;
+    })
+    .catch(()=>{
+      out.innerHTML = "<p style='color:red'>❌ Server Error</p>";
+    });
 }
 </script>
 
