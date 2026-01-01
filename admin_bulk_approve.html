@@ -2,15 +2,31 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Bulk Approve Members | Admin</title>
+<title>Bulk Approve Members | Admin – JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
+
+/* HEADER */
 header{
   background:#7b0000;color:#fff;
   text-align:center;padding:15px
 }
+
+/* NAVIGATION */
+nav{
+  background:#3b0000;
+  display:flex;flex-wrap:wrap;
+  justify-content:center
+}
+nav a{
+  color:#fff;text-decoration:none;
+  padding:8px 12px;font-size:14px
+}
+nav a:hover{background:#7b0000}
+
+/* MAIN */
 .container{
   max-width:900px;margin:20px auto;
   background:#fff;padding:20px;border-radius:10px
@@ -32,8 +48,15 @@ button{
 }
 .approve{background:#28a745;color:#fff}
 .download{background:#7b0000;color:#fff}
+.gray{background:#555;color:#fff}
 .count{text-align:center;font-size:14px;margin-bottom:10px}
-footer{text-align:center;font-size:12px;color:#555;margin:20px}
+
+/* FOOTER */
+footer{
+  text-align:center;font-size:12px;
+  color:#555;margin:25px 10px
+}
+footer a{color:#7b0000;text-decoration:none}
 </style>
 </head>
 
@@ -41,15 +64,33 @@ footer{text-align:center;font-size:12px;color:#555;margin:20px}
 
 <header>
   <h2>🚀 Bulk Approve Members</h2>
-  <p>Admin Panel (GitHub Pages Mode)</p>
+  <p>Admin Panel – GitHub Pages Mode</p>
 </header>
+
+<!-- ADMIN NAVIGATION -->
+<nav>
+  <a href="admin_dashboard.html">🏠 Dashboard</a>
+  <a href="admin_pending.html">⏳ Pending</a>
+  <a href="bulk_approve.html">🚀 Bulk Approve</a>
+  <a href="admin_edit_member.html">✏️ Edit Member</a>
+  <a href="admin_karyakarini.html">🧑‍⚖️ कार्यकारिणी</a>
+  <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="verify.html" target="_blank">🔍 Verify</a>
+  <a href="certificate.html" target="_blank">📜 Certificate</a>
+  <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
+  <a href="appointment.html" target="_blank">📄 Appointment</a>
+  <a href="gallery.html" target="_blank">🖼️ Gallery</a>
+  <a href="events.html" target="_blank">📢 Events</a>
+  <a href="contact.html" target="_blank">📞 Contact</a>
+  <a href="https://jbrrms.in" target="_blank">🌐 Website</a>
+</nav>
 
 <div class="container">
 
 <div class="notice">
-⚠️ <b>Important:</b> यह GitHub Static Mode है।  
+⚠️ <b>Important:</b> यह <b>GitHub Static Mode</b> है।  
 Approve करने के बाद <b>Updated members.json</b> डाउनलोड होगा।  
-उस फ़ाइल को GitHub repo में replace करना ज़रूरी है।
+उस फ़ाइल को GitHub repo के <b>data/members.json</b> में replace करना ज़रूरी है।
 </div>
 
 <div class="count">
@@ -61,13 +102,17 @@ Pending Members: <b id="pendingCount">0</b>
 <div class="actions">
   <button class="approve" onclick="approveSelected()">✅ Approve Selected</button>
   <button class="download" onclick="download()">⬇️ Download Updated JSON</button>
+  <button class="gray" onclick="location.reload()">🔄 Reload</button>
 </div>
 
 </div>
 
 <footer>
 © 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Admin Use Only
+Admin Panel – Authorized Use Only<br>
+<a href="https://jbrrms.in/privacy.html" target="_blank">Privacy</a> |
+<a href="https://jbrrms.in/terms.html" target="_blank">Terms</a> |
+<a href="https://jbrrms.in/verify.html" target="_blank">Verify</a>
 </footer>
 
 <script>
@@ -113,7 +158,7 @@ function render(){
 function approveSelected(){
   const checks=document.querySelectorAll("input[type=checkbox]:checked");
   if(checks.length===0){
-    alert("कोई Member select नहीं है");
+    alert("❌ कोई Member select नहीं है");
     return;
   }
 
