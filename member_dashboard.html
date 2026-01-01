@@ -53,32 +53,40 @@ button{
 <div class="card" id="out"></div>
 
 <script>
-const m = JSON.parse(localStorage.getItem("jbr_member"));
+let m = null;
 
-if(!m){
+/* ===== SAFE SESSION LOAD ===== */
+try{
+  m = JSON.parse(localStorage.getItem("jbr_member"));
+}catch(e){
+  m = null;
+}
+
+if(!m || !m.member_id){
   location.href = "member_login.html";
 }
 
-const mid = m.member_id || m.memberId;
+/* ===== DATA ===== */
+const mid = m.member_id;
 
+/* ===== RENDER ===== */
 document.getElementById("out").innerHTML = `
-  <h2>✅ Welcome ${m.name || ""}</h2>
+  <h2>✅ Welcome ${m.name || "Member"}</h2>
 
   <p>
     <b>Member ID:</b> ${mid}<br>
-    <b>Post:</b> ${m.post || ""}<br>
-    <b>Level:</b> ${m.level || ""}<br>
-    <b>District:</b> ${m.district || ""}<br>
-    <b>State:</b> ${m.state || ""}
+    <b>Post:</b> ${m.post || "-"}<br>
+    <b>District:</b> ${m.district || "-"}<br>
+    <b>State:</b> ${m.state || "-"}
   </p>
 
   <hr>
 
-  <a href="idcard.html?id=${mid}" target="_blank">🪪 View ID Card</a>
+  <a href="idcard_a4.html?id=${mid}" target="_blank">🪪 ID Card (A4)</a>
+  <a href="idcard_pvc.html?id=${mid}" target="_blank">🪪 ID Card (PVC)</a>
   <a href="certificate.html?id=${mid}" target="_blank">📄 Certificate</a>
   <a href="appointment.html?id=${mid}" target="_blank">📜 Appointment Letter</a>
-  <a href="verify.html?id=${mid}" target="_blank">🔍 Verification Page</a>
-  <a href="directory.html" target="_blank">📂 Member Directory</a>
+  <a href="verify.html" target="_blank">🔍 Public Verification</a>
 
   <button onclick="logout()">🚪 Logout</button>
 
@@ -87,6 +95,7 @@ document.getElementById("out").innerHTML = `
   </div>
 `;
 
+/* ===== LOGOUT ===== */
 function logout(){
   localStorage.removeItem("jbr_member");
   location.href = "member_login.html";
