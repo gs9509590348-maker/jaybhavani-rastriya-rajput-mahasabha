@@ -2,38 +2,100 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Bulk Add Members | JBRRMS</title>
+<title>Bulk Add Members | Admin – JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+*{box-sizing:border-box}
 body{font-family:Arial;background:#f4f4f4;margin:0}
+
+/* HEADER */
+header{
+  background:#7b0000;color:#fff;
+  text-align:center;padding:16px
+}
+header h2{margin:0}
+header p{margin:6px 0 0;font-size:13px}
+
+/* NAV */
+nav{
+  background:#3b0000;
+  display:flex;flex-wrap:wrap;
+  justify-content:center
+}
+nav a{
+  color:#fff;text-decoration:none;
+  padding:8px 12px;font-size:14px
+}
+nav a:hover{background:#7b0000}
+
+/* MAIN */
 .container{
-  max-width:900px;margin:30px auto;
+  max-width:1100px;margin:25px auto;
   background:#fff;padding:20px;border-radius:10px
 }
-h2{text-align:center;color:#7b0000}
+h2{text-align:center;color:#7b0000;margin-top:0}
+
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{border:1px solid #ccc;padding:6px}
 th{background:#f0f0f0}
 input{width:100%;padding:4px;font-size:12px}
+
 .btn{
   margin:10px 5px;padding:10px 16px;
   background:#7b0000;color:#fff;
-  border:none;border-radius:6px;cursor:pointer
+  border:none;border-radius:6px;cursor:pointer;
+  font-size:14px
 }
 .gray{background:#555}
+.green{background:#1fa463}
+.blue{background:#0066cc}
+
 textarea{
   width:100%;height:240px;margin-top:15px;
   font-family:monospace;font-size:12px
 }
-.note{font-size:12px;color:#555;margin-top:10px}
+.note{font-size:12px;color:#555;margin-top:10px;line-height:1.6}
+
+/* FOOTER */
+footer{
+  text-align:center;font-size:12px;
+  color:#555;margin:30px 10px
+}
+footer a{color:#7b0000;text-decoration:none}
 </style>
 </head>
 
 <body>
 
+<header>
+  <h2>👥 Bulk Add Members</h2>
+  <p>Admin Panel – Master Data Entry Tool</p>
+</header>
+
+<!-- ADMIN NAVIGATION -->
+<nav>
+  <a href="admin_control.html">🔐 Control Room</a>
+  <a href="admin_dashboard.html">📊 Dashboard</a>
+  <a href="admin_pending.html">⏳ Pending Members</a>
+  <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
+  <a href="admin_edit_member.html">✏️ Edit Member</a>
+  <a href="bulk_add_members.html">➕ Bulk Add</a>
+  <a href="admin_karyakarini.html">🧑‍⚖️ कार्यकारिणी</a>
+  <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="verify.html" target="_blank">🔍 Verify</a>
+  <a href="certificate.html" target="_blank">📜 Certificate</a>
+  <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
+  <a href="appointment.html" target="_blank">📄 Appointment</a>
+  <a href="gallery.html" target="_blank">🖼️ Gallery</a>
+  <a href="events.html" target="_blank">📢 Events</a>
+  <a href="contact.html" target="_blank">📞 Contact</a>
+  <a href="index.html" target="_blank">🏠 Website</a>
+</nav>
+
 <div class="container">
-<h2>👥 Bulk Add Members Tool</h2>
+
+<h2>📥 Bulk Member Entry Table</h2>
 
 <table id="tbl">
 <thead>
@@ -53,17 +115,30 @@ textarea{
 <tbody></tbody>
 </table>
 
-<button class="btn" onclick="addRow()">➕ Add Row</button>
-<button class="btn gray" onclick="generate()">⚙️ Generate JSON</button>
+<div style="text-align:center">
+  <button class="btn green" onclick="addRow()">➕ Add Row</button>
+  <button class="btn blue" onclick="generate()">⚙️ Generate JSON</button>
+</div>
 
 <h3>Generated JSON (Copy & Paste)</h3>
-<textarea id="out"></textarea>
+<textarea id="out" placeholder="यहाँ Generated JSON आएगा..."></textarea>
 
 <p class="note">
-👉 इस JSON को <b>data/members.json</b> में paste करें  
-<br>👉 Status default <b>pending</b> रहेगा (Bulk Approve से approve करें)
+👉 इस JSON को <b>data/members.json</b> में paste / merge करें  
+<br>👉 Default <b>status = pending</b> रहेगा  
+<br>👉 Approve करने के लिए <b>Bulk Approve</b> tool उपयोग करें  
+<br>👉 GitHub Pages = Static Mode (Manual Commit Required)
 </p>
+
 </div>
+
+<footer>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Tools – Authorized Use Only<br>
+<a href="privacy.html" target="_blank">Privacy</a> |
+<a href="terms.html" target="_blank">Terms</a> |
+<a href="verify.html" target="_blank">Verify</a>
+</footer>
 
 <script>
 const tbody = document.querySelector("#tbl tbody");
@@ -114,11 +189,6 @@ function generate(){
     JSON.stringify(data,null,2);
 }
 </script>
-
-<footer style="text-align:center;font-size:13px;color:#555;margin:30px 0">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
-</footer>
 
 </body>
 </html>
