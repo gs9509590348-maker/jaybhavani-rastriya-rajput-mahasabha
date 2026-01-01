@@ -16,7 +16,7 @@ body{
   background:#eee;
 }
 
-/* A4 */
+/* A4 PAGE */
 .page{
   width:210mm;
   min-height:297mm;
@@ -70,6 +70,11 @@ body{
   line-height:1.4;
 }
 
+.info a{
+  color:#000;
+  text-decoration:none;
+}
+
 .qr{
   position:absolute;
   bottom:4mm;
@@ -94,6 +99,7 @@ body{
   margin-top:3mm;
   border-top:1px dashed #999;
   padding-top:2mm;
+  text-align:center;
 }
 
 .no-print{text-align:center;margin:10px}
@@ -141,6 +147,11 @@ fetch("data/members.json")
 
   list.forEach(m=>{
     const mid = m.member_id || m.memberId;
+    const mob = String(m.mobile||"").replace(/\D/g,"");
+
+    const verifyURL = `https://jbrrms.in/verify.html?id=${mid}`;
+    const waURL = mob ? `https://wa.me/91${mob}` : "#";
+
     const card = document.createElement("div");
     card.className="card";
     card.innerHTML=`
@@ -157,17 +168,21 @@ fetch("data/members.json")
           पिता: ${m.father||""}<br>
           पद: ${m.post||""}<br>
           स्तर: ${m.level||""}<br>
-          ID: <b>${mid}</b>
+          ID: <b>${mid}</b><br>
+          ${mob ? `📞 <a href="tel:+91${mob}">${mob}</a><br>` : ``}
+          ${mob ? `💬 <a href="${waURL}" target="_blank">WhatsApp</a>` : ``}
         </div>
       </div>
 
       <div class="qr">
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://jbrrms.in/verify.html?id=${mid}">
+        <a href="${verifyURL}" target="_blank">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${verifyURL}">
+        </a>
       </div>
 
       <div class="back">
         यह कार्ड जय भवानी राष्ट्रीय राजपूत महासभा की संपत्ति है।<br>
-        सत्यापन: jbrrms.in
+        सत्यापन: <a href="${verifyURL}" target="_blank">jbrrms.in</a>
       </div>
     `;
     wrap.appendChild(card);
