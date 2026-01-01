@@ -50,13 +50,17 @@ button:hover{opacity:.9}
   <h2>🔐 Member Login</h2>
 
   <input id="mid" placeholder="Member ID">
-  <input id="mob" placeholder="Mobile Number">
+  <input id="mob" placeholder="Mobile Number (10 अंक)">
   <button onclick="login()">Login</button>
 
   <p id="msg"></p>
 </div>
 
 <script>
+/* ===== CONFIG ===== */
+const MEMBER_JSON = "data/members.json";
+
+/* ===== LOGIN ===== */
 async function login(){
   const midVal = document.getElementById("mid").value.trim();
   const mobVal = document.getElementById("mob").value.trim();
@@ -67,26 +71,43 @@ async function login(){
     return;
   }
 
+  if(!/^\d{10}$/.test(mobVal)){
+    msg.innerHTML =
+      "<span class='error'>❌ Mobile Number 10 अंकों का होना चाहिए</span>";
+    return;
+  }
+
   msg.innerText = "⏳ Checking...";
 
   try{
-    const res = await fetch("data/members.json");
+    const res = await fetch(MEMBER_JSON, {cache:"no-store"});
     const data = await res.json();
 
     const m = data.find(x =>
       (x.member_id || x.memberId) == midVal &&
-      String(x.mobile) == String(mobVal) &&
-      (x.status||"").toLowerCase() === "approved"
+      String(x.mobile) == String(mobVal)
     );
 
     if(!m){
       msg.innerHTML =
-        "<span class='error'>❌ Member नहीं मिला या Approved नहीं है</span>";
+        "<span class='error'>❌ Member ID या Mobile गलत है</span>";
       return;
     }
 
-    // save session
-    localStorage.setItem("jbr_member", JSON.stringify(m));
+    if((m.status||"").toLowerCase() !== "approved"){
+      msg.innerHTML =
+        "<span class='error'>❌ Member अभी Approved नहीं है</span>";
+      return;
+    }
+
+    // Save session (safe fields only)
+    localStorage.setItem("jbr_member", JSON.stringify({
+      member_id: m.member_id || m.memberId,
+      name: m.name,
+      post: m.post,
+      district: m.district,
+      state: m.state
+    }));
 
     msg.innerHTML =
       "<span class='success'>✅ Login Successful</span>";
@@ -97,7 +118,7 @@ async function login(){
 
   }catch(e){
     msg.innerHTML =
-      "<span class='error'>❌ Data load error</span>";
+      "<span class='error'>❌ Member data load नहीं हो पाया</span>";
   }
 }
 </script>
