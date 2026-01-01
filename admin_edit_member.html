@@ -6,60 +6,121 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{font-family:Arial;background:#f4f4f4}
+body{font-family:Arial;background:#f4f4f4;margin:0}
+header{
+  background:#7b0000;color:#fff;
+  padding:12px;text-align:center
+}
+nav{
+  background:#3b0000;
+  display:flex;flex-wrap:wrap;
+  justify-content:center
+}
+nav a{
+  color:#fff;text-decoration:none;
+  padding:8px 12px;font-size:14px
+}
+nav a:hover{background:#7b0000}
+
 .box{
-  max-width:500px;margin:30px auto;
+  max-width:520px;margin:25px auto;
   background:#fff;padding:20px;
   border:2px solid #7b0000;border-radius:8px
 }
-h2{text-align:center;color:#7b0000}
+h2{text-align:center;color:#7b0000;margin-top:0}
 input,select{
-  width:100%;padding:8px;margin:6px 0
+  width:100%;padding:8px;margin:6px 0;
+  font-size:14px
 }
 button{
   width:100%;padding:10px;
   background:#7b0000;color:#fff;
   border:none;border-radius:6px;
-  margin-top:10px
+  margin-top:10px;font-size:15px;
+  cursor:pointer
 }
+.gray{background:#555}
 .note{font-size:13px;color:#555;margin-top:10px}
+footer{
+  text-align:center;font-size:13px;
+  color:#555;margin:30px 10px
+}
 </style>
 </head>
 
 <body>
 
+<header>
+  <h2>🔐 JBRRMS – Admin Control</h2>
+  <div>Edit Member Panel</div>
+</header>
+
+<!-- ADMIN NAVIGATION -->
+<nav>
+  <a href="admin_dashboard.html">🏠 Dashboard</a>
+  <a href="admin_pending.html">⏳ Pending Members</a>
+  <a href="admin_edit_member.html">✏️ Edit Member</a>
+  <a href="admin_karyakarini.html">🧑‍⚖️ कार्यकारिणी</a>
+  <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="verify.html" target="_blank">🔍 Verify</a>
+  <a href="certificate.html" target="_blank">📜 Certificate</a>
+  <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
+  <a href="appointment.html" target="_blank">📄 Appointment</a>
+  <a href="gallery.html" target="_blank">🖼️ Gallery</a>
+  <a href="events.html" target="_blank">📢 Events</a>
+  <a href="contact.html" target="_blank">📞 Contact</a>
+  <a href="https://jbrrms.in" target="_blank">🌐 Website</a>
+</nav>
+
 <div class="box">
-<h2>🔐 Admin – Edit Member</h2>
+<h2>✏️ Edit Member Details</h2>
 
 <input id="mid" placeholder="Enter Member ID">
-<button onclick="loadMember()">Load Member</button>
+<button onclick="loadMember()">🔎 Load Member</button>
 
 <hr>
 
-<input id="name" placeholder="Name">
+<input id="name" placeholder="Member Name">
 <input id="father" placeholder="Father Name">
-<input id="post" placeholder="Post">
-<input id="level" placeholder="Level">
+<input id="post" placeholder="Post / Position">
+<input id="level" placeholder="Level (District / State / National)">
 <input id="photo" placeholder="Photo URL">
 
 <button onclick="saveData()">⬇️ Download Updated members.json</button>
+<a href="data/members.json" class="button"></a>
 
 <p class="note">
-⚠️ Download file को <b>data/members.json</b> से GitHub में replace करें
+⚠️ Download की गई <b>members.json</b> फ़ाइल को<br>
+<b>data/members.json</b> में GitHub पर replace करें।
 </p>
+
+<button class="gray" onclick="location.reload()">🔄 Reset Form</button>
 </div>
+
+<footer>
+© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Panel – Authorized Use Only<br>
+<a href="https://jbrrms.in/privacy.html" target="_blank">Privacy</a> |
+<a href="https://jbrrms.in/terms.html" target="_blank">Terms</a>
+</footer>
 
 <script>
 let members=[], index=-1;
 
 fetch("data/members.json")
 .then(r=>r.json())
-.then(d=>members=d);
+.then(d=>members=d)
+.catch(()=>alert("❌ members.json load नहीं हुआ"));
 
 function loadMember(){
   const id=document.getElementById("mid").value.trim();
-  index=members.findIndex(m=>m.member_id===id);
-  if(index<0){alert("Member not found");return;}
+  index=members.findIndex(m =>
+    (m.member_id||m.memberId)===id
+  );
+  if(index<0){
+    alert("❌ Member not found");
+    return;
+  }
 
   const m=members[index];
   name.value=m.name||"";
@@ -70,7 +131,10 @@ function loadMember(){
 }
 
 function saveData(){
-  if(index<0){alert("Load member first");return;}
+  if(index<0){
+    alert("❌ पहले Member load करें");
+    return;
+  }
 
   members[index].name=name.value;
   members[index].father=father.value;
