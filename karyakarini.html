@@ -11,6 +11,7 @@ header{background:#7b0000;color:#fff;padding:16px;text-align:center}
 .section{max-width:1100px;margin:18px auto;background:#fff;padding:18px;border-radius:10px}
 h2{color:#7b0000;margin:6px 0 14px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+
 .card{
   border:1px solid #ddd;
   border-radius:12px;
@@ -37,6 +38,7 @@ h2{color:#7b0000;margin:6px 0 14px}
 .national{background:#7b0000}
 .state{background:#004aad}
 .youth{background:#28a745}
+
 .name{font-weight:bold}
 .post{font-size:14px;margin:4px 0}
 .place{font-size:12px;color:#555}
@@ -70,42 +72,87 @@ h2{color:#7b0000;margin:6px 0 14px}
 </div>
 
 <script>
-fetch("data/karyakarini.json")
-.then(r=>r.json())
-.then(d=>{
-  const list = d.karyakarini
-    .filter(x=>x.active)
-    .sort((a,b)=>a.order-b.order);
+// ================= FINAL DATA =================
+const karyakarini = [
+  {
+    order:1, active:true,
+    name:"ठा. गोवर्धन सिंह जी",
+    post:"संस्थापक",
+    level:"राष्ट्रीय",
+    district:"बरखेड़ी मिट्ठू",
+    state:"मध्य प्रदेश",
+    mobile:"+919784823382",
+    photo:""
+  },
+  {
+    order:2, active:true,
+    name:"ठा. शंकर सिंह जी राणा",
+    post:"युवा कार्यकारिणी राष्ट्रीय अध्यक्ष",
+    level:"राष्ट्रीय",
+    district:"मोगरा",
+    state:"मध्य प्रदेश",
+    mobile:"+919116568039",
+    photo:""
+  },
+  {
+    order:3, active:true,
+    name:"ठा. श्याम सिंह राठौड़",
+    post:"युवा प्रदेश अध्यक्ष",
+    level:"प्रदेश",
+    district:"डाबला मनोहर",
+    state:"मध्य प्रदेश",
+    mobile:"+919165463190",
+    photo:""
+  },
+  {
+    order:4, active:true,
+    name:"पप्पू सिंह जी",
+    post:"प्रदेश अध्यक्ष",
+    level:"प्रदेश",
+    district:"झरिका का खेड़ा",
+    state:"राजस्थान",
+    mobile:"+919772710875",
+    photo:""
+  },
+  {
+    order:5, active:true,
+    name:"दीवान सिंह जी",
+    post:"राजस्थान युवा प्रदेश अध्यक्ष",
+    level:"प्रदेश",
+    district:"तीसाई",
+    state:"राजस्थान",
+    mobile:"8302295957",
+    photo:""
+  }
+];
 
-  list.forEach(m=>{
-    let target="state", badgeCls="state", label="प्रदेश";
+// ================= RENDER =================
+karyakarini
+.filter(x=>x.active)
+.sort((a,b)=>a.order-b.order)
+.forEach(m=>{
+  let target="state", badgeCls="state", label="प्रदेश";
 
-    if(m.post && m.post.includes("संस्थापक")){
-      target="founder";
-      badgeCls="founder";
-      label="संस्थापक";
-    }
-    else if(m.post && m.post.includes("युवा")){
-      target="youth";
-      badgeCls="youth";
-      label = "युवा " + (m.level||"");
-    }
-    else if(m.level==="राष्ट्रीय"){
-      target="national";
-      badgeCls="national";
-      label="राष्ट्रीय";
-    }
+  if(m.post.includes("संस्थापक")){
+    target="founder"; badgeCls="founder"; label="संस्थापक";
+  }
+  else if(m.post.includes("युवा")){
+    target="youth"; badgeCls="youth"; label="युवा";
+  }
+  else if(m.level==="राष्ट्रीय"){
+    target="national"; badgeCls="national"; label="राष्ट्रीय";
+  }
 
-    document.getElementById(target).innerHTML += `
-      <div class="card">
-        <div class="badge ${badgeCls}">${label}</div>
-        <img src="${m.photo||'https://via.placeholder.com/90'}">
-        <div class="name">${m.name||""}</div>
-        <div class="post">${m.post||""}</div>
-        <div class="place">${m.district||""} ${m.state||""}</div>
-        ${m.mobile ? `<div class="place">📞 ${m.mobile}</div>` : ``}
-      </div>`;
-  });
+  document.getElementById(target).innerHTML += `
+    <div class="card">
+      <div class="badge ${badgeCls}">${label}</div>
+      <img src="${m.photo || 'https://via.placeholder.com/90'}">
+      <div class="name">${m.name}</div>
+      <div class="post">${m.post}</div>
+      <div class="place">${m.district} ${m.state}</div>
+      ${m.mobile ? `<div class="place">📞 ${m.mobile}</div>` : ``}
+    </div>
+  `;
 });
 </script>
 
