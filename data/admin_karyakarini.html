@@ -2,12 +2,29 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Admin Panel | कार्यकारिणी प्रबंधन</title>
+<title>Admin Panel | कार्यकारिणी प्रबंधन – JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+*{box-sizing:border-box}
 body{font-family:Arial;background:#f4f4f4;margin:0}
+
+/* HEADER */
 header{background:#7b0000;color:#fff;padding:15px;text-align:center}
+
+/* NAV */
+nav{
+  background:#3b0000;
+  display:flex;flex-wrap:wrap;
+  justify-content:center
+}
+nav a{
+  color:#fff;text-decoration:none;
+  padding:8px 12px;font-size:14px
+}
+nav a:hover{background:#7b0000}
+
+/* MAIN */
 .container{
   max-width:1100px;margin:20px auto;
   background:#fff;padding:20px;border-radius:10px
@@ -24,9 +41,17 @@ button{
 .up,.down{background:#ffc107}
 .delete{background:#dc3545;color:#fff}
 .add{background:#28a745;color:#fff}
-.footer{text-align:center;font-size:13px;color:#555;margin:30px 0}
+
 textarea{width:100%;height:220px}
-.note{background:#fff3cd;padding:10px;border-left:4px solid #ff9800;margin-bottom:15px}
+.note{
+  background:#fff3cd;padding:10px;
+  border-left:4px solid #ff9800;
+  margin-bottom:15px;font-size:13px
+}
+
+/* FOOTER */
+.footer{text-align:center;font-size:12px;color:#555;margin:30px 10px}
+.footer a{color:#7b0000;text-decoration:none}
 </style>
 </head>
 
@@ -42,14 +67,38 @@ if(sessionStorage.getItem("admin")!=="1"){
 
 <header>
   <h2>🔐 Admin Panel – कार्यकारिणी प्रबंधन</h2>
+  <p>Master Admin Tool</p>
 </header>
+
+<!-- ADMIN NAVIGATION -->
+<nav>
+  <a href="../admin_control.html">🔐 Control Room</a>
+  <a href="../admin_dashboard.html">📊 Dashboard</a>
+  <a href="../admin_pending.html">⏳ Pending Members</a>
+  <a href="../admin_bulk_approve.html">🚀 Bulk Approve</a>
+  <a href="../bulk_add_members.html">➕ Bulk Add Members</a>
+  <a href="../bulk_whatsapp.html">📲 Bulk WhatsApp</a>
+  <a href="../admin_edit_member.html">✏️ Edit Member</a>
+  <a href="../admin_karyakarini.html">🧑‍💼 कार्यकारिणी</a>
+  <a href="../karyakarini.html" target="_blank">👥 View कार्यकारिणी</a>
+  <a href="../members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="../verify.html" target="_blank">🔍 Verify</a>
+  <a href="../certificate.html" target="_blank">📜 Certificate</a>
+  <a href="../idcard_print.html" target="_blank">🪪 ID Card</a>
+  <a href="../appointment.html" target="_blank">📄 Appointment</a>
+  <a href="../gallery.html" target="_blank">🖼️ Gallery</a>
+  <a href="../events.html" target="_blank">📢 Events</a>
+  <a href="../contact.html" target="_blank">📞 Contact</a>
+  <a href="../index.html" target="_blank">🏠 Website</a>
+</nav>
 
 <div class="container">
 
 <div class="note">
 <b>नोट:</b> सभी बदलाव browser में होंगे।  
 नीचे बने <b>Updated JSON</b> को copy करके  
-<code>data/karyakarini.json</code> में paste करें।
+<code>data/karyakarini.json</code> में paste करें।  
+<br>👉 GitHub Pages = Static Mode
 </div>
 
 <!-- ADD NEW MEMBER -->
@@ -76,7 +125,7 @@ if(sessionStorage.getItem("admin")!=="1"){
 <hr>
 
 <!-- EXISTING MEMBERS -->
-<h3>✏️ Edit / Delete / Reorder</h3>
+<h3>✏️ Edit / Delete / Reorder कार्यकारिणी</h3>
 <table>
 <thead>
 <tr>
@@ -99,15 +148,17 @@ if(sessionStorage.getItem("admin")!=="1"){
 
 </div>
 
-<div class="footer">
+<footer class="footer">
 © 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Admin use only
-</div>
+Admin Panel – Authorized Use Only<br>
+<a href="../privacy.html" target="_blank">Privacy</a> |
+<a href="../terms.html" target="_blank">Terms</a> |
+<a href="../verify.html" target="_blank">Verify</a>
+</footer>
 
 <script>
 /* ✅ SAFE ABSOLUTE PATH */
 const JSON_PATH = "../data/karyakarini.json";
-
 let data=[];
 
 fetch(JSON_PATH)
@@ -117,15 +168,12 @@ fetch(JSON_PATH)
   normalizeOrder();
   render();
 })
-.catch(()=>{
-  alert("karyakarini.json load नहीं हो पा रहा");
-});
+.catch(()=>alert("karyakarini.json load नहीं हो पा रहा"));
 
 function normalizeOrder(){
   data.sort((a,b)=>a.order-b.order);
   data.forEach((m,i)=>m.order=i+1);
 }
-
 function nextId(){
   return "KAR-" + String(data.length+1).padStart(3,"0");
 }
@@ -147,10 +195,8 @@ function addMember(){
     order:data.length+1,
     active:true
   });
-  clearNew();
-  render();
+  clearNew();render();
 }
-
 function clearNew(){
   n_name.value=n_post.value=n_district.value=
   n_state.value=n_mobile.value=n_photo.value="";
@@ -196,8 +242,7 @@ function upd(i,k,v){data[i][k]=v;render();}
 function del(i){
   if(confirm("Delete this member?")){
     data.splice(i,1);
-    normalizeOrder();
-    render();
+    normalizeOrder();render();
   }
 }
 function moveUp(i){
