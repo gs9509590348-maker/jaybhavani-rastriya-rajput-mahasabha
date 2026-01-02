@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#7b0000">
+<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – Official Digital Portal">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://jbrrms.in/">
 
 <style>
 *{box-sizing:border-box}
@@ -14,14 +18,14 @@ body{
   background:#f2f2f2;
   color:#222
 }
-a{text-decoration:none}
+a{text-decoration:none;color:inherit}
 
 /* HEADER */
 header{
   background:#7b0000;
   color:#fff;
   text-align:center;
-  padding:18px 10px
+  padding:20px 10px
 }
 header h1{margin:0;font-size:20px}
 header p{margin:6px 0 0;font-size:13px}
@@ -44,30 +48,25 @@ nav a{
   border:1px solid #ddd
 }
 
-/* CONTAINER */
+/* LAYOUT */
 .container{
   max-width:900px;
-  margin:12px auto;
+  margin:14px auto;
   padding:0 10px
 }
-
-/* SECTION */
 .section{
   background:#7b0000;
   color:#fff;
   border-radius:10px;
-  margin:14px 0;
+  margin:16px 0;
   padding:10px
 }
 .section h2{margin:0 0 8px;font-size:15px}
-
-/* CARD */
 .card{
   background:#fff;
   color:#222;
   border-radius:8px;
-  padding:12px;
-  margin-top:8px
+  padding:12px
 }
 
 /* BUTTONS */
@@ -89,9 +88,6 @@ nav a{
 .btn.green{background:#1fa463}
 .btn.black{background:#000}
 
-/* LIST */
-ol,ul{padding-left:18px;font-size:14px}
-
 /* FOOTER */
 footer{
   background:#111;
@@ -99,7 +95,7 @@ footer{
   text-align:center;
   font-size:12px;
   padding:14px;
-  margin-top:20px
+  margin-top:24px
 }
 </style>
 </head>
@@ -121,7 +117,6 @@ footer{
 
 <div class="container">
 
-<!-- NOTICE -->
 <div class="section">
   <h2>📢 सूचना</h2>
   <div class="card">
@@ -130,7 +125,6 @@ footer{
   </div>
 </div>
 
-<!-- PUBLIC SERVICES -->
 <div class="section">
   <h2>🌐 Public Services</h2>
   <div class="card btns">
@@ -142,7 +136,6 @@ footer{
   </div>
 </div>
 
-<!-- MEMBERSHIP -->
 <div class="section">
   <h2>📝 Membership</h2>
   <div class="card btns">
@@ -152,20 +145,16 @@ footer{
   </div>
 </div>
 
-<!-- ADMIN -->
 <div class="section">
   <h2>🛡️ Admin Panel (Authorized)</h2>
   <div class="card btns">
-    <a class="btn black" href="admin_secure.html">🔐 Admin Control Room</a>
-    <a class="btn black" href="admin_dashboard.html">📊 Admin Dashboard</a>
-    <a class="btn black" href="admin_bulk_approve.html">🚀 Bulk Approve</a>
-    <a class="btn black" href="admin_edit_member.html">✏️ Edit Member</a>
-    <a class="btn black" href="bulk_add_members.html">➕ Bulk Add Members</a>
-    <a class="btn black" href="bulk_whatsapp.html">📲 Bulk WhatsApp</a>
+    <a class="btn black" target="_blank"
+       href="https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec?admin=1">
+       🔐 Admin Control Room
+    </a>
   </div>
 </div>
 
-<!-- DATA & SYSTEM -->
 <div class="section">
   <h2>📂 System & Data</h2>
   <div class="card btns">
@@ -176,7 +165,6 @@ footer{
   </div>
 </div>
 
-<!-- SOCIAL -->
 <div class="section">
   <h2>🌐 Social & Contact</h2>
   <div class="card btns">
@@ -186,7 +174,6 @@ footer{
   </div>
 </div>
 
-<!-- LEGAL -->
 <div class="section">
   <h2>⚠️ कानूनी घोषणा</h2>
   <div class="card">
@@ -203,7 +190,7 @@ Official Digital Portal
 </footer>
 
 <script>
-document.getElementById("yr").innerText=new Date().getFullYear();
+document.getElementById("yr").innerText = new Date().getFullYear();
 </script>
 
 </body>
