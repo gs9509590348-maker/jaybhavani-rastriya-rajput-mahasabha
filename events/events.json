@@ -1,24 +1,25 @@
-{
-  "last_updated": "2025-01-01",
-  "organization": "जय भवानी राष्ट्रीय राजपूत महासभा",
-  "events": [
-    {
-      "id": "EVT-001",
-      "title": "राष्ट्रीय कार्यकारिणी बैठक",
-      "date": "2025-02-10",
-      "location": "भोपाल, मध्य प्रदेश",
-      "description": "राष्ट्रीय एवं प्रदेश स्तर की कार्यकारिणी की महत्वपूर्ण बैठक।",
-      "image": "https://jbrrms.in/assets/events/meeting1.jpg",
-      "status": "completed"
-    },
-    {
-      "id": "EVT-002",
-      "title": "युवा सम्मेलन",
-      "date": "2025-03-05",
-      "location": "जयपुर, राजस्थान",
-      "description": "युवा कार्यकारिणी सम्मेलन एवं संगठन विस्तार कार्यक्रम।",
-      "image": "https://jbrrms.in/assets/events/youth-meet.jpg",
-      "status": "upcoming"
-    }
-  ]
-}
+<div id="events"></div>
+
+<script>
+fetch('events/events.json')
+  .then(res => res.json())
+  .then(data => {
+    let html = '';
+    data.events.forEach(ev => {
+      html += `
+        <div style="border:1px solid #ddd;padding:12px;margin:10px 0;border-radius:8px">
+          <img src="${ev.image}" style="width:100%;max-width:320px;border-radius:6px">
+          <h3>${ev.title}</h3>
+          <p><b>📅</b> ${ev.date}</p>
+          <p><b>📍</b> ${ev.location}</p>
+          <p>${ev.description}</p>
+          <span style="padding:4px 8px;border-radius:4px;
+            background:${ev.status==='upcoming'?'#28a745':'#555'};
+            color:#fff;font-size:12px">
+            ${ev.status.toUpperCase()}
+          </span>
+        </div>`;
+    });
+    document.getElementById('events').innerHTML = html;
+  });
+</script>
