@@ -9,7 +9,8 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:Segoe UI,Arial;background:#f4f4f4}
 header{
-  background:#7b0000;color:#fff;text-align:center;padding:18px
+  background:#7b0000;color:#fff;
+  text-align:center;padding:18px
 }
 header h1{margin:0;font-size:22px}
 header p{margin:6px 0 0;font-size:13px}
@@ -43,6 +44,15 @@ a.blue{background:#0066cc}
 a.black{background:#000}
 a.orange{background:#ff9800}
 
+.top-actions{
+  text-align:center;margin:10px 0
+}
+.top-actions button{
+  padding:8px 14px;border:none;border-radius:6px;
+  cursor:pointer;font-size:14px;margin:0 5px
+}
+.logout{background:#000;color:#fff}
+
 footer{
   text-align:center;font-size:12px;color:#555;margin:30px 10px
 }
@@ -52,10 +62,22 @@ footer{
 
 <body>
 
+<script>
+/* 🔐 ADMIN SESSION PROTECTION */
+if(sessionStorage.getItem("admin") !== "1"){
+  alert("❌ Unauthorized Access");
+  location.href = "admin_login.html";
+}
+</script>
+
 <header>
   <h1>🔐 Admin Control Room</h1>
   <p>पूरा सिस्टम यहीं से कंट्रोल होगा (Master Panel)</p>
 </header>
+
+<div class="top-actions">
+  <button class="logout" onclick="logout()">🚪 Logout</button>
+</div>
 
 <div class="container">
 
@@ -63,10 +85,10 @@ footer{
 <div class="section">
   <h2>👤 Member Management</h2>
   <div class="content">
-    <a class="btn" href="admin_edit_member.html">✏️ Edit / Delete Member</a>
+    <a class="btn" href="admin_edit_member.html">✏️ Edit Member</a>
     <a class="btn green" href="admin_bulk_approve.html">🚀 Bulk Approve Members</a>
-    <a class="btn blue" href="directory.html" target="_blank">🧑‍🤝‍🧑 Public Member Directory</a>
-    <a class="btn gray" href="members.html" target="_blank">📋 Members List (JSON View)</a>
+    <a class="btn blue" href="directory.html" target="_blank">🧑‍🤝‍🧑 Public Directory</a>
+    <a class="btn gray" href="data/members.json" target="_blank">📋 members.json</a>
     <a class="btn" href="verify.html" target="_blank">🔍 Verify Member</a>
   </div>
 </div>
@@ -76,7 +98,7 @@ footer{
   <h2>🧑‍💼 कार्यकारिणी समिति</h2>
   <div class="content">
     <a class="btn" href="admin_karyakarini.html">➕ Add / Edit कार्यकारिणी</a>
-    <a class="btn blue" href="karyakarini.html" target="_blank">👥 View कार्यकारिणी (Public)</a>
+    <a class="btn blue" href="karyakarini.html" target="_blank">👥 View (Public)</a>
   </div>
 </div>
 
@@ -95,8 +117,8 @@ footer{
 <div class="section">
   <h2>📸 Events / Gallery</h2>
   <div class="content">
-    <a class="btn blue" href="gallery.html" target="_blank">🖼️ Photo Gallery</a>
-    <a class="btn blue" href="events.html" target="_blank">📢 Events / Notice Board</a>
+    <a class="btn blue" href="gallery.html" target="_blank">🖼️ Gallery</a>
+    <a class="btn blue" href="events.html" target="_blank">📢 Events</a>
   </div>
 </div>
 
@@ -105,7 +127,7 @@ footer{
   <h2>📝 Forms & Registration</h2>
   <div class="content">
     <a class="btn green" href="join.html" target="_blank">📝 Join / Membership Form</a>
-    <a class="btn gray" href="https://docs.google.com/forms" target="_blank">📄 Google Form (Backend)</a>
+    <a class="btn gray" href="https://docs.google.com/forms" target="_blank">📄 Google Forms (Backend)</a>
   </div>
 </div>
 
@@ -114,19 +136,8 @@ footer{
   <h2>⚙️ System & Admin</h2>
   <div class="content">
     <a class="btn black" href="admin_dashboard.html">📊 Admin Dashboard</a>
-    <a class="btn black" href="index.html" target="_blank">🏠 Back to Website</a>
-    <a class="btn gray" href="data/members.json" target="_blank">📂 members.json</a>
+    <a class="btn black" href="index.html" target="_blank">🏠 Website</a>
     <a class="btn gray" href="data/" target="_blank">📁 Data Folder</a>
-  </div>
-</div>
-
-<!-- LEGAL / INFO -->
-<div class="section">
-  <h2>ℹ️ Legal & Info</h2>
-  <div class="content">
-    <a class="btn gray" href="privacy.html" target="_blank">🛡️ Privacy Policy</a>
-    <a class="btn gray" href="terms.html" target="_blank">📜 Terms & Conditions</a>
-    <a class="btn orange" href="contact.html" target="_blank">📞 Contact Page</a>
   </div>
 </div>
 
@@ -148,9 +159,18 @@ footer{
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
 Admin Control Room – Authorized Use Only
 </footer>
+
+<script>
+function logout(){
+  if(confirm("Logout from Admin Panel?")){
+    sessionStorage.removeItem("admin");
+    location.href = "admin_login.html";
+  }
+}
+</script>
 
 </body>
 </html>
