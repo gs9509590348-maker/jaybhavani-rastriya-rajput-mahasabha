@@ -44,7 +44,7 @@ nav a:hover{background:#7b0000}
   padding:18px;text-align:center;
   box-shadow:0 2px 6px rgba(0,0,0,.1)
 }
-.card h3{margin:0;font-size:24px}
+.card h3{margin:0;font-size:26px}
 .card p{margin:6px 0 0;font-size:13px;color:#555}
 
 .green{border-top:5px solid #28a745}
@@ -81,7 +81,7 @@ footer a{color:#7b0000;text-decoration:none}
 <body>
 
 <script>
-/* 🔐 ADMIN SESSION CHECK */
+/* 🔐 SESSION BASED ADMIN CHECK */
 if(sessionStorage.getItem("admin") !== "1"){
   alert("❌ Unauthorized Access");
   location.href = "../admin_login.html";
@@ -112,45 +112,48 @@ if(sessionStorage.getItem("admin") !== "1"){
 
 <div class="container">
 
-<div class="cards">
-  <div class="card blue">
-    <h3 id="total">0</h3>
-    <p>Total Members</p>
+  <!-- STATS CARDS -->
+  <div class="cards">
+    <div class="card blue">
+      <h3 id="total">0</h3>
+      <p>Total Members</p>
+    </div>
+    <div class="card green">
+      <h3 id="approved">0</h3>
+      <p>Approved Members</p>
+    </div>
+    <div class="card red">
+      <h3 id="pending">0</h3>
+      <p>Pending Members</p>
+    </div>
+    <div class="card orange">
+      <h3 id="kcount">0</h3>
+      <p>कार्यकारिणी Members</p>
+    </div>
   </div>
-  <div class="card green">
-    <h3 id="approved">0</h3>
-    <p>Approved Members</p>
-  </div>
-  <div class="card red">
-    <h3 id="pending">0</h3>
-    <p>Pending Members</p>
-  </div>
-  <div class="card orange">
-    <h3 id="kcount">0</h3>
-    <p>कार्यकारिणी Members</p>
-  </div>
-</div>
 
-<div class="section">
-  <h3>⚡ Quick Actions</h3>
-  <div class="quick">
-    <a href="../admin_pending.html">⏳ Pending</a>
-    <a href="../admin_bulk_approve.html" class="green">🚀 Bulk Approve</a>
-    <a href="../bulk_add_members.html" class="blue">➕ Bulk Add</a>
-    <a href="../bulk_whatsapp.html">📲 WhatsApp</a>
-    <a href="../admin_karyakarini.html" class="gray">🧑‍💼 कार्यकारिणी</a>
+  <!-- QUICK ACTIONS -->
+  <div class="section">
+    <h3>⚡ Quick Actions</h3>
+    <div class="quick">
+      <a href="../admin_pending.html">⏳ Pending</a>
+      <a href="../admin_bulk_approve.html" class="green">🚀 Bulk Approve</a>
+      <a href="../bulk_add_members.html" class="blue">➕ Bulk Add</a>
+      <a href="../bulk_whatsapp.html">📲 WhatsApp</a>
+      <a href="../admin_karyakarini.html" class="gray">🧑‍💼 कार्यकारिणी</a>
+    </div>
   </div>
-</div>
 
-<div class="section">
-  <h3>ℹ️ System Info</h3>
-  <p>
-    ✔ Hosting: <b>GitHub Pages (Static)</b><br>
-    ✔ Data Source: <b>JSON Files</b><br>
-    ✔ Update Flow: Edit → Download → GitHub Replace<br>
-    🔐 Admin Access via Session
-  </p>
-</div>
+  <!-- SYSTEM INFO -->
+  <div class="section">
+    <h3>ℹ️ System Info</h3>
+    <p>
+      ✔ Hosting: <b>GitHub Pages (Static)</b><br>
+      ✔ Data Source: <b>JSON Files</b><br>
+      ✔ Update Flow: Edit → Download → GitHub Replace<br>
+      🔐 Admin Access: Session Based
+    </p>
+  </div>
 
 </div>
 
@@ -167,32 +170,42 @@ const kcountEl   = document.getElementById("kcount");
 
 /* ===== LOAD MEMBERS STATS ===== */
 fetch("../data/members.json?v=" + Date.now())
-  .then(r => r.json())
-  .then(list => {
+  .then(r=>{
+    if(!r.ok) throw new Error("members load error");
+    return r.json();
+  })
+  .then(list=>{
     if(!Array.isArray(list)) return;
 
-    let total = list.length;
-    let approved = 0, pending = 0;
-
-    list.forEach(m => {
-      const s = (m.status || "pending").toLowerCase();
-      if(s === "approved") approved++;
+    let total=list.length, approved=0, pending=0;
+    list.forEach(m=>{
+      const s=(m.status||"pending").toLowerCase();
+      if(s==="approved") approved++;
       else pending++;
     });
 
-    totalEl.innerText = total;
-    approvedEl.innerText = approved;
-    pendingEl.innerText = pending;
+    totalEl.innerText=total;
+    approvedEl.innerText=approved;
+    pendingEl.innerText=pending;
   })
-  .catch(() => console.log("members.json load error"));
+  .catch(()=>{
+    totalEl.innerText="—";
+    approvedEl.innerText="—";
+    pendingEl.innerText="—";
+  });
 
 /* ===== LOAD KARYAKARINI COUNT ===== */
 fetch("../data/karyakarini.json?v=" + Date.now())
-  .then(r => r.json())
-  .then(j => {
-    kcountEl.innerText = (j.karyakarini || []).length;
+  .then(r=>{
+    if(!r.ok) throw new Error("karyakarini load error");
+    return r.json();
   })
-  .catch(() => console.log("karyakarini.json load error"));
+  .then(j=>{
+    kcountEl.innerText=(j.karyakarini||[]).length;
+  })
+  .catch(()=>{
+    kcountEl.innerText="0";
+  });
 </script>
 
 </body>
