@@ -11,17 +11,31 @@ body{font-family:Arial;background:#f4f4f4;margin:0}
   max-width:900px;margin:30px auto;
   background:#fff;padding:20px;border-radius:10px
 }
-h2{text-align:center;color:#7b0000}
+h2{text-align:center;color:#7b0000;margin-top:0}
 input[type=file]{margin:10px 0}
 .btn{
   padding:10px 16px;background:#7b0000;
-  color:#fff;border:none;border-radius:6px;cursor:pointer
+  color:#fff;border:none;border-radius:6px;
+  cursor:pointer;font-size:14px
 }
 textarea{
-  width:100%;height:280px;margin-top:15px;
+  width:100%;height:300px;margin-top:15px;
   font-family:monospace;font-size:12px
 }
-.note{font-size:13px;color:#555;margin-top:10px;line-height:1.6}
+.note{
+  font-size:13px;color:#555;margin-top:12px;
+  line-height:1.6
+}
+.warn{
+  background:#fff3cd;border-left:5px solid #ff9800;
+  padding:10px;font-size:13px;margin:12px 0
+}
+.ok{color:#28a745;font-weight:bold}
+.no{color:#dc3545;font-weight:bold}
+footer{
+  text-align:center;font-size:13px;
+  color:#555;margin:30px 0
+}
 </style>
 </head>
 
@@ -30,80 +44,106 @@ textarea{
 <div class="box">
 <h2>📄 CSV → JSON Bulk Members Tool</h2>
 
+<div class="warn">
+⚠️ <b>Admin Use Only</b><br>
+यह tool सिर्फ <b>GitHub Static Mode</b> के लिए है।  
+Generated JSON को manually <b>data/members.json</b> में paste करना होगा।
+</div>
+
 <p><b>Step-1:</b> CSV file upload करें</p>
 <input type="file" id="csv" accept=".csv">
 
-<p><b>Step-2:</b> Generate JSON</p>
+<p><b>Step-2:</b> JSON generate करें</p>
 <button class="btn" onclick="parseCSV()">Generate JSON</button>
 
 <h3>Generated JSON (Copy & Paste)</h3>
-<textarea id="out"></textarea>
+<textarea id="out" placeholder="Generated JSON will appear here…"></textarea>
 
 <div class="note">
-<b>CSV Columns Order (Header required):</b><br>
+<b>CSV Header (Required – Order matter नहीं करता):</b><br>
 Member_ID, Name, Father, Mobile, Post, Department, Level, District, State, Photo_URL
 <br><br>
-👉 Generated JSON को <b>data/members.json</b> में paste करें<br>
-👉 Status default <b>pending</b> रहेगा (Bulk Approve से approve करें)
+✔ Status default <b>pending</b> रहेगा<br>
+✔ Duplicate Member ID auto-skip होंगे<br>
+✔ Final JSON → <b>data/members.json</b><br>
+✔ Approve → <b>Bulk Approve Panel</b>
 </div>
 </div>
 
 <script>
+function clean(v){
+  return (v || "").toString().trim();
+}
+
 function parseCSV(){
-  const file=document.getElementById("csv").files[0];
+  const file = document.getElementById("csv").files[0];
   if(!file){
     alert("❌ CSV file select करें");
     return;
   }
 
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const text=e.target.result.trim();
-    const lines=text.split(/\r?\n/);
-    const data=[];
-    const today=new Date().toISOString().split("T")[0];
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result.trim();
+    const lines = text.split(/\r?\n/);
 
-    // assume first row is header
+    if(lines.length < 2){
+      alert("❌ CSV में data नहीं है");
+      return;
+    }
+
+    // header mapping
+    const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
+    const idx = name => headers.indexOf(name);
+
+    const usedIds = new Set();
+    const result = [];
+    const today = new Date().toISOString().split("T")[0];
+
     for(let i=1;i<lines.length;i++){
-      const line=lines[i];
-      if(!line.trim()) continue;
+      const row = lines[i].trim();
+      if(!row) continue;
 
-      // simple CSV split (safe for normal admin CSV)
-      const c=line.split(",").map(x=>x.trim());
-      if(!c[0]) continue;
+      const cols = row.split(",").map(c => c.replace(/^"|"$/g,"").trim());
+      const memberId = clean(cols[idx("member_id")]);
 
-      data.push({
-        member_id: c[0],
-        name: c[1] || "",
-        father: c[2] || "",
-        mobile: c[3] || "",
-        post: c[4] || "",
-        department: c[5] || "",
-        level: c[6] || "",
-        district: c[7] || "",
-        state: c[8] || "",
-        photo: c[9] || "",
+      if(!memberId || usedIds.has(memberId)) continue;
+      usedIds.add(memberId);
+
+      result.push({
+        id: memberId,
+        name: clean(cols[idx("name")]),
+        father: clean(cols[idx("father")]),
+        mobile: clean(cols[idx("mobile")]),
+        post: clean(cols[idx("post")]),
+        department: clean(cols[idx("department")]),
+        level: clean(cols[idx("level")]),
+        district: clean(cols[idx("district")]),
+        state: clean(cols[idx("state")]),
+        photo: clean(cols[idx("photo_url")]),
         status: "pending",
         created_at: today
       });
     }
 
-    if(!data.length){
-      alert("❌ CSV में valid data नहीं मिला");
+    if(!result.length){
+      alert("❌ Valid members नहीं मिले");
       return;
     }
 
     document.getElementById("out").value =
-      JSON.stringify(data,null,2);
+      JSON.stringify(result, null, 2);
+
+    alert("✅ JSON Generated Successfully ("+result.length+" members)");
   };
 
   reader.readAsText(file);
 }
 </script>
 
-<footer style="text-align:center;font-size:13px;color:#555;margin:30px 0">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
+<footer>
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Bulk Admin Utility – Authorized Use Only
 </footer>
 
 </body>
