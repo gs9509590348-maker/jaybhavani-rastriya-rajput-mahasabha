@@ -8,226 +8,76 @@
 
 <style>
 :root{
-  --main:#7b0000;
-  --dark:#3b0000;
-  --bg:#f2f2f2;
-  --card:#ffffff;
-  --text:#222;
-  --muted:#666;
+  --main:#7b0000; --dark:#3b0000;
+  --bg:#f2f2f2; --card:#fff;
+  --text:#222; --muted:#666;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Arial;
-  background:var(--bg);
-  color:var(--text);
-}
+body{margin:0;font-family:system-ui;background:var(--bg);color:var(--text)}
 a{text-decoration:none;color:inherit}
-.topbar{
-  background:#000;color:#fff;
-  padding:6px 12px;
-  display:flex;justify-content:space-between;
-  font-size:13px;flex-wrap:wrap
-}
-header{
-  background:linear-gradient(135deg,var(--dark),var(--main));
-  color:#fff;text-align:center;
-  padding:36px 14px
-}
-header h1{margin:0;font-size:26px}
-header p{margin:8px 0 0;font-size:14px}
-nav{
-  background:#fff;border-bottom:1px solid #ddd;
-  display:flex;flex-wrap:wrap;gap:10px;
-  justify-content:center;padding:12px
-}
-nav a{
-  background:var(--main);color:#fff;
-  padding:10px 14px;border-radius:8px;
-  font-size:14px
-}
+.topbar{background:#000;color:#fff;padding:6px 12px;display:flex;justify-content:space-between;font-size:13px;flex-wrap:wrap}
+header{background:linear-gradient(135deg,var(--dark),var(--main));color:#fff;text-align:center;padding:34px 14px}
+nav{background:#fff;border-bottom:1px solid #ddd;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px}
+nav a{background:var(--main);color:#fff;padding:10px 14px;border-radius:8px;font-size:14px}
 nav a.alt{background:#333}
-.container{
-  max-width:1200px;margin:20px auto;padding:0 12px
-}
+.container{max-width:1200px;margin:20px auto;padding:0 12px}
 .section{margin:36px 0}
-.section h2{margin:0 0 16px;color:var(--main)}
-.card{
-  background:var(--card);border-radius:14px;
-  padding:20px;box-shadow:0 6px 18px rgba(0,0,0,.06)
-}
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  gap:16px
-}
-ul{padding-left:18px;margin:8px 0}
-li{margin:6px 0;font-size:14px}
-footer{
-  background:#111;color:#ddd;
-  text-align:center;padding:22px 12px;
-  font-size:13px
-}
+.card{background:var(--card);border-radius:14px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,.06)}
+footer{background:#111;color:#ddd;text-align:center;padding:22px;font-size:13px}
 </style>
 </head>
 
 <body>
 
-<!-- TOP BAR -->
 <div class="topbar">
   <span>📞 हेल्पलाइन: +91 91966377972</span>
   <span>जय भवानी | जय राजपूताना 🚩</span>
 </div>
 
-<!-- HEADER -->
 <header>
   <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
   <p>स्वाभिमान • एकता • संगठन • राष्ट्र सेवा</p>
 </header>
 
-<!-- NAVIGATION -->
 <nav>
   <a href="karyakarini.html">👥 कार्यकारिणी</a>
   <a href="directory.html">📂 सदस्य निर्देशिका</a>
   <a href="gallery.html">🖼️ Gallery</a>
   <a class="alt" href="verify.html">🔍 Verify Member</a>
-
-  <a class="alt" target="_blank"
-     href="https://docs.google.com/forms/d/e/1FAIpQLSdv8aK9SvqAUOES59Kd1vtGqdayTxE7wJEISdVvr15XT1doBQ/viewform">
-    📝 Membership Form
-  </a>
-
-  <a class="alt" target="_blank"
-     href="https://script.google.com/macros/s/AKfycbzwWFI46PJJL3sP-1Hf3frP7aHdJk7Q5xUOt0mzd3D06xfwaT03E3Dajf8khpmO6wcEOA/exec">
-    🧑‍💼 Member Dashboard
-  </a>
-
-  <a class="alt" target="_blank"
-     href="https://script.google.com/macros/s/AKfycbzwWFI46PJJL3sP-1Hf3frP7aHdJk7Q5xUOt0mzd3D06xfwaT03E3Dajf8khpmO6wcEOA/exec?admin=1">
-    🛠️ Admin Login
-  </a>
+  <a class="alt" target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdv8aK9SvqAUOES59Kd1vtGqdayTxE7wJEISdVvr15XT1doBQ/viewform">📝 Membership Form</a>
+  <a class="alt" target="_blank" href="https://script.google.com/macros/s/AKfycbzwWFI46PJJL3sP-1Hf3frP7aHdJk7Q5xUOt0mzd3D06xfwaT03E3Dajf8khpmO6wcEOA/exec">🧑‍💼 Member Dashboard</a>
+  <a class="alt" target="_blank" href="https://script.google.com/macros/s/AKfycbzwWFI46PJJL3sP-1Hf3frP7aHdJk7Q5xUOt0mzd3D06xfwaT03E3Dajf8khpmO6wcEOA/exec?admin=1">🛠️ Admin Login</a>
 </nav>
 
 <div class="container">
 
-<!-- ABOUT -->
-<div class="section">
+<div class="section"><div class="card">
 <h2>🏛️ संगठन परिचय</h2>
-<div class="card">
-जय भवानी राष्ट्रीय राजपूत महासभा एक राष्ट्र स्तरीय सामाजिक संगठन है,
-जो राजपूत समाज के स्वाभिमान, एकता, संगठन एवं राष्ट्र सेवा हेतु समर्पित है।
-यह संगठन पूर्णतः गैर-राजनीतिक एवं समाजसेवी है।
-</div>
-</div>
+यह संगठन राजपूत समाज की एकता, स्वाभिमान एवं राष्ट्र सेवा हेतु समर्पित है।
+</div></div>
 
-<!-- VISION -->
-<div class="section">
-<h2>🌄 Vision & Mission</h2>
-<div class="card">
+<div class="section"><div class="card">
+<h2>🌐 Official Links</h2>
 <ul>
-<li>राजपूत समाज को संगठित, शिक्षित एवं सशक्त बनाना</li>
-<li>युवाओं में नेतृत्व, अनुशासन एवं राष्ट्रभक्ति विकसित करना</li>
-<li>डिजिटल, पारदर्शी एवं जवाबदेह संगठन निर्माण</li>
-<li>राष्ट्र सेवा एवं सामाजिक उत्थान</li>
+<li>📘 Facebook Page – https://www.facebook.com/jbrrms</li>
+<li>👥 Facebook Group – https://www.facebook.com/groups/jbrrms</li>
+<li>💬 WhatsApp – https://wa.me/91966377972</li>
+<li>🌐 Website – https://jbrrms.in</li>
 </ul>
-</div>
-</div>
+</div></div>
 
-<!-- STRUCTURE -->
-<div class="section">
-<h2>🏗️ संगठन संरचना</h2>
-<div class="card">
-<ul>
-<li>राष्ट्रीय → प्रदेश → जिला → तहसील → ब्लॉक → ग्राम / वार्ड</li>
-</ul>
-</div>
-</div>
-
-<!-- MEMBERSHIP -->
-<div class="section">
-<h2>👥 सदस्यता प्रणाली</h2>
-<div class="card">
-<ul>
-<li>18 वर्ष से अधिक आयु का कोई भी व्यक्ति सदस्य बन सकता है</li>
-<li>डिजिटल Member ID, Appointment Letter एवं Certificate</li>
-<li>QR / Online Verification अनिवार्य</li>
-<li>गलत जानकारी पर सदस्यता निरस्त की जा सकती है</li>
-</ul>
-</div>
-</div>
-
-<!-- DIGITAL SYSTEM -->
-<div class="section">
-<h2>💻 डिजिटल सिस्टम</h2>
-<div class="card">
-<ul>
-<li>Auto Digital ID Card Generator</li>
-<li>Appointment Letter & Certificate (PDF)</li>
-<li>GitHub आधारित Public members.json</li>
-<li>Online & QR Verification System</li>
-</ul>
-</div>
-</div>
-
-<!-- ADMIN -->
-<div class="section">
-<h2>🛠️ Admin Dashboard (Secure)</h2>
-<div class="card">
-<ul>
-<li>Member Approve / Reject</li>
-<li>Bulk Approval (100+)</li>
-<li>Member Edit / Correction</li>
-<li>कार्यकारिणी Live Edit</li>
-<li>Auto Document Generation</li>
-<li>members.json Auto Sync</li>
-</ul>
-</div>
-</div>
-
-<!-- WHATSAPP -->
-<div class="section">
-<h2>📲 WhatsApp Automation</h2>
-<div class="card">
-<ul>
-<li>Approval पर Auto WhatsApp Message</li>
-<li>Bulk WhatsApp Broadcast</li>
-<li>ID / Certificate / Appointment Links भेजना</li>
-</ul>
-</div>
-</div>
-
-<!-- PRIVACY -->
-<div class="section">
-<h2>🛡️ Privacy & Data Policy</h2>
-<div class="card">
-<ul>
-<li>केवल आवश्यक जानकारी सार्वजनिक</li>
-<li>कोई व्यावसायिक उपयोग नहीं</li>
-<li>सभी बदलाव Log & Audit आधारित</li>
-</ul>
-</div>
-</div>
-
-<!-- LEGAL -->
-<div class="section">
+<div class="section"><div class="card">
 <h2>⚠️ कानूनी घोषणा</h2>
-<div class="card">
-यह संगठन सामाजिक एवं सांस्कृतिक है।
-यह किसी सरकारी अथवा राजनीतिक संस्था का प्रतिनिधित्व नहीं करता।
-सभी डिजिटल दस्तावेज़ केवल संगठनात्मक पहचान हेतु हैं।
-</div>
-</div>
+यह संगठन सामाजिक एवं सांस्कृतिक है। सभी डिजिटल दस्तावेज़ केवल संगठनात्मक पहचान हेतु हैं।
+</div></div>
 
 </div>
 
 <footer>
-© <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Official Digital Portal
+© <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा
 </footer>
 
-<script>
-document.getElementById("yr").innerText = new Date().getFullYear();
-</script>
+<script>document.getElementById("yr").innerText=new Date().getFullYear()</script>
 
 </body>
 </html>
