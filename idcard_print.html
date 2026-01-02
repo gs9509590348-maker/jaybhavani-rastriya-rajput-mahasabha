@@ -10,11 +10,7 @@
   body{margin:0}
   .no-print{display:none}
 }
-
-body{
-  font-family:Arial,sans-serif;
-  background:#eee;
-}
+body{font-family:Arial,sans-serif;background:#eee}
 
 /* A4 PAGE */
 .page{
@@ -127,18 +123,21 @@ button{
 
 <script>
 const wrap = document.getElementById("cards");
-const id = new URLSearchParams(location.search).get("id");
+const qs = new URLSearchParams(location.search);
+const onlyId = qs.get("id");
 
-fetch("data/members.json")
+/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
+fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
 .then(r=>r.json())
 .then(data=>{
-  const members = data.filter(m =>
-    (m.status||"").toLowerCase()==="approved"
-  );
 
-  const list = id
-    ? members.filter(m => (m.member_id||m.memberId) === id)
-    : members;
+  const members = Array.isArray(data) ? data : [];
+
+  const list = onlyId
+    ? members.filter(m =>
+        m.id && m.id.trim().toUpperCase() === onlyId.trim().toUpperCase()
+      )
+    : members.filter(m => m.id);
 
   if(!list.length){
     alert("❌ Member नहीं मिला");
@@ -146,7 +145,7 @@ fetch("data/members.json")
   }
 
   list.forEach(m=>{
-    const mid = m.member_id || m.memberId;
+    const mid = m.id;
     const mob = String(m.mobile||"").replace(/\D/g,"");
 
     const verifyURL = `https://jbrrms.in/verify.html?id=${mid}`;
@@ -161,13 +160,13 @@ fetch("data/members.json")
 
       <div class="body">
         <div class="photo">
-          <img src="${m.photo||'https://via.placeholder.com/150'}">
+          <img src="${m.photo || 'https://via.placeholder.com/150'}">
         </div>
         <div class="info">
-          <b>${m.name||""}</b><br>
-          पिता: ${m.father||""}<br>
-          पद: ${m.post||""}<br>
-          स्तर: ${m.level||""}<br>
+          <b>${m.name || ""}</b><br>
+          पिता: ${m.father || ""}<br>
+          पद: ${m.post || ""}<br>
+          स्तर: ${m.level || ""}<br>
           ID: <b>${mid}</b><br>
           ${mob ? `📞 <a href="tel:+91${mob}">${mob}</a><br>` : ``}
           ${mob ? `💬 <a href="${waURL}" target="_blank">WhatsApp</a>` : ``}
@@ -176,7 +175,7 @@ fetch("data/members.json")
 
       <div class="qr">
         <a href="${verifyURL}" target="_blank">
-          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${verifyURL}">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(verifyURL)}">
         </a>
       </div>
 
@@ -187,7 +186,8 @@ fetch("data/members.json")
     `;
     wrap.appendChild(card);
   });
-});
+})
+.catch(()=>alert("❌ members.json load नहीं हुआ"));
 </script>
 
 </body>
