@@ -14,7 +14,7 @@ header{
   text-align:center;padding:15px
 }
 
-/* NAVIGATION */
+/* NAV */
 nav{
   background:#3b0000;
   display:flex;flex-wrap:wrap;
@@ -64,7 +64,7 @@ footer a{color:#7b0000;text-decoration:none}
 <body>
 
 <script>
-/* 🔐 ADMIN SESSION CHECK */
+/* 🔐 SESSION BASED ADMIN CHECK */
 if(sessionStorage.getItem("admin") !== "1"){
   alert("❌ Unauthorized Access");
   location.href = "admin_login.html";
@@ -121,82 +121,80 @@ let members = [];
 const listEl = document.getElementById("list");
 const pendingEl = document.getElementById("pendingCount");
 
-/* ===== LOAD MEMBERS (CACHE SAFE) ===== */
+/* ===== LOAD MEMBERS.JSON (CACHE SAFE) ===== */
 fetch("data/members.json?v=" + Date.now())
-  .then(r => {
+  .then(r=>{
     if(!r.ok) throw new Error("load error");
     return r.json();
   })
-  .then(d => {
+  .then(d=>{
     if(!Array.isArray(d)) throw new Error("invalid json");
     members = d;
     render();
   })
-  .catch(() => {
-    listEl.innerHTML = "<p class='no'>❌ members.json load नहीं हुआ</p>";
+  .catch(()=>{
+    listEl.innerHTML="<p class='no'>❌ members.json load नहीं हुआ</p>";
   });
 
-/* ===== GET MEMBER ID ===== */
+/* ===== GET ID SAFE ===== */
 function getId(m){
   return m.id || m.member_id || m.memberId || "N/A";
 }
 
-/* ===== RENDER PENDING ===== */
+/* ===== RENDER PENDING MEMBERS ===== */
 function render(){
-  listEl.innerHTML = "";
-  let pending = 0;
+  listEl.innerHTML="";
+  let pending=0;
 
-  members.forEach((m,i) => {
-    const status = (m.status || "pending").toLowerCase();
-
-    if(status === "pending"){
+  members.forEach((m,i)=>{
+    const status=(m.status||"pending").toLowerCase();
+    if(status==="pending"){
       pending++;
-      listEl.innerHTML += `
+      listEl.innerHTML+=`
         <div class="member">
           <input type="checkbox" data-i="${i}" checked>
           <div>
-            <b>${m.name || "No Name"}</b><br>
-            <small>ID: ${getId(m)} ${m.post ? "| "+m.post : ""}</small>
+            <b>${m.name||"No Name"}</b><br>
+            <small>ID: ${getId(m)} ${m.post?"| "+m.post:""}</small>
           </div>
         </div>
       `;
     }
   });
 
-  pendingEl.innerText = pending;
-
-  if(pending === 0){
-    listEl.innerHTML = "<p>✅ कोई Pending Member नहीं है</p>";
+  pendingEl.innerText=pending;
+  if(pending===0){
+    listEl.innerHTML="<p>✅ कोई Pending Member नहीं है</p>";
   }
 }
 
 /* ===== APPROVE SELECTED ===== */
 function approveSelected(){
-  const checks = document.querySelectorAll("input[type=checkbox]:checked");
-
-  if(checks.length === 0){
+  const checks=document.querySelectorAll("input[type=checkbox]:checked");
+  if(checks.length===0){
     alert("❌ कोई Member select नहीं है");
     return;
   }
+  if(!confirm("Selected members approve करना चाहते हैं?")) return;
 
-  checks.forEach(c => {
-    const i = parseInt(c.getAttribute("data-i"),10);
-    members[i].status = "approved";
+  checks.forEach(c=>{
+    const i=parseInt(c.dataset.i,10);
+    members[i].status="approved";
   });
 
   alert("✅ Selected members Approved (Preview)");
   render();
 }
 
-/* ===== DOWNLOAD JSON ===== */
+/* ===== DOWNLOAD UPDATED JSON ===== */
 function downloadJSON(){
-  const blob = new Blob(
-    [JSON.stringify(members, null, 2)],
+  const blob=new Blob(
+    [JSON.stringify(members,null,2)],
     {type:"application/json"}
   );
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "members.json";
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="members.json";
   a.click();
 }
 </script>
