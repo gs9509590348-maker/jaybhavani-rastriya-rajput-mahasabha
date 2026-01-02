@@ -111,44 +111,50 @@ QR Verify द्वारा मान्य
 const qs = new URLSearchParams(location.search);
 const id = qs.get("id");
 const VERIFY_BASE = "https://jbrrms.in/verify.html?id=";
-let member=null;
+
+let member = null;
 
 if(!id){
   alert("❌ Member ID missing");
 }
 
-fetch("data/members.json")
+/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
+fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
 .then(r=>r.json())
 .then(list=>{
+
   member = list.find(x =>
-    (x.member_id || x.memberId) === id
+    x.id && x.id.trim().toUpperCase() === id.trim().toUpperCase()
   );
+
   if(!member){
     alert("❌ Member not found");
     return;
   }
 
+  /* ===== FILL LETTER DATA ===== */
   name.innerText = member.name || "";
   father.innerText = member.father || "";
   level.innerText = member.level || "";
   post.innerText = member.post || "";
   dept.innerText = member.department || "";
   area.innerText =
-    (member.district||"")+" / "+(member.state||"");
-  mid.innerText =
-    member.member_id || member.memberId || "";
+    (member.district||"") + " / " + (member.state||"");
+
+  mid.innerText = member.id;
+
   date.innerText =
     new Date().toLocaleDateString("hi-IN");
 
-  idcard.href =
-    "idcard_print.html?id=" + (member.member_id||member.memberId);
-  verify.href =
-    VERIFY_BASE + (member.member_id||member.memberId);
+  /* ===== LINKS ===== */
+  idcard.href = "idcard.html?id=" + member.id;
+  verify.href = VERIFY_BASE + member.id;
 })
 .catch(()=>{
   alert("❌ members.json load नहीं हुआ");
 });
 
+/* ===== DOWNLOAD LETTER ===== */
 function download(){
   html2canvas(document.getElementById("app"),{scale:2})
   .then(c=>{
@@ -159,18 +165,20 @@ function download(){
   });
 }
 
+/* ===== WHATSAPP SHARE ===== */
 function shareWhatsApp(){
   if(!member) return;
-  const midv = member.member_id || member.memberId;
+
   const msg =
 `मैं जय भवानी राष्ट्रीय राजपूत महासभा का नियुक्त सदस्य हूँ ✅
 
 नाम: ${member.name}
-पद: ${member.post}
-Member ID: ${midv}
+पद: ${member.post || ""}
+Member ID: ${member.id}
 
 Verify Online 👇
-${VERIFY_BASE}${midv}`;
+${VERIFY_BASE}${member.id}`;
+
   window.open(
     "https://wa.me/?text="+encodeURIComponent(msg),
     "_blank"
