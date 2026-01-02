@@ -31,6 +31,7 @@ header{
 }
 header h1{margin:0;font-size:26px}
 header p{margin:8px 0 0;font-size:14px}
+
 nav{
   background:#fff;border-bottom:1px solid #ddd;
   display:flex;flex-wrap:wrap;gap:10px;
@@ -42,6 +43,7 @@ nav a{
   font-size:14px
 }
 nav a.alt{background:#333}
+
 .container{
   max-width:1200px;margin:20px auto;padding:0 12px
 }
@@ -58,6 +60,7 @@ nav a.alt{background:#333}
 }
 ul{padding-left:18px}
 li{margin:6px 0;font-size:14px}
+
 footer{
   background:#111;color:#ddd;
   text-align:center;padding:22px;
@@ -81,18 +84,21 @@ footer a{color:#fff;text-decoration:underline}
   <p>स्वाभिमान • एकता • संगठन • राष्ट्र सेवा</p>
 </header>
 
-<!-- NAVIGATION (MATCHING REPO FILES) -->
+<!-- MAIN NAVIGATION -->
 <nav>
+  <!-- PUBLIC -->
   <a href="index.html">🏠 Home</a>
   <a href="karyakarini.html">👥 कार्यकारिणी</a>
   <a href="directory.html">📂 सदस्य निर्देशिका</a>
   <a href="gallery.html">🖼️ Gallery</a>
   <a href="verify.html">🔍 Verify</a>
 
+  <!-- MEMBER -->
   <a class="alt" href="member_login.html">🔐 Member Login</a>
   <a class="alt" href="member_dashboard.html">🧑‍💼 Member Dashboard</a>
 
-  <a class="alt" href="admin_secure.html">🛡️ Admin Secure</a>
+  <!-- ADMIN -->
+  <a class="alt" href="admin_control.html">🛡️ Admin Secure</a>
   <a class="alt" href="admin_dashboard.html">🛠️ Admin Panel</a>
 </nav>
 
@@ -117,7 +123,7 @@ footer a{color:#fff;text-decoration:underline}
 <h3>🆔 Digital ID</h3>
 <ul>
 <li>ID Card (PDF)</li>
-<li>QR / Online Verify</li>
+<li>QR / Online Verification</li>
 <li><a href="idcard_print.html">Open</a></li>
 </ul>
 </div>
@@ -131,9 +137,9 @@ footer a{color:#fff;text-decoration:underline}
 </div>
 
 <div class="card">
-<h3>📄 Appointment</h3>
+<h3>📄 Appointment Letter</h3>
 <ul>
-<li>Auto Letter</li>
+<li>Auto Generated</li>
 <li><a href="appointment.html">View</a></li>
 </ul>
 </div>
@@ -146,9 +152,9 @@ footer a{color:#fff;text-decoration:underline}
 <h2>🛠️ Admin System</h2>
 <div class="card">
 <ul>
-<li><a href="admin_bulk_approve.html">Bulk Approve Members</a></li>
-<li><a href="admin_edit_member.html">Edit Member</a></li>
-<li><a href="bulk_whatsapp.html">Bulk WhatsApp</a></li>
+<li>Bulk Approve Members</li>
+<li>Edit / Update Member Records</li>
+<li>Bulk WhatsApp Communication</li>
 <li>members.json Auto Sync</li>
 </ul>
 </div>
@@ -159,10 +165,14 @@ footer a{color:#fff;text-decoration:underline}
 <h2>🌐 Official Links</h2>
 <div class="card">
 <ul>
-<li>📘 Facebook: <a href="https://www.facebook.com/jbrrms" target="_blank">jbrrms</a></li>
-<li>👥 Facebook Group: <a href="https://www.facebook.com/groups/jbrrms" target="_blank">Join</a></li>
-<li>💬 WhatsApp: <a href="https://wa.me/91966377972" target="_blank">+91 91966377972</a></li>
-<li>🌐 Website: <a href="https://jbrrms.in" target="_blank">jbrrms.in</a></li>
+<li>📘 Facebook Page:
+<a href="https://www.facebook.com/jbrrms" target="_blank">jbrrms</a></li>
+<li>👥 Facebook Group:
+<a href="https://www.facebook.com/groups/jbrrms" target="_blank">Join Group</a></li>
+<li>💬 WhatsApp:
+<a href="https://wa.me/91966377972" target="_blank">+91 91966377972</a></li>
+<li>🌐 Official Website:
+<a href="https://jbrrms.in" target="_blank">jbrrms.in</a></li>
 </ul>
 </div>
 </div>
@@ -185,7 +195,7 @@ Official Digital Portal
 </footer>
 
 <script>
-document.getElementById("yr").innerText=new Date().getFullYear();
+document.getElementById("yr").innerText = new Date().getFullYear();
 </script>
 
 </body>
