@@ -8,13 +8,11 @@
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
 header{background:#7b0000;color:#fff;padding:16px;text-align:center}
-
 .section{
   max-width:1100px;margin:18px auto;
   background:#fff;padding:18px;border-radius:10px
 }
 h2{color:#7b0000;margin:6px 0 14px}
-
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -46,7 +44,6 @@ h2{color:#7b0000;margin:6px 0 14px}
 .national{background:#7b0000}
 .state{background:#004aad}
 .youth{background:#28a745}
-
 .name{font-weight:bold}
 .post{font-size:14px;margin:4px 0}
 .place{font-size:12px;color:#555}
@@ -81,61 +78,6 @@ h2{color:#7b0000;margin:6px 0 14px}
 </div>
 
 <script>
-/* ================= DATA (JSON READY) ================= */
-const karyakarini = [
-  {
-    order:1, active:true,
-    name:"ठा. गोवर्धन सिंह जी",
-    post:"संस्थापक",
-    category:"founder",
-    district:"बरखेड़ी मिट्ठू",
-    state:"मध्य प्रदेश",
-    mobile:"+919784823382",
-    photo:""
-  },
-  {
-    order:2, active:true,
-    name:"ठा. शंकर सिंह जी राणा",
-    post:"युवा राष्ट्रीय अध्यक्ष",
-    category:"youth",
-    district:"मोगरा",
-    state:"मध्य प्रदेश",
-    mobile:"+919116568039",
-    photo:""
-  },
-  {
-    order:3, active:true,
-    name:"ठा. श्याम सिंह राठौड़",
-    post:"युवा प्रदेश अध्यक्ष",
-    category:"youth",
-    district:"डाबला मनोहर",
-    state:"मध्य प्रदेश",
-    mobile:"+919165463190",
-    photo:""
-  },
-  {
-    order:4, active:true,
-    name:"पप्पू सिंह जी",
-    post:"प्रदेश अध्यक्ष",
-    category:"state",
-    district:"झरिका का खेड़ा",
-    state:"राजस्थान",
-    mobile:"+919772710875",
-    photo:""
-  },
-  {
-    order:5, active:true,
-    name:"दीवान सिंह जी",
-    post:"राजस्थान युवा प्रदेश अध्यक्ष",
-    category:"state",
-    district:"तीसाई",
-    state:"राजस्थान",
-    mobile:"8302295957",
-    photo:""
-  }
-];
-
-/* ================= RENDER ENGINE ================= */
 const map = {
   founder:{el:"founder", cls:"founder", label:"संस्थापक"},
   national:{el:"national", cls:"national", label:"राष्ट्रीय"},
@@ -143,22 +85,28 @@ const map = {
   youth:{el:"youth", cls:"youth", label:"युवा"}
 };
 
-karyakarini
-.filter(m=>m.active)
-.sort((a,b)=>a.order-b.order)
-.forEach(m=>{
-  const cfg = map[m.category] || map.state;
-
-  document.getElementById(cfg.el).innerHTML += `
-    <div class="card">
-      <div class="badge ${cfg.cls}">${cfg.label}</div>
-      <img src="${m.photo || 'https://via.placeholder.com/90'}" alt="${m.name}">
-      <div class="name">${m.name}</div>
-      <div class="post">${m.post}</div>
-      <div class="place">${m.district}, ${m.state}</div>
-      ${m.mobile ? `<div class="phone">📞 ${m.mobile}</div>` : ``}
-    </div>
-  `;
+fetch("karyakarni.json?v="+Date.now())
+.then(r=>r.json())
+.then(list=>{
+  list
+  .filter(m=>m.active)
+  .sort((a,b)=>a.order-b.order)
+  .forEach(m=>{
+    const cfg = map[m.category] || map.state;
+    document.getElementById(cfg.el).innerHTML += `
+      <div class="card">
+        <div class="badge ${cfg.cls}">${cfg.label}</div>
+        <img src="${m.photo || 'https://via.placeholder.com/90'}">
+        <div class="name">${m.name}</div>
+        <div class="post">${m.post}</div>
+        <div class="place">${m.district}, ${m.state}</div>
+        ${m.mobile ? `<div class="phone">📞 ${m.mobile}</div>` : ``}
+      </div>
+    `;
+  });
+})
+.catch(()=>{
+  alert("❌ कार्यकारिणी डेटा लोड नहीं हुआ");
 });
 </script>
 
