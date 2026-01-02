@@ -33,10 +33,8 @@ p{font-size:16px;line-height:1.8}
 }
 .gray{background:#555}
 .whatsapp{background:#25D366}
-.links a{
-  color:#7b0000;text-decoration:none;font-weight:bold
-}
 .links{font-size:14px;text-align:center;line-height:1.8}
+.links a{color:#7b0000;text-decoration:none;font-weight:bold}
 .site-footer{
   text-align:center;font-size:13px;
   color:#555;margin:40px 0 20px;line-height:1.6
@@ -78,13 +76,11 @@ p{font-size:16px;line-height:1.8}
 </p>
 
 <div class="footer-row">
-<div>
-दिनांक : <span id="date"></span>
-</div>
-<div style="text-align:right">
-(यह प्रमाण पत्र पूर्णतः डिजिटल है)<br>
-QR Verify द्वारा मान्य
-</div>
+  <div>दिनांक : <span id="date"></span></div>
+  <div style="text-align:right">
+    (यह प्रमाण पत्र पूर्णतः डिजिटल है)<br>
+    QR Verify द्वारा मान्य
+  </div>
 </div>
 
 <p style="text-align:center;font-weight:bold;margin-top:30px">
@@ -93,7 +89,7 @@ QR Verify द्वारा मान्य
 
 </div>
 
-<!-- ACTION BUTTONS -->
+<!-- ACTIONS -->
 <button class="btn no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
 <button class="btn no-print" onclick="download()">⬇️ Download Certificate</button>
 
@@ -101,80 +97,51 @@ QR Verify द्वारा मान्य
 <a id="appointment" class="btn gray no-print" target="_blank">📄 Appointment Letter</a>
 <a id="verify" class="btn gray no-print" target="_blank">🔍 Verify Online</a>
 
-<a href="https://jbrrms.in" class="btn gray no-print" target="_blank">🌐 Official Website</a>
-<a href="https://jbrrms.in/members.html" class="btn gray no-print" target="_blank">🧑‍🤝‍🧑 Member Directory</a>
-<a href="https://jbrrms.in/join.html" class="btn gray no-print" target="_blank">📝 Join Organization</a>
-<a href="https://jbrrms.in/gallery.html" class="btn gray no-print" target="_blank">🖼️ Gallery</a>
-<a href="https://jbrrms.in/events.html" class="btn gray no-print" target="_blank">📢 Events / Notice</a>
-<a href="https://jbrrms.in/contact.html" class="btn gray no-print" target="_blank">📞 Contact Us</a>
-
 <button class="btn whatsapp no-print" onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
-
-<!-- EXTRA LINKS -->
-<div class="links no-print">
-<hr>
-<b>Connect With Us</b><br>
-<a href="mailto:info@jbrrms.in">✉️ info@jbrrms.in</a> |
-<a href="https://wa.me/91XXXXXXXXXX" target="_blank">📲 WhatsApp</a><br>
-
-<a href="https://facebook.com/jbrrms" target="_blank">📘 Facebook</a> |
-<a href="https://instagram.com/jbrrms" target="_blank">📸 Instagram</a> |
-<a href="https://youtube.com/@jbrrms" target="_blank">▶️ YouTube</a> |
-<a href="https://twitter.com/jbrrms" target="_blank">🐦 X</a><br><br>
-
-<a href="https://jbrrms.in/privacy.html" target="_blank">🛡️ Privacy Policy</a> |
-<a href="https://jbrrms.in/terms.html" target="_blank">📜 Terms</a> |
-<a href="https://jbrrms.in/verify.html" target="_blank">🔍 Verify Member</a><br>
-
-📍 <a href="https://maps.google.com/?q=जय भवानी राष्ट्रीय राजपूत महासभा" target="_blank">
-Head Office Location
-</a>
-</div>
-
-<footer class="site-footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।<br>
-यह किसी सरकारी संस्था से संबद्ध नहीं है।
-</footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
 const qs = new URLSearchParams(location.search);
-const id = qs.get("id");
-const VERIFY_BASE = "https://jbrrms.in/verify.html?id=";
+const id = (qs.get("id")||"").trim().toUpperCase();
+const VERIFY_BASE = "verify.html?id=";
+
 let member=null;
 
 if(!id){
   alert("❌ Member ID missing");
 }
 
-fetch("data/members.json")
-.then(r=>r.json())
+/* ===== LOAD MEMBERS.JSON ===== */
+fetch("data/members.json?v="+Date.now())
+.then(r=>{
+  if(!r.ok) throw new Error();
+  return r.json();
+})
 .then(list=>{
   member = list.find(x =>
-    (x.member_id || x.memberId) === id
+    (x.id||"").toUpperCase() === id
   );
   if(!member){
     alert("❌ Member not found");
     return;
   }
 
-  name.innerText = member.name || "";
-  father.innerText = member.father || "";
-  level.innerText = member.level || "";
-  post.innerText = member.post || "";
-  mid.innerText = member.member_id || member.memberId || "";
-  date.innerText = new Date().toLocaleDateString("hi-IN");
+  name.innerText   = member.name||"";
+  father.innerText = member.father||"";
+  level.innerText  = member.level||"";
+  post.innerText   = member.post||"";
+  mid.innerText    = member.id;
+  date.innerText   = new Date().toLocaleDateString("hi-IN");
 
-  idcard.href = "idcard_print.html?id="+mid.innerText;
-  appointment.href = "appointment.html?id="+mid.innerText;
-  verify.href = VERIFY_BASE+mid.innerText;
+  idcard.href      = "idcard_print.html?id="+member.id;
+  appointment.href = "appointment.html?id="+member.id;
+  verify.href      = VERIFY_BASE+member.id;
 });
 
+/* ===== DOWNLOAD PNG ===== */
 function download(){
-  html2canvas(document.getElementById("cert"),{scale:2})
-  .then(c=>{
+  html2canvas(cert,{scale:2}).then(c=>{
     const a=document.createElement("a");
     a.download="JBRRMS_Certificate_"+id+".png";
     a.href=c.toDataURL("image/png");
@@ -182,21 +149,26 @@ function download(){
   });
 }
 
+/* ===== WHATSAPP SHARE ===== */
 function shareWhatsApp(){
   if(!member) return;
-  const midv = member.member_id || member.memberId;
-  const msg =
+  const msg=
 `मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
 
 नाम: ${member.name}
 पद: ${member.post}
-Member ID: ${midv}
+Member ID: ${member.id}
 
 Verify Online 👇
-${VERIFY_BASE}${midv}`;
+${location.origin}/${VERIFY_BASE}${member.id}`;
   window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
 }
 </script>
+
+<footer class="site-footer">
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।
+</footer>
 
 </body>
 </html>
