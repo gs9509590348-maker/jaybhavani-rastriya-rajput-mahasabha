@@ -8,9 +8,15 @@
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
 header{background:#7b0000;color:#fff;padding:15px;text-align:center}
-.container{max-width:500px;margin:30px auto;background:#fff;padding:20px;border-radius:10px}
+.container{
+  max-width:500px;margin:30px auto;
+  background:#fff;padding:20px;border-radius:10px
+}
 h3{color:#7b0000;margin-top:0}
-input{width:100%;padding:10px;margin:8px 0;font-size:14px}
+input{
+  width:100%;padding:10px;margin:8px 0;
+  font-size:14px
+}
 button{
   padding:12px;border:none;border-radius:6px;
   font-size:15px;cursor:pointer;width:100%;
@@ -24,7 +30,10 @@ button{
 .value{font-weight:bold;margin-bottom:6px}
 .ok{color:#28a745;font-weight:bold}
 .no{color:#dc3545;font-weight:bold}
-.footer{text-align:center;font-size:12px;color:#555;margin:30px 0}
+.footer{
+  text-align:center;font-size:12px;
+  color:#555;margin:30px 0
+}
 </style>
 </head>
 
@@ -32,13 +41,13 @@ button{
 
 <header>
   <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-  <p>Member Verification</p>
+  <p>Official Member Verification</p>
 </header>
 
 <div class="container">
   <h3>🔐 सदस्य सत्यापन</h3>
 
-  <input id="mid" placeholder="Member ID (जैसे JBRRMS-5F7887B0)">
+  <input id="mid" placeholder="Member ID (जैसे JBRRMS-8EDCBF19)">
   <button onclick="verifyMember()">Verify Member</button>
 
   <div id="out"></div>
@@ -51,20 +60,28 @@ Official Verification Page
 
 <script>
 let members = [];
+const out = document.getElementById("out");
 
-/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
-fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
-  .then(res => res.json())
+/* ===== LOAD MEMBERS.JSON (CACHE SAFE) ===== */
+fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json?v=" + Date.now())
+  .then(res => {
+    if (!res.ok) throw new Error("Network error");
+    return res.json();
+  })
   .then(data => {
-    members = Array.isArray(data) ? data : [];
+    if (!Array.isArray(data)) throw new Error("Invalid JSON");
+
+    // ✅ Clean invalid / blank records
+    members = data.filter(m => m && m.id && m.id.toString().trim() !== "");
+
     autoVerifyFromURL();
   })
-  .catch(() => {
-    document.getElementById("out").innerHTML =
-      "<p class='no'>❌ Verification data load नहीं हुआ</p>";
+  .catch(err => {
+    out.innerHTML = "<p class='no'>❌ Verification data load नहीं हुआ</p>";
+    console.error(err);
   });
 
-/* ===== AUTO VERIFY FROM QR / LINK ===== */
+/* ===== AUTO VERIFY FROM URL (QR / LINK) ===== */
 function autoVerifyFromURL(){
   const p = new URLSearchParams(location.search);
   const id = p.get("id");
@@ -74,19 +91,26 @@ function autoVerifyFromURL(){
   }
 }
 
-/* ===== MAIN VERIFY FUNCTION ===== */
+/* ===== NORMALIZE ID ===== */
+function normalizeId(v){
+  return v
+    .toString()
+    .trim()
+    .toUpperCase()
+    .replace(/\s+/g,"");
+}
+
+/* ===== VERIFY MEMBER ===== */
 function verifyMember(){
-  const id = document.getElementById("mid").value.trim().toUpperCase();
-  const out = document.getElementById("out");
+  const input = document.getElementById("mid").value;
+  const id = normalizeId(input);
 
   if(!id){
     out.innerHTML = "<p class='no'>❌ Member ID जरूरी है</p>";
     return;
   }
 
-  const m = members.find(x =>
-    x.id && x.id.trim().toUpperCase() === id
-  );
+  const m = members.find(x => normalizeId(x.id) === id);
 
   if(!m){
     out.innerHTML = "<p class='no'>❌ Member Not Found</p>";
