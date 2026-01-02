@@ -11,9 +11,15 @@ header{background:#7b0000;color:#fff;padding:15px;text-align:center}
 .container{max-width:500px;margin:30px auto;background:#fff;padding:20px;border-radius:10px}
 h3{color:#7b0000;margin-top:0}
 input{width:100%;padding:10px;margin:8px 0;font-size:14px}
-button{padding:12px;border:none;border-radius:6px;font-size:15px;cursor:pointer;width:100%;
-       background:#7b0000;color:#fff}
-.card{margin-top:15px;border:1px solid #ddd;padding:12px;border-radius:8px;background:#fafafa}
+button{
+  padding:12px;border:none;border-radius:6px;
+  font-size:15px;cursor:pointer;width:100%;
+  background:#7b0000;color:#fff
+}
+.card{
+  margin-top:15px;border:1px solid #ddd;
+  padding:12px;border-radius:8px;background:#fafafa
+}
 .label{font-size:13px;color:#555}
 .value{font-weight:bold;margin-bottom:6px}
 .ok{color:#28a745;font-weight:bold}
@@ -32,8 +38,8 @@ button{padding:12px;border:none;border-radius:6px;font-size:15px;cursor:pointer;
 <div class="container">
   <h3>🔐 सदस्य सत्यापन</h3>
 
-  <input id="mid" placeholder="Member ID (जैसे JBRRMS-00001)">
-  <button onclick="verify()">Verify Member</button>
+  <input id="mid" placeholder="Member ID (जैसे JBRRMS-5F7887B0)">
+  <button onclick="verifyMember()">Verify Member</button>
 
   <div id="out"></div>
 </div>
@@ -46,11 +52,11 @@ Official Verification Page
 <script>
 let members = [];
 
-/* ===== LOAD MEMBERS.JSON ===== */
-fetch("members.json")
-  .then(r => r.json())
-  .then(d => {
-    members = Array.isArray(d) ? d : [];
+/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
+fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
+  .then(res => res.json())
+  .then(data => {
+    members = Array.isArray(data) ? data : [];
     autoVerifyFromURL();
   })
   .catch(() => {
@@ -58,18 +64,18 @@ fetch("members.json")
       "<p class='no'>❌ Verification data load नहीं हुआ</p>";
   });
 
-/* ===== AUTO VERIFY FROM QR URL ===== */
+/* ===== AUTO VERIFY FROM QR / LINK ===== */
 function autoVerifyFromURL(){
   const p = new URLSearchParams(location.search);
   const id = p.get("id");
   if(id){
     document.getElementById("mid").value = id;
-    verify();
+    verifyMember();
   }
 }
 
-/* ===== VERIFY FUNCTION ===== */
-function verify(){
+/* ===== MAIN VERIFY FUNCTION ===== */
+function verifyMember(){
   const id = document.getElementById("mid").value.trim().toUpperCase();
   const out = document.getElementById("out");
 
@@ -79,7 +85,7 @@ function verify(){
   }
 
   const m = members.find(x =>
-    x.member_id && x.member_id.toUpperCase() === id
+    x.id && x.id.trim().toUpperCase() === id
   );
 
   if(!m){
@@ -89,23 +95,16 @@ function verify(){
 
   out.innerHTML = `
     <div class="card">
-      <div class="label">Status</div>
       <div class="value ok">✅ VERIFIED MEMBER</div>
 
       <div class="label">Member ID</div>
-      <div class="value">${m.member_id}</div>
+      <div class="value">${m.id}</div>
 
       <div class="label">Name</div>
       <div class="value">${m.name || "-"}</div>
 
       <div class="label">Mobile</div>
       <div class="value">${m.mobile || "-"}</div>
-
-      <div class="label">District</div>
-      <div class="value">${m.district || "-"}</div>
-
-      <div class="label">State</div>
-      <div class="value">${m.state || "-"}</div>
     </div>
   `;
 }
