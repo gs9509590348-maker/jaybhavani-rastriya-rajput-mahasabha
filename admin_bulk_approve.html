@@ -50,6 +50,7 @@ button{
 .download{background:#7b0000;color:#fff}
 .gray{background:#555;color:#fff}
 .count{text-align:center;font-size:14px;margin-bottom:10px}
+.no{color:#dc3545;font-weight:bold;text-align:center}
 
 /* FOOTER */
 footer{
@@ -62,26 +63,29 @@ footer a{color:#7b0000;text-decoration:none}
 
 <body>
 
+<script>
+/* 🔐 ADMIN SESSION CHECK */
+if(sessionStorage.getItem("admin") !== "1"){
+  alert("❌ Unauthorized Access");
+  location.href = "admin_login.html";
+}
+</script>
+
 <header>
   <h2>🚀 Bulk Approve Members</h2>
-  <p>Admin Panel – GitHub Pages Mode</p>
+  <p>Admin Panel – GitHub Static Mode</p>
 </header>
 
-<!-- ADMIN NAVIGATION -->
 <nav>
   <a href="admin_dashboard.html">🏠 Dashboard</a>
   <a href="admin_pending.html">⏳ Pending</a>
-  <a href="bulk_approve.html">🚀 Bulk Approve</a>
+  <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
   <a href="admin_edit_member.html">✏️ Edit Member</a>
   <a href="admin_karyakarini.html">🧑‍⚖️ कार्यकारिणी</a>
   <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
   <a href="verify.html" target="_blank">🔍 Verify</a>
   <a href="certificate.html" target="_blank">📜 Certificate</a>
   <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
-  <a href="appointment.html" target="_blank">📄 Appointment</a>
-  <a href="gallery.html" target="_blank">🖼️ Gallery</a>
-  <a href="events.html" target="_blank">📢 Events</a>
-  <a href="contact.html" target="_blank">📞 Contact</a>
   <a href="https://jbrrms.in" target="_blank">🌐 Website</a>
 </nav>
 
@@ -90,7 +94,7 @@ footer a{color:#7b0000;text-decoration:none}
 <div class="notice">
 ⚠️ <b>Important:</b> यह <b>GitHub Static Mode</b> है।  
 Approve करने के बाद <b>Updated members.json</b> डाउनलोड होगा।  
-उस फ़ाइल को GitHub repo के <b>data/members.json</b> में replace करना ज़रूरी है।
+उस फ़ाइल को GitHub repo में <b>same path</b> पर replace करना ज़रूरी है।
 </div>
 
 <div class="count">
@@ -101,69 +105,82 @@ Pending Members: <b id="pendingCount">0</b>
 
 <div class="actions">
   <button class="approve" onclick="approveSelected()">✅ Approve Selected</button>
-  <button class="download" onclick="download()">⬇️ Download Updated JSON</button>
+  <button class="download" onclick="downloadJSON()">⬇️ Download Updated JSON</button>
   <button class="gray" onclick="location.reload()">🔄 Reload</button>
 </div>
 
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Admin Panel – Authorized Use Only<br>
-<a href="https://jbrrms.in/privacy.html" target="_blank">Privacy</a> |
-<a href="https://jbrrms.in/terms.html" target="_blank">Terms</a> |
-<a href="https://jbrrms.in/verify.html" target="_blank">Verify</a>
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Panel – Authorized Use Only
 </footer>
 
 <script>
 let members = [];
+const listEl = document.getElementById("list");
+const pendingEl = document.getElementById("pendingCount");
 
-fetch("data/members.json")
-  .then(r=>r.json())
-  .then(d=>{
+/* ===== LOAD MEMBERS (CACHE SAFE) ===== */
+fetch("data/members.json?v=" + Date.now())
+  .then(r => {
+    if(!r.ok) throw new Error("load error");
+    return r.json();
+  })
+  .then(d => {
+    if(!Array.isArray(d)) throw new Error("invalid json");
     members = d;
     render();
   })
-  .catch(()=>{
-    alert("❌ members.json load नहीं हुआ");
+  .catch(() => {
+    listEl.innerHTML = "<p class='no'>❌ members.json load नहीं हुआ</p>";
   });
 
-function render(){
-  const list=document.getElementById("list");
-  list.innerHTML="";
-  let pending=0;
+/* ===== GET MEMBER ID ===== */
+function getId(m){
+  return m.id || m.member_id || m.memberId || "N/A";
+}
 
-  members.forEach((m,i)=>{
-    if((m.status||"pending")==="pending"){
+/* ===== RENDER PENDING ===== */
+function render(){
+  listEl.innerHTML = "";
+  let pending = 0;
+
+  members.forEach((m,i) => {
+    const status = (m.status || "pending").toLowerCase();
+
+    if(status === "pending"){
       pending++;
-      const mid = m.member_id || m.memberId || "N/A";
-      list.innerHTML+=`
-      <div class="member">
-        <input type="checkbox" data-i="${i}" checked>
-        <div>
-          <b>${m.name || "No Name"}</b><br>
-          <small>ID: ${mid} | ${m.post || ""}</small>
+      listEl.innerHTML += `
+        <div class="member">
+          <input type="checkbox" data-i="${i}" checked>
+          <div>
+            <b>${m.name || "No Name"}</b><br>
+            <small>ID: ${getId(m)} ${m.post ? "| "+m.post : ""}</small>
+          </div>
         </div>
-      </div>`;
+      `;
     }
   });
 
-  document.getElementById("pendingCount").innerText = pending;
+  pendingEl.innerText = pending;
 
-  if(pending===0){
-    list.innerHTML="<p>✅ कोई Pending Member नहीं है</p>";
+  if(pending === 0){
+    listEl.innerHTML = "<p>✅ कोई Pending Member नहीं है</p>";
   }
 }
 
+/* ===== APPROVE SELECTED ===== */
 function approveSelected(){
-  const checks=document.querySelectorAll("input[type=checkbox]:checked");
-  if(checks.length===0){
+  const checks = document.querySelectorAll("input[type=checkbox]:checked");
+
+  if(checks.length === 0){
     alert("❌ कोई Member select नहीं है");
     return;
   }
 
-  checks.forEach(c=>{
-    const i = c.getAttribute("data-i");
+  checks.forEach(c => {
+    const i = parseInt(c.getAttribute("data-i"),10);
     members[i].status = "approved";
   });
 
@@ -171,14 +188,15 @@ function approveSelected(){
   render();
 }
 
-function download(){
-  const blob=new Blob(
-    [JSON.stringify(members,null,2)],
+/* ===== DOWNLOAD JSON ===== */
+function downloadJSON(){
+  const blob = new Blob(
+    [JSON.stringify(members, null, 2)],
     {type:"application/json"}
   );
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="members.json";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "members.json";
   a.click();
 }
 </script>
