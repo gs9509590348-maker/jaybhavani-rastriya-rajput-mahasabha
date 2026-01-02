@@ -7,18 +7,26 @@
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
-header{background:#7b0000;color:#fff;padding:12px;text-align:center}
+
+/* HEADER */
+header{background:#7b0000;color:#fff;padding:14px;text-align:center}
+header h2{margin:0}
+header div{font-size:13px}
+
+/* NAV */
 nav{background:#3b0000;display:flex;flex-wrap:wrap;justify-content:center}
 nav a{color:#fff;text-decoration:none;padding:8px 12px;font-size:14px}
 nav a:hover{background:#7b0000}
+
+/* BOX */
 .box{
   max-width:520px;margin:25px auto;
   background:#fff;padding:20px;
-  border:2px solid #7b0000;border-radius:8px
+  border:2px solid #7b0000;border-radius:10px
 }
-h2{text-align:center;color:#7b0000;margin-top:0}
+h3{text-align:center;color:#7b0000;margin-top:0}
 input{
-  width:100%;padding:8px;margin:6px 0;
+  width:100%;padding:9px;margin:6px 0;
   font-size:14px
 }
 button{
@@ -29,7 +37,7 @@ button{
 }
 .gray{background:#555}
 .note{font-size:13px;color:#555;margin-top:10px}
-footer{text-align:center;font-size:13px;color:#555;margin:30px 10px}
+footer{text-align:center;font-size:12px;color:#555;margin:30px 10px}
 .ok{color:#28a745;font-weight:bold}
 .no{color:#dc3545;font-weight:bold}
 </style>
@@ -37,45 +45,54 @@ footer{text-align:center;font-size:13px;color:#555;margin:30px 10px}
 
 <body>
 
+<script>
+/* 🔐 SESSION BASED ADMIN CHECK */
+if(sessionStorage.getItem("admin") !== "1"){
+  alert("❌ Unauthorized Access");
+  location.href = "admin_login.html";
+}
+</script>
+
 <header>
   <h2>🔐 JBRRMS – Admin Control</h2>
-  <div>Edit Member Panel</div>
+  <div>Edit Member Panel (GitHub Static)</div>
 </header>
 
 <nav>
   <a href="admin_dashboard.html">🏠 Dashboard</a>
   <a href="admin_pending.html">⏳ Pending</a>
-  <a href="admin_edit_member.html">✏️ Edit</a>
+  <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
+  <a href="admin_edit_member.html">✏️ Edit Member</a>
   <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
   <a href="verify.html" target="_blank">🔍 Verify</a>
   <a href="certificate.html" target="_blank">📜 Certificate</a>
   <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
-  <a href="https://jbrrms.in" target="_blank">🌐 Website</a>
+  <a href="index.html" target="_blank">🌐 Website</a>
 </nav>
 
 <div class="box">
-<h2>✏️ Edit Member Details</h2>
+  <h3>✏️ Edit Member Details</h3>
 
-<input id="mid" placeholder="Enter Member ID (JBRRMS-XXXX)">
-<button onclick="loadMember()">🔎 Load Member</button>
+  <input id="mid" placeholder="Enter Member ID (JBRRMS-XXXX)">
+  <button onclick="loadMember()">🔎 Load Member</button>
 
-<div id="msg"></div>
+  <div id="msg"></div>
 
-<hr>
+  <hr>
 
-<input id="name" placeholder="Member Name">
-<input id="father" placeholder="Father Name">
-<input id="post" placeholder="Post / Position">
-<input id="level" placeholder="Level (District / State / National)">
-<input id="photo" placeholder="Photo URL">
+  <input id="name" placeholder="Member Name">
+  <input id="father" placeholder="Father Name">
+  <input id="post" placeholder="Post / Position">
+  <input id="level" placeholder="Level (District / State / National)">
+  <input id="photo" placeholder="Photo URL">
 
-<button onclick="downloadJSON()">⬇️ Download Updated members.json</button>
-<button class="gray" onclick="location.reload()">🔄 Reset</button>
+  <button onclick="downloadJSON()">⬇️ Download Updated members.json</button>
+  <button class="gray" onclick="location.reload()">🔄 Reset</button>
 
-<p class="note">
-⚠️ Download की गई <b>members.json</b> फ़ाइल को  
-GitHub repo में replace करें (same path).
-</p>
+  <p class="note">
+    ⚠️ Download की गई <b>members.json</b> फ़ाइल को  
+    GitHub repo में <b>same path ( /data/members.json )</b> पर replace करें।
+  </p>
 </div>
 
 <footer>
@@ -89,46 +106,42 @@ let index = -1;
 const msg = document.getElementById("msg");
 
 /* ===== LOAD members.json (CACHE SAFE) ===== */
-fetch("members.json?v=" + Date.now())
-  .then(r => {
+fetch("data/members.json?v=" + Date.now())
+  .then(r=>{
     if(!r.ok) throw new Error("load error");
     return r.json();
   })
-  .then(d => {
+  .then(d=>{
     if(!Array.isArray(d)) throw new Error("invalid json");
-    members = d.filter(m => m && m.id);
+    members = d.filter(m=>m && m.id);
   })
-  .catch(() => {
-    msg.innerHTML = "<p class='no'>❌ members.json load नहीं हुआ</p>";
+  .catch(()=>{
+    msg.innerHTML="<p class='no'>❌ members.json load नहीं हुआ</p>";
   });
 
-/* ===== LOAD MEMBER ===== */
+/* ===== LOAD MEMBER BY ID ===== */
 function loadMember(){
-  const id = document.getElementById("mid").value
-    .trim().toUpperCase();
+  const id=document.getElementById("mid").value.trim().toUpperCase();
+  index = members.findIndex(m=>m.id && m.id.toUpperCase()===id);
 
-  index = members.findIndex(m =>
-    m.id && m.id.toUpperCase() === id
-  );
-
-  if(index < 0){
-    msg.innerHTML = "<p class='no'>❌ Member Not Found</p>";
+  if(index<0){
+    msg.innerHTML="<p class='no'>❌ Member Not Found</p>";
     return;
   }
 
-  const m = members[index];
-  name.value = m.name || "";
+  const m=members[index];
+  name.value   = m.name   || "";
   father.value = m.father || "";
-  post.value = m.post || "";
-  level.value = m.level || "";
-  photo.value = m.photo || "";
+  post.value   = m.post   || "";
+  level.value  = m.level  || "";
+  photo.value  = m.photo  || "";
 
-  msg.innerHTML = "<p class='ok'>✅ Member Loaded</p>";
+  msg.innerHTML="<p class='ok'>✅ Member Loaded</p>";
 }
 
 /* ===== DOWNLOAD UPDATED JSON ===== */
 function downloadJSON(){
-  if(index < 0){
+  if(index<0){
     alert("❌ पहले Member load करें");
     return;
   }
@@ -139,14 +152,13 @@ function downloadJSON(){
   members[index].level = level.value.trim();
   members[index].photo = photo.value.trim();
 
-  const blob = new Blob(
-    [JSON.stringify(members, null, 2)],
-    {type: "application/json"}
+  const blob=new Blob(
+    [JSON.stringify(members,null,2)],
+    {type:"application/json"}
   );
-
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "members.json";
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="members.json";
   a.click();
 }
 </script>
