@@ -32,8 +32,7 @@ button{padding:12px;border:none;border-radius:6px;font-size:15px;cursor:pointer;
 <div class="container">
   <h3>🔐 सदस्य सत्यापन</h3>
 
-  <input id="mid" placeholder="Member ID (जैसे JBRRMS-XXXXXX)">
-
+  <input id="mid" placeholder="Member ID (जैसे JBRRMS-00001)">
   <button onclick="verify()">Verify Member</button>
 
   <div id="out"></div>
@@ -47,18 +46,31 @@ Official Verification Page
 <script>
 let members = [];
 
-/* ===== LOAD MEMBERS ===== */
+/* ===== LOAD MEMBERS.JSON ===== */
 fetch("members.json")
   .then(r => r.json())
-  .then(d => members = d)
+  .then(d => {
+    members = Array.isArray(d) ? d : [];
+    autoVerifyFromURL();
+  })
   .catch(() => {
     document.getElementById("out").innerHTML =
-      "<p class='no'>❌ Data load नहीं हुआ</p>";
+      "<p class='no'>❌ Verification data load नहीं हुआ</p>";
   });
+
+/* ===== AUTO VERIFY FROM QR URL ===== */
+function autoVerifyFromURL(){
+  const p = new URLSearchParams(location.search);
+  const id = p.get("id");
+  if(id){
+    document.getElementById("mid").value = id;
+    verify();
+  }
+}
 
 /* ===== VERIFY FUNCTION ===== */
 function verify(){
-  const id = document.getElementById("mid").value.trim().toLowerCase();
+  const id = document.getElementById("mid").value.trim().toUpperCase();
   const out = document.getElementById("out");
 
   if(!id){
@@ -66,7 +78,9 @@ function verify(){
     return;
   }
 
-  const m = members.find(x => x.id && x.id.toLowerCase() === id);
+  const m = members.find(x =>
+    x.member_id && x.member_id.toUpperCase() === id
+  );
 
   if(!m){
     out.innerHTML = "<p class='no'>❌ Member Not Found</p>";
@@ -79,13 +93,19 @@ function verify(){
       <div class="value ok">✅ VERIFIED MEMBER</div>
 
       <div class="label">Member ID</div>
-      <div class="value">${m.id}</div>
+      <div class="value">${m.member_id}</div>
 
       <div class="label">Name</div>
       <div class="value">${m.name || "-"}</div>
 
       <div class="label">Mobile</div>
       <div class="value">${m.mobile || "-"}</div>
+
+      <div class="label">District</div>
+      <div class="value">${m.district || "-"}</div>
+
+      <div class="label">State</div>
+      <div class="value">${m.state || "-"}</div>
     </div>
   `;
 }
