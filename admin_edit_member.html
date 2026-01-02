@@ -7,44 +7,31 @@
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
-header{
-  background:#7b0000;color:#fff;
-  padding:12px;text-align:center
-}
-nav{
-  background:#3b0000;
-  display:flex;flex-wrap:wrap;
-  justify-content:center
-}
-nav a{
-  color:#fff;text-decoration:none;
-  padding:8px 12px;font-size:14px
-}
+header{background:#7b0000;color:#fff;padding:12px;text-align:center}
+nav{background:#3b0000;display:flex;flex-wrap:wrap;justify-content:center}
+nav a{color:#fff;text-decoration:none;padding:8px 12px;font-size:14px}
 nav a:hover{background:#7b0000}
-
 .box{
   max-width:520px;margin:25px auto;
   background:#fff;padding:20px;
   border:2px solid #7b0000;border-radius:8px
 }
 h2{text-align:center;color:#7b0000;margin-top:0}
-input,select{
+input{
   width:100%;padding:8px;margin:6px 0;
   font-size:14px
 }
 button{
-  width:100%;padding:10px;
+  width:100%;padding:10px;margin-top:8px;
   background:#7b0000;color:#fff;
   border:none;border-radius:6px;
-  margin-top:10px;font-size:15px;
-  cursor:pointer
+  font-size:15px;cursor:pointer
 }
 .gray{background:#555}
 .note{font-size:13px;color:#555;margin-top:10px}
-footer{
-  text-align:center;font-size:13px;
-  color:#555;margin:30px 10px
-}
+footer{text-align:center;font-size:13px;color:#555;margin:30px 10px}
+.ok{color:#28a745;font-weight:bold}
+.no{color:#dc3545;font-weight:bold}
 </style>
 </head>
 
@@ -55,28 +42,24 @@ footer{
   <div>Edit Member Panel</div>
 </header>
 
-<!-- ADMIN NAVIGATION -->
 <nav>
   <a href="admin_dashboard.html">🏠 Dashboard</a>
-  <a href="admin_pending.html">⏳ Pending Members</a>
-  <a href="admin_edit_member.html">✏️ Edit Member</a>
-  <a href="admin_karyakarini.html">🧑‍⚖️ कार्यकारिणी</a>
+  <a href="admin_pending.html">⏳ Pending</a>
+  <a href="admin_edit_member.html">✏️ Edit</a>
   <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
   <a href="verify.html" target="_blank">🔍 Verify</a>
   <a href="certificate.html" target="_blank">📜 Certificate</a>
   <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
-  <a href="appointment.html" target="_blank">📄 Appointment</a>
-  <a href="gallery.html" target="_blank">🖼️ Gallery</a>
-  <a href="events.html" target="_blank">📢 Events</a>
-  <a href="contact.html" target="_blank">📞 Contact</a>
   <a href="https://jbrrms.in" target="_blank">🌐 Website</a>
 </nav>
 
 <div class="box">
 <h2>✏️ Edit Member Details</h2>
 
-<input id="mid" placeholder="Enter Member ID">
+<input id="mid" placeholder="Enter Member ID (JBRRMS-XXXX)">
 <button onclick="loadMember()">🔎 Load Member</button>
+
+<div id="msg"></div>
 
 <hr>
 
@@ -86,69 +69,84 @@ footer{
 <input id="level" placeholder="Level (District / State / National)">
 <input id="photo" placeholder="Photo URL">
 
-<button onclick="saveData()">⬇️ Download Updated members.json</button>
-<a href="data/members.json" class="button"></a>
+<button onclick="downloadJSON()">⬇️ Download Updated members.json</button>
+<button class="gray" onclick="location.reload()">🔄 Reset</button>
 
 <p class="note">
-⚠️ Download की गई <b>members.json</b> फ़ाइल को<br>
-<b>data/members.json</b> में GitHub पर replace करें।
+⚠️ Download की गई <b>members.json</b> फ़ाइल को  
+GitHub repo में replace करें (same path).
 </p>
-
-<button class="gray" onclick="location.reload()">🔄 Reset Form</button>
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Admin Panel – Authorized Use Only<br>
-<a href="https://jbrrms.in/privacy.html" target="_blank">Privacy</a> |
-<a href="https://jbrrms.in/terms.html" target="_blank">Terms</a>
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Panel – Authorized Use Only
 </footer>
 
 <script>
-let members=[], index=-1;
+let members = [];
+let index = -1;
+const msg = document.getElementById("msg");
 
-fetch("data/members.json")
-.then(r=>r.json())
-.then(d=>members=d)
-.catch(()=>alert("❌ members.json load नहीं हुआ"));
+/* ===== LOAD members.json (CACHE SAFE) ===== */
+fetch("members.json?v=" + Date.now())
+  .then(r => {
+    if(!r.ok) throw new Error("load error");
+    return r.json();
+  })
+  .then(d => {
+    if(!Array.isArray(d)) throw new Error("invalid json");
+    members = d.filter(m => m && m.id);
+  })
+  .catch(() => {
+    msg.innerHTML = "<p class='no'>❌ members.json load नहीं हुआ</p>";
+  });
 
+/* ===== LOAD MEMBER ===== */
 function loadMember(){
-  const id=document.getElementById("mid").value.trim();
-  index=members.findIndex(m =>
-    (m.member_id||m.memberId)===id
+  const id = document.getElementById("mid").value
+    .trim().toUpperCase();
+
+  index = members.findIndex(m =>
+    m.id && m.id.toUpperCase() === id
   );
-  if(index<0){
-    alert("❌ Member not found");
+
+  if(index < 0){
+    msg.innerHTML = "<p class='no'>❌ Member Not Found</p>";
     return;
   }
 
-  const m=members[index];
-  name.value=m.name||"";
-  father.value=m.father||"";
-  post.value=m.post||"";
-  level.value=m.level||"";
-  photo.value=m.photo||"";
+  const m = members[index];
+  name.value = m.name || "";
+  father.value = m.father || "";
+  post.value = m.post || "";
+  level.value = m.level || "";
+  photo.value = m.photo || "";
+
+  msg.innerHTML = "<p class='ok'>✅ Member Loaded</p>";
 }
 
-function saveData(){
-  if(index<0){
+/* ===== DOWNLOAD UPDATED JSON ===== */
+function downloadJSON(){
+  if(index < 0){
     alert("❌ पहले Member load करें");
     return;
   }
 
-  members[index].name=name.value;
-  members[index].father=father.value;
-  members[index].post=post.value;
-  members[index].level=level.value;
-  members[index].photo=photo.value;
+  members[index].name   = name.value.trim();
+  members[index].father= father.value.trim();
+  members[index].post  = post.value.trim();
+  members[index].level = level.value.trim();
+  members[index].photo = photo.value.trim();
 
-  const blob=new Blob(
-    [JSON.stringify(members,null,2)],
-    {type:"application/json"}
+  const blob = new Blob(
+    [JSON.stringify(members, null, 2)],
+    {type: "application/json"}
   );
-  const a=document.createElement("a");
-  a.href=URL.createObjectURL(blob);
-  a.download="members.json";
+
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "members.json";
   a.click();
 }
 </script>
