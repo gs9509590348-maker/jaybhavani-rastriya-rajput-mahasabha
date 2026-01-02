@@ -82,14 +82,14 @@ p{font-size:16px;line-height:1.8}
 </p>
 
 <div class="footer-row">
-<div>
-नियुक्ति तिथि : <span id="date"></span><br>
-स्थान : __________
-</div>
-<div style="text-align:right">
-(यह पत्र पूर्णतः डिजिटल है)<br>
-QR Verify द्वारा मान्य
-</div>
+  <div>
+    नियुक्ति तिथि : <span id="date"></span><br>
+    स्थान : __________
+  </div>
+  <div style="text-align:right">
+    (यह पत्र पूर्णतः डिजिटल है)<br>
+    QR Verify द्वारा मान्य
+  </div>
 </div>
 
 <p style="text-align:center;font-weight:bold;margin-top:30px">
@@ -110,7 +110,7 @@ QR Verify द्वारा मान्य
 <script>
 const qs = new URLSearchParams(location.search);
 const id = qs.get("id");
-const VERIFY_BASE = "https://jbrrms.in/verify.html?id=";
+const VERIFY_BASE = "verify.html?id=";
 
 let member = null;
 
@@ -118,13 +118,15 @@ if(!id){
   alert("❌ Member ID missing");
 }
 
-/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
-fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
-.then(r=>r.json())
+/* ===== LOAD MEMBERS.JSON (GITHUB STATIC) ===== */
+fetch("data/members.json?v=" + Date.now())
+.then(r=>{
+  if(!r.ok) throw new Error("load error");
+  return r.json();
+})
 .then(list=>{
-
   member = list.find(x =>
-    x.id && x.id.trim().toUpperCase() === id.trim().toUpperCase()
+    x.id && x.id.toUpperCase() === id.toUpperCase()
   );
 
   if(!member){
@@ -133,28 +135,26 @@ fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha
   }
 
   /* ===== FILL LETTER DATA ===== */
-  name.innerText = member.name || "";
+  name.innerText   = member.name || "";
   father.innerText = member.father || "";
-  level.innerText = member.level || "";
-  post.innerText = member.post || "";
-  dept.innerText = member.department || "";
-  area.innerText =
+  post.innerText   = member.post || "";
+  level.innerText  = member.level || "";
+  dept.innerText   = member.department || "";
+  area.innerText   =
     (member.district||"") + " / " + (member.state||"");
 
   mid.innerText = member.id;
-
-  date.innerText =
-    new Date().toLocaleDateString("hi-IN");
+  date.innerText = new Date().toLocaleDateString("hi-IN");
 
   /* ===== LINKS ===== */
-  idcard.href = "idcard.html?id=" + member.id;
+  idcard.href = "idcard_print.html?id=" + member.id;
   verify.href = VERIFY_BASE + member.id;
 })
 .catch(()=>{
   alert("❌ members.json load नहीं हुआ");
 });
 
-/* ===== DOWNLOAD LETTER ===== */
+/* ===== DOWNLOAD LETTER AS IMAGE ===== */
 function download(){
   html2canvas(document.getElementById("app"),{scale:2})
   .then(c=>{
@@ -177,7 +177,7 @@ function shareWhatsApp(){
 Member ID: ${member.id}
 
 Verify Online 👇
-${VERIFY_BASE}${member.id}`;
+${location.origin}/${VERIFY_BASE}${member.id}`;
 
   window.open(
     "https://wa.me/?text="+encodeURIComponent(msg),
@@ -187,7 +187,7 @@ ${VERIFY_BASE}${member.id}`;
 </script>
 
 <footer class="site-footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
 यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।<br>
 यह किसी सरकारी संस्था से संबद्ध नहीं है।
 </footer>
