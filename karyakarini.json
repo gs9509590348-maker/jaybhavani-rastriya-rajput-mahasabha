@@ -1,54 +1,57 @@
-{
-  "last_updated": "2025-01-01",
-  "organization": "जय भवानी राष्ट्रीय राजपूत महासभा",
-  "karyakarini": [
-    {
-      "id": "KAR-000",
-      "name": "ठा. गोवर्धन सिंह जी",
-      "post": "संस्थापक",
-      "level": "राष्ट्रीय",
-      "district": "बरखेड़ी मिट्ठू",
-      "state": "मध्य प्रदेश",
-      "mobile": "9784823382",
-      "photo": "https://jbrrms.in/assets/leaders/govardhan-singh.jpg",
-      "order": 0,
-      "active": true
-    },
-    {
-      "id": "KAR-001",
-      "name": "शंकर सिंह जी राणा",
-      "post": "राष्ट्रीय युवा अध्यक्ष",
-      "level": "राष्ट्रीय",
-      "district": "मोगरा",
-      "state": "मध्य प्रदेश",
-      "mobile": "9116568039",
-      "photo": "https://jbrrms.in/assets/leaders/shankar-singh.jpg",
-      "order": 1,
-      "active": true
-    },
-    {
-      "id": "KAR-002",
-      "name": "पप्पू सिंह जी",
-      "post": "प्रदेश अध्यक्ष",
-      "level": "प्रदेश",
-      "district": "झरिका का खेड़ा",
-      "state": "राजस्थान",
-      "mobile": "9772710875",
-      "photo": "https://jbrrms.in/assets/leaders/pappu-singh.jpg",
-      "order": 2,
-      "active": true
-    },
-    {
-      "id": "KAR-003",
-      "name": "ठा. श्याम सिंह राठौड़",
-      "post": "युवा प्रदेश अध्यक्ष",
-      "level": "प्रदेश",
-      "district": "डाबला मनोहर",
-      "state": "मध्य प्रदेश",
-      "mobile": "9165463190",
-      "photo": "https://jbrrms.in/assets/leaders/shyam-singh.jpg",
-      "order": 3,
-      "active": true
-    }
-  ]
-}
+[
+  {
+    "order": 1,
+    "active": true,
+    "name": "ठा. गोवर्धन सिंह जी",
+    "post": "संस्थापक",
+    "category": "founder",
+    "district": "बरखेड़ी मिट्ठू",
+    "state": "मध्य प्रदेश",
+    "mobile": "+919784823382",
+    "photo": ""
+  },
+  {
+    "order": 2,
+    "active": true,
+    "name": "ठा. शंकर सिंह जी राणा",
+    "post": "युवा राष्ट्रीय अध्यक्ष",
+    "category": "youth",
+    "district": "मोगरा",
+    "state": "मध्य प्रदेश",
+    "mobile": "+919116568039",
+    "photo": ""
+  },
+  {
+    "order": 3,
+    "active": true,
+    "name": "ठा. श्याम सिंह राठौड़",
+    "post": "युवा प्रदेश अध्यक्ष",
+    "category": "youth",
+    "district": "डाबला मनोहर",
+    "state": "मध्य प्रदेश",
+    "mobile": "+919165463190",
+    "photo": ""
+  },
+  {
+    "order": 4,
+    "active": true,
+    "name": "पप्पू सिंह जी",
+    "post": "प्रदेश अध्यक्ष",
+    "category": "state",
+    "district": "झरिका का खेड़ा",
+    "state": "राजस्थान",
+    "mobile": "+919772710875",
+    "photo": ""
+  },
+  {
+    "order": 5,
+    "active": true,
+    "name": "दीवान सिंह जी",
+    "post": "राजस्थान युवा प्रदेश अध्यक्ष",
+    "category": "state",
+    "district": "तीसाई",
+    "state": "राजस्थान",
+    "mobile": "8302295957",
+    "photo": ""
+  }
+]
