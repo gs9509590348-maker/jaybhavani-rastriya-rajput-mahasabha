@@ -2,19 +2,36 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>ID Card A4 | JBRRMS</title>
+<title>ID Card (A4) | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{font-family:Arial;background:#eee;margin:0}
-.page{width:210mm;height:297mm;background:#fff;margin:10px auto;padding:20px}
-.card{border:2px solid #7b0000;padding:20px}
+.page{
+  width:210mm;
+  height:297mm;
+  background:#fff;
+  margin:10px auto;
+  padding:20px
+}
+.card{
+  border:2px solid #7b0000;
+  padding:20px
+}
 h2{text-align:center;color:#7b0000;margin:5px 0}
-.row{display:flex;gap:20px}
-.photo img{width:120px;height:120px;border-radius:8px;border:2px solid #7b0000}
+.row{display:flex;gap:20px;align-items:flex-start}
+.photo img{
+  width:120px;height:120px;
+  border-radius:8px;
+  border:2px solid #7b0000;
+  object-fit:cover
+}
 .info p{margin:6px 0;font-size:15px}
-.qr{text-align:right}
-@media print{body{background:#fff}}
+.qr img{width:120px;height:120px}
+.verify{text-align:center;margin-top:30px;font-size:14px}
+@media print{
+  body{background:#fff}
+}
 </style>
 </head>
 
@@ -26,40 +43,70 @@ h2{text-align:center;color:#7b0000;margin:5px 0}
 
     <div class="row">
       <div class="photo">
-        <img id="photo">
+        <img id="photo" src="assets/photo.png">
       </div>
+
       <div class="info">
         <p><b>Name:</b> <span id="name"></span></p>
-        <p><b>Father:</b> <span id="father"></span></p>
-        <p><b>Post:</b> <span id="post"></span></p>
         <p><b>District:</b> <span id="district"></span></p>
         <p><b>State:</b> <span id="state"></span></p>
         <p><b>Member ID:</b> <span id="mid"></span></p>
+        <p><b>Status:</b> <span id="status"></span></p>
       </div>
+
       <div class="qr">
-        <img id="qr" width="120">
+        <img id="qr">
       </div>
     </div>
 
-    <p style="text-align:center;margin-top:30px">
-      Verify: https://jbrrms.in/verify.html
-    </p>
+    <div class="verify">
+      Verify: https://jbrrms.in/verify.html?id=<span id="vid"></span>
+    </div>
   </div>
 </div>
 
 <script>
-const id=new URLSearchParams(location.search).get("id");
+const params = new URLSearchParams(location.search);
+const memberId = params.get("id");
 
-fetch("https://jbrrms.in/members.json")
-.then(r=>r.json())
-.then(list=>{
-  const m=list.find(x=>x.id===id);
-  if(!m) return alert("Member not found");
+if(!memberId){
+  alert("Member ID missing");
+  throw new Error("No ID");
+}
 
-  name.innerText=m.name||"";
-  father.innerText=m.father||"";
-  post.innerText=m.post||"";
-  district.innerText=m.district||"";
-  state.innerText=m.state||"";
-  mid.innerText=m.id;
-  if(m.photo) photo.src=m.photo;
+fetch("members.json?v=" + Date.now())
+.then(r => r.json())
+.then(list => {
+  const m = list.find(x => x.member_id === memberId);
+  if(!m){
+    alert("Member not found");
+    return;
+  }
+
+  document.getElementById("name").innerText = m.name || "-";
+  document.getElementById("district").innerText = m.district || "-";
+  document.getElementById("state").innerText = m.state || "-";
+  document.getElementById("mid").innerText = m.member_id;
+  document.getElementById("status").innerText = m.status || "Approved";
+  document.getElementById("vid").innerText = m.member_id;
+
+  // Photo (optional)
+  if(m.photo){
+    document.getElementById("photo").src = m.photo;
+  }
+
+  // QR code
+  document.getElementById("qr").src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" +
+    encodeURIComponent(
+      "https://jbrrms.in/verify.html?id=" + m.member_id
+    );
+})
+.catch(err => {
+  alert("Data load error");
+  console.error(err);
+});
+</script>
+
+</body>
+</html>
