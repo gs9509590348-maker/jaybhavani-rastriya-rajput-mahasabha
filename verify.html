@@ -30,6 +30,22 @@ button{
 .value{font-weight:bold;margin-bottom:6px}
 .ok{color:#28a745;font-weight:bold}
 .no{color:#dc3545;font-weight:bold}
+
+/* QUICK LINKS */
+.qlink{
+  display:block;
+  margin:6px 0;
+  padding:9px;
+  background:#7b0000;
+  color:#fff;
+  text-decoration:none;
+  border-radius:6px;
+  font-size:14px;
+  text-align:center
+}
+.qlink.gray{background:#555}
+.qlink:hover{opacity:.9}
+
 .footer{
   text-align:center;font-size:12px;
   color:#555;margin:30px 0
@@ -63,61 +79,52 @@ let members = [];
 const out = document.getElementById("out");
 
 /* ===== LOAD MEMBERS.JSON (CACHE SAFE) ===== */
-fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json?v=" + Date.now())
-  .then(res => {
-    if (!res.ok) throw new Error("Network error");
-    return res.json();
+fetch("data/members.json?v=" + Date.now())
+  .then(r=>{
+    if(!r.ok) throw new Error("load error");
+    return r.json();
   })
-  .then(data => {
-    if (!Array.isArray(data)) throw new Error("Invalid JSON");
+  .then(data=>{
+    if(!Array.isArray(data)) throw new Error("invalid json");
 
-    // ✅ Clean invalid / blank records
-    members = data.filter(m => m && m.id && m.id.toString().trim() !== "");
-
+    // ✅ Clean invalid / blank rows
+    members = data.filter(m=>m && m.id && m.id.toString().trim()!=="");
     autoVerifyFromURL();
   })
-  .catch(err => {
-    out.innerHTML = "<p class='no'>❌ Verification data load नहीं हुआ</p>";
-    console.error(err);
+  .catch(()=>{
+    out.innerHTML="<p class='no'>❌ Verification data load नहीं हुआ</p>";
   });
 
 /* ===== AUTO VERIFY FROM URL (QR / LINK) ===== */
 function autoVerifyFromURL(){
-  const p = new URLSearchParams(location.search);
-  const id = p.get("id");
+  const p=new URLSearchParams(location.search);
+  const id=p.get("id");
   if(id){
-    document.getElementById("mid").value = id;
+    mid.value=id;
     verifyMember();
   }
 }
 
 /* ===== NORMALIZE ID ===== */
 function normalizeId(v){
-  return v
-    .toString()
-    .trim()
-    .toUpperCase()
-    .replace(/\s+/g,"");
+  return v.toString().trim().toUpperCase().replace(/\s+/g,"");
 }
 
 /* ===== VERIFY MEMBER ===== */
 function verifyMember(){
-  const input = document.getElementById("mid").value;
-  const id = normalizeId(input);
-
+  const id=normalizeId(mid.value||"");
   if(!id){
-    out.innerHTML = "<p class='no'>❌ Member ID जरूरी है</p>";
+    out.innerHTML="<p class='no'>❌ Member ID जरूरी है</p>";
     return;
   }
 
-  const m = members.find(x => normalizeId(x.id) === id);
-
+  const m=members.find(x=>normalizeId(x.id)===id);
   if(!m){
-    out.innerHTML = "<p class='no'>❌ Member Not Found</p>";
+    out.innerHTML="<p class='no'>❌ Member Not Found</p>";
     return;
   }
 
-  out.innerHTML = `
+  out.innerHTML=`
     <div class="card">
       <div class="value ok">✅ VERIFIED MEMBER</div>
 
@@ -125,10 +132,29 @@ function verifyMember(){
       <div class="value">${m.id}</div>
 
       <div class="label">Name</div>
-      <div class="value">${m.name || "-"}</div>
+      <div class="value">${m.name||"-"}</div>
 
       <div class="label">Mobile</div>
-      <div class="value">${m.mobile || "-"}</div>
+      <div class="value">${m.mobile||"-"}</div>
+
+      <hr>
+
+      <div class="label">Quick Documents</div>
+
+      <a class="qlink" target="_blank"
+         href="certificate.html?id=${m.id}">
+         📜 View Certificate
+      </a>
+
+      <a class="qlink" target="_blank"
+         href="appointment.html?id=${m.id}">
+         📄 Appointment Letter
+      </a>
+
+      <a class="qlink gray" target="_blank"
+         href="idcard_print.html?id=${m.id}">
+         🪪 View ID Card
+      </a>
     </div>
   `;
 }
