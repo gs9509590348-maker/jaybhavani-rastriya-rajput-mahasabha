@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>ID Card A4 | JBRRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{font-family:Arial;background:#eee;margin:0}
+.page{width:210mm;height:297mm;background:#fff;margin:10px auto;padding:20px}
+.card{border:2px solid #7b0000;padding:20px}
+h2{text-align:center;color:#7b0000;margin:5px 0}
+.row{display:flex;gap:20px}
+.photo img{width:120px;height:120px;border-radius:8px;border:2px solid #7b0000}
+.info p{margin:6px 0;font-size:15px}
+.qr{text-align:right}
+@media print{body{background:#fff}}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="card">
+    <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+
+    <div class="row">
+      <div class="photo">
+        <img id="photo">
+      </div>
+      <div class="info">
+        <p><b>Name:</b> <span id="name"></span></p>
+        <p><b>Father:</b> <span id="father"></span></p>
+        <p><b>Post:</b> <span id="post"></span></p>
+        <p><b>District:</b> <span id="district"></span></p>
+        <p><b>State:</b> <span id="state"></span></p>
+        <p><b>Member ID:</b> <span id="mid"></span></p>
+      </div>
+      <div class="qr">
+        <img id="qr" width="120">
+      </div>
+    </div>
+
+    <p style="text-align:center;margin-top:30px">
+      Verify: https://jbrrms.in/verify.html
+    </p>
+  </div>
+</div>
+
+<script>
+const id=new URLSearchParams(location.search).get("id");
+
+fetch("https://jbrrms.in/members.json")
+.then(r=>r.json())
+.then(list=>{
+  const m=list.find(x=>x.id===id);
+  if(!m) return alert("Member not found");
+
+  name.innerText=m.name||"";
+  father.innerText=m.father||"";
+  post.innerText=m.post||"";
+  district.innerText=m.district||"";
+  state.innerText=m.state||"";
+  mid.innerText=m.id;
+  if(m.photo) photo.src=m.photo;
