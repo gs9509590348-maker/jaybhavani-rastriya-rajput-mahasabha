@@ -30,22 +30,13 @@ button{
 .value{font-weight:bold;margin-bottom:6px}
 .ok{color:#28a745;font-weight:bold}
 .no{color:#dc3545;font-weight:bold}
-
-/* QUICK LINKS */
 .qlink{
-  display:block;
-  margin:6px 0;
-  padding:9px;
-  background:#7b0000;
-  color:#fff;
-  text-decoration:none;
-  border-radius:6px;
-  font-size:14px;
-  text-align:center
+  display:block;margin:6px 0;padding:9px;
+  background:#7b0000;color:#fff;
+  text-decoration:none;border-radius:6px;
+  font-size:14px;text-align:center
 }
 .qlink.gray{background:#555}
-.qlink:hover{opacity:.9}
-
 .footer{
   text-align:center;font-size:12px;
   color:#555;margin:30px 0
@@ -75,27 +66,26 @@ Official Verification Page
 </div>
 
 <script>
-let members = [];
-const out = document.getElementById("out");
+let members=[];
+const out=document.getElementById("out");
 
-/* ===== LOAD MEMBERS.JSON (CACHE SAFE) ===== */
-fetch("data/members.json?v=" + Date.now())
-  .then(r=>{
-    if(!r.ok) throw new Error("load error");
-    return r.json();
-  })
-  .then(data=>{
-    if(!Array.isArray(data)) throw new Error("invalid json");
+/* ===== LOAD members.json ===== */
+fetch("members.json?v="+Date.now())
+.then(r=>r.json())
+.then(data=>{
+  // ✅ only valid members
+  members=data.filter(m=>
+    m &&
+    m.member_id &&
+    m.member_id.toString().trim()!==""
+  );
+  autoVerifyFromURL();
+})
+.catch(()=>{
+  out.innerHTML="<p class='no'>❌ Verification data load नहीं हुआ</p>";
+});
 
-    // ✅ Clean invalid / blank rows
-    members = data.filter(m=>m && m.id && m.id.toString().trim()!=="");
-    autoVerifyFromURL();
-  })
-  .catch(()=>{
-    out.innerHTML="<p class='no'>❌ Verification data load नहीं हुआ</p>";
-  });
-
-/* ===== AUTO VERIFY FROM URL (QR / LINK) ===== */
+/* ===== AUTO VERIFY (QR / LINK) ===== */
 function autoVerifyFromURL(){
   const p=new URLSearchParams(location.search);
   const id=p.get("id");
@@ -105,57 +95,52 @@ function autoVerifyFromURL(){
   }
 }
 
-/* ===== NORMALIZE ID ===== */
-function normalizeId(v){
+/* ===== NORMALIZE ===== */
+function norm(v){
   return v.toString().trim().toUpperCase().replace(/\s+/g,"");
 }
 
-/* ===== VERIFY MEMBER ===== */
+/* ===== VERIFY ===== */
 function verifyMember(){
-  const id=normalizeId(mid.value||"");
+  const id=norm(mid.value||"");
   if(!id){
     out.innerHTML="<p class='no'>❌ Member ID जरूरी है</p>";
     return;
   }
 
-  const m=members.find(x=>normalizeId(x.id)===id);
+  const m=members.find(x=>norm(x.member_id)===id);
   if(!m){
     out.innerHTML="<p class='no'>❌ Member Not Found</p>";
     return;
   }
 
   out.innerHTML=`
-    <div class="card">
-      <div class="value ok">✅ VERIFIED MEMBER</div>
+  <div class="card">
+    <div class="value ok">✅ VERIFIED MEMBER</div>
 
-      <div class="label">Member ID</div>
-      <div class="value">${m.id}</div>
+    <div class="label">Member ID</div>
+    <div class="value">${m.member_id}</div>
 
-      <div class="label">Name</div>
-      <div class="value">${m.name||"-"}</div>
+    <div class="label">Name</div>
+    <div class="value">${m.name||"-"}</div>
 
-      <div class="label">Mobile</div>
-      <div class="value">${m.mobile||"-"}</div>
+    <div class="label">Mobile</div>
+    <div class="value">${m.mobile||"-"}</div>
 
-      <hr>
+    <hr>
 
-      <div class="label">Quick Documents</div>
+    <div class="label">Quick Documents</div>
 
-      <a class="qlink" target="_blank"
-         href="certificate.html?id=${m.id}">
-         📜 View Certificate
-      </a>
+    <a class="qlink" target="_blank"
+       href="certificate.html?id=${m.member_id}">
+       📜 View Certificate
+    </a>
 
-      <a class="qlink" target="_blank"
-         href="appointment.html?id=${m.id}">
-         📄 Appointment Letter
-      </a>
-
-      <a class="qlink gray" target="_blank"
-         href="idcard_print.html?id=${m.id}">
-         🪪 View ID Card
-      </a>
-    </div>
+    <a class="qlink gray" target="_blank"
+       href="idcard-a4.html?id=${m.member_id}">
+       🪪 View ID Card
+    </a>
+  </div>
   `;
 }
 </script>
