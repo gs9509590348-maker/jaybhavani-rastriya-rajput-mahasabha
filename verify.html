@@ -7,95 +7,87 @@
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
-.header{background:#7b0000;color:#fff;padding:15px;text-align:center}
+header{background:#7b0000;color:#fff;padding:15px;text-align:center}
 .container{max-width:500px;margin:30px auto;background:#fff;padding:20px;border-radius:10px}
 h3{color:#7b0000;margin-top:0}
 input{width:100%;padding:10px;margin:8px 0;font-size:14px}
-.btn{padding:10px;border:none;border-radius:6px;font-size:14px;cursor:pointer;width:100%}
-.green{background:#28a745;color:#fff}
-.blue{background:#1877f2;color:#fff}
+button{padding:12px;border:none;border-radius:6px;font-size:15px;cursor:pointer;width:100%;
+       background:#7b0000;color:#fff}
 .card{margin-top:15px;border:1px solid #ddd;padding:12px;border-radius:8px;background:#fafafa}
 .label{font-size:13px;color:#555}
 .value{font-weight:bold;margin-bottom:6px}
+.ok{color:#28a745;font-weight:bold}
+.no{color:#dc3545;font-weight:bold}
 .footer{text-align:center;font-size:12px;color:#555;margin:30px 0}
 </style>
 </head>
 
 <body>
 
-<div class="header">
+<header>
   <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
   <p>Member Verification</p>
-</div>
+</header>
 
 <div class="container">
   <h3>🔐 सदस्य सत्यापन</h3>
 
-  <input id="mid" placeholder="Member ID (जैसे JBRRMS-2025-001)">
-  <input id="mob" placeholder="Mobile Number (10 अंक)">
+  <input id="mid" placeholder="Member ID (जैसे JBRRMS-XXXXXX)">
 
-  <button class="btn green" onclick="verify()">Verify Member</button>
+  <button onclick="verify()">Verify Member</button>
 
   <div id="out"></div>
 </div>
 
 <div class="footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+© जय भवानी राष्ट्रीय राजपूत महासभा<br>
 Official Verification Page
 </div>
 
 <script>
-/* ===== CONFIG ===== */
-const API = "https://script.google.com/macros/s/AKfycbzc6Nc1K1QZiQeDLpx5YOWLIpdLp6oI7PHoTc4Pwas5ccJRYP-_tV2p8gJIj-kgURAwkg/exec";
+let members = [];
+
+/* ===== LOAD MEMBERS ===== */
+fetch("members.json")
+  .then(r => r.json())
+  .then(d => members = d)
+  .catch(() => {
+    document.getElementById("out").innerHTML =
+      "<p class='no'>❌ Data load नहीं हुआ</p>";
+  });
 
 /* ===== VERIFY FUNCTION ===== */
 function verify(){
-  const mid = document.getElementById("mid").value.trim();
-  const mob = document.getElementById("mob").value.trim();
+  const id = document.getElementById("mid").value.trim().toLowerCase();
   const out = document.getElementById("out");
 
-  if(!mid || !mob){
-    out.innerHTML = "<p style='color:red'>❌ Member ID और Mobile जरूरी है</p>";
+  if(!id){
+    out.innerHTML = "<p class='no'>❌ Member ID जरूरी है</p>";
     return;
   }
 
-  if(!/^\d{10}$/.test(mob)){
-    out.innerHTML = "<p style='color:red'>❌ Mobile Number 10 अंकों का होना चाहिए</p>";
+  const m = members.find(x => x.id && x.id.toLowerCase() === id);
+
+  if(!m){
+    out.innerHTML = "<p class='no'>❌ Member Not Found</p>";
     return;
   }
 
-  out.innerHTML = "⏳ Verifying...";
+  out.innerHTML = `
+    <div class="card">
+      <div class="label">Status</div>
+      <div class="value ok">✅ VERIFIED MEMBER</div>
 
-  fetch(`${API}?action=verify&id=${encodeURIComponent(mid)}&mobile=${encodeURIComponent(mob)}`)
-    .then(r => r.json())
-    .then(m => {
+      <div class="label">Member ID</div>
+      <div class="value">${m.id}</div>
 
-      if(!m || !(m.member_id || m.memberId)){
-        out.innerHTML = "<p style='color:red'>❌ Member Verify नहीं हुआ</p>";
-        return;
-      }
+      <div class="label">Name</div>
+      <div class="value">${m.name || "-"}</div>
 
-      out.innerHTML = `
-      <div class="card">
-        <div class="label">Status</div>
-        <div class="value" style="color:green">✅ VERIFIED MEMBER</div>
-
-        <div class="label">Name</div>
-        <div class="value">${m.name || "-"}</div>
-
-        <div class="label">Post</div>
-        <div class="value">${m.post || "-"}</div>
-
-        <div class="label">District / State</div>
-        <div class="value">${m.district || "-"}, ${m.state || "-"}</div>
-
-        ${m.id_card ? `<a class="btn blue" target="_blank" href="${m.id_card}">🆔 View ID Card</a><br><br>` : ``}
-        ${m.appointment ? `<a class="btn blue" target="_blank" href="${m.appointment}">📄 Appointment Letter</a>` : ``}
-      </div>`;
-    })
-    .catch(()=>{
-      out.innerHTML = "<p style='color:red'>❌ Server Error</p>";
-    });
+      <div class="label">Mobile</div>
+      <div class="value">${m.mobile || "-"}</div>
+    </div>
+  `;
 }
 </script>
 
