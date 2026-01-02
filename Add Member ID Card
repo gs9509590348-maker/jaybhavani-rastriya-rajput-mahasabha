@@ -50,7 +50,9 @@ body{background:#eee;font-family:Arial,sans-serif;margin:0}
   </div>
 
   <div class="photo">
-    <img id="photo" src="https://via.placeholder.com/90" alt="Photo">
+    <img id="photo"
+         src="https://via.placeholder.com/90"
+         onerror="this.src='../assets/no-photo.png'">
   </div>
 
   <div class="info">
@@ -85,15 +87,14 @@ body{background:#eee;font-family:Arial,sans-serif;margin:0}
 const qs = new URLSearchParams(location.search);
 const id = qs.get("id");
 const VERIFY_BASE = "https://jbrrms.in/verify.html?id=";
-
 let member = null;
 
 if(!id){
-  alert("❌ Member ID missing");
+  alert("❌ Member ID missing in URL");
 }
 
-/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
-fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
+/* LOAD MEMBERS.JSON (GitHub Pages) */
+fetch("../members.json")
   .then(r => r.json())
   .then(list => {
 
@@ -106,7 +107,6 @@ fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha
       return;
     }
 
-    /* ===== FILL DATA ===== */
     name.innerText = member.name || "-";
     father.innerText = member.father || "-";
     post.innerText = member.post || "-";
@@ -117,11 +117,8 @@ fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha
     status.innerText = member.status || "Active";
     mid.innerText = member.id;
 
-    if(member.photo){
-      photo.src = member.photo;
-    }
+    if(member.photo){ photo.src = member.photo; }
 
-    /* ===== VERIFY + QR ===== */
     const verifyUrl = VERIFY_BASE + member.id;
     qr.src =
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
@@ -130,30 +127,27 @@ fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha
     verify.href = verifyUrl;
   })
   .catch(()=>{
-    alert("❌ members.json load नहीं हुआ");
+    alert("❌ members.json load failed");
   });
 
-/* ===== DOWNLOAD CARD ===== */
 function download(){
   html2canvas(document.getElementById("card"),{scale:2}).then(c=>{
     const a=document.createElement("a");
-    a.download="JBRRMS_ID_CARD_"+id+".png";
+    a.download="JBRRMS_ID_"+id+".png";
     a.href=c.toDataURL("image/png");
     a.click();
   });
 }
 
-/* ===== WHATSAPP SHARE ===== */
 function shareWhatsApp(){
   if(!member) return;
-
   const msg =
 `मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
 
 नाम: ${member.name}
 Member ID: ${member.id}
 
-Verify Online 👇
+Verify 👇
 ${VERIFY_BASE}${member.id}`;
 
   window.open(
