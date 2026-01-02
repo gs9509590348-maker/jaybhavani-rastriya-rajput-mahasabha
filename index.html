@@ -1,170 +1,210 @@
-<!DOCTYPE html>  <html lang="hi">  
-<head>  
-<meta charset="UTF-8">  
-<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<meta name="theme-color" content="#7b0000">  <style>  
-:root{  
-  --main:#7b0000; --dark:#3b0000;  
-  --bg:#f2f2f2; --card:#ffffff;  
-  --text:#222; --muted:#666;  
-}  
-*{box-sizing:border-box}  
-body{  
-  margin:0;  
-  font-family:system-ui,-apple-system,Segoe UI,Arial;  
-  background:var(--bg);  
-  color:var(--text)  
-}  
-a{text-decoration:none;color:inherit}  
-  
-/* TOP BAR */  
-.topbar{  
-  background:#000;color:#fff;  
-  padding:6px 12px;  
-  display:flex;  
-  justify-content:space-between;  
-  font-size:13px;  
-  flex-wrap:wrap  
-}  
-  
-/* HEADER */  
-header{  
-  background:linear-gradient(135deg,var(--dark),var(--main));  
-  color:#fff;  
-  text-align:center;  
-  padding:34px 14px  
-}  
-header h1{margin:0;font-size:26px}  
-header p{margin:8px 0 0;font-size:14px}  
-  
-/* NAV */  
-nav{  
-  background:#fff;  
-  border-bottom:1px solid #ddd;  
-  display:flex;  
-  flex-wrap:wrap;  
-  gap:10px;  
-  justify-content:center;  
-  padding:12px  
-}  
-nav a{  
-  background:var(--main);  
-  color:#fff;  
-  padding:10px 14px;  
-  border-radius:8px;  
-  font-size:14px  
-}  
-nav a.alt{background:#333}  
-  
-/* LAYOUT */  
-.container{  
-  max-width:1200px;  
-  margin:20px auto;  
-  padding:0 12px  
-}  
-.section{margin:36px 0}  
-.section h2{margin:0 0 16px;color:var(--main)}  
-.card{  
-  background:var(--card);  
-  border-radius:14px;  
-  padding:20px;  
-  box-shadow:0 6px 18px rgba(0,0,0,.06)  
-}  
-.grid{  
-  display:grid;  
-  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));  
-  gap:16px  
-}  
-ul{padding-left:18px}  
-li{margin:6px 0;font-size:14px}  
-  
-/* FOOTER */  
-footer{  
-  background:#111;  
-  color:#ddd;  
-  text-align:center;  
-  padding:22px;  
-  font-size:13px  
-}  
-footer a{color:#fff;text-decoration:underline}  
-</style>  </head>  <body>  <!-- TOP BAR -->  <div class="topbar">  
-  <span>📞 हेल्पलाइन: +91 91966377972</span>  
-  <span>जय भवानी | जय राजपूताना 🚩</span>  
-</div>  <!-- HEADER -->  <header>  
-  <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>  
-  <p>स्वाभिमान • एकता • संगठन • राष्ट्र सेवा</p>  
-</header>  <!-- NAVIGATION -->  <nav>  
-  <a href="index.html">🏠 Home</a>  
-  <a href="karyakarini.html">👥 कार्यकारिणी</a>  
-  <a href="directory.html">📂 सदस्य निर्देशिका</a>  
-  <a href="gallery.html">🖼️ Gallery</a>  
-  <a href="verify.html">🔍 Verify</a>  <a class="alt" href="member_login.html">🔐 Member Login</a>
-<a class="alt" href="member_dashboard.html">🧑‍💼 Member Dashboard</a>
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7b0000">
 
-<a class="alt" href="admin_control.html">🛡️ Admin Secure</a>
-<a class="alt" href="admin_dashboard.html">🛠️ Admin Panel</a>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Arial;
+  background:#f2f2f2;
+  color:#222
+}
+a{text-decoration:none}
 
-</nav>  <div class="container">  <!-- ABOUT -->  <div class="section">  
-<h2>🏛️ संगठन परिचय</h2>  
-<div class="card">  
-जय भवानी राष्ट्रीय राजपूत महासभा एक राष्ट्र स्तरीय सामाजिक संगठन है,  
-जो राजपूत समाज के स्वाभिमान, एकता, संगठन एवं राष्ट्र सेवा हेतु समर्पित है।  
-यह संगठन पूर्णतः गैर-राजनीतिक एवं समाजसेवी है।  
-</div>  
-</div>  <!-- DIGITAL SYSTEM -->  <div class="section">  
-<h2>💻 Digital Membership System</h2>  
-<div class="grid">  <div class="card">  
-<h3>🆔 Digital ID</h3>  
-<ul>  
-<li>ID Card (PDF)</li>  
-<li>QR / Online Verify</li>  
-<li><a href="idcard_print.html">Open</a></li>  
-</ul>  
-</div>  <div class="card">  
-<h3>📜 Certificate</h3>  
-<ul>  
-<li>Auto Generated</li>  
-<li><a href="certificate.html">Download</a></li>  
-</ul>  
-</div>  <div class="card">  
-<h3>📄 Appointment</h3>  
-<ul>  
-<li>Auto Letter</li>  
-<li><a href="appointment.html">View</a></li>  
-</ul>  
-</div>  </div>  
-</div>  <!-- ADMIN FEATURES -->  <div class="section">  
-<h2>🛠️ Admin System</h2>  
-<div class="card">  
-<ul>  
-<li><a href="admin_bulk_approve.html">Bulk Approve Members</a></li>  
-<li><a href="admin_edit_member.html">Edit Member</a></li>  
-<li><a href="bulk_whatsapp.html">Bulk WhatsApp</a></li>  
-<li>members.json Auto Sync</li>  
-</ul>  
-</div>  
-</div>  <!-- SOCIAL -->  <div class="section">  
-<h2>🌐 Official Links</h2>  
-<div class="card">  
-<ul>  
-<li>📘 Facebook: <a href="https://www.facebook.com/jbrrms" target="_blank">jbrrms</a></li>  
-<li>👥 Facebook Group: <a href="https://www.facebook.com/groups/jbrrms" target="_blank">Join</a></li>  
-<li>💬 WhatsApp: <a href="https://wa.me/91966377972" target="_blank">+91 91966377972</a></li>  
-<li>🌐 Website: <a href="https://jbrrms.in" target="_blank">jbrrms.in</a></li>  
-</ul>  
-</div>  
-</div>  <!-- LEGAL -->  <div class="section">  
-<h2>⚠️ कानूनी घोषणा</h2>  
-<div class="card">  
-यह संगठन सामाजिक एवं सांस्कृतिक है।  
-यह किसी सरकारी अथवा राजनीतिक संस्था का प्रतिनिधित्व नहीं करता।  
-सभी डिजिटल दस्तावेज़ केवल संगठनात्मक पहचान हेतु हैं।  
-</div>  
-</div>  </div>  <footer>  
-© <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा |  
-Official Digital Portal  
-</footer>  <script>  
-document.getElementById("yr").innerText = new Date().getFullYear();  
-</script>  </body>  
+/* HEADER */
+header{
+  background:#7b0000;
+  color:#fff;
+  text-align:center;
+  padding:18px 10px
+}
+header h1{margin:0;font-size:20px}
+header p{margin:6px 0 0;font-size:13px}
+
+/* NAV */
+nav{
+  background:#fff;
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  padding:10px;
+  flex-wrap:wrap
+}
+nav a{
+  padding:6px 12px;
+  border-radius:20px;
+  background:#f5f5f5;
+  font-size:13px;
+  color:#7b0000;
+  border:1px solid #ddd
+}
+
+/* CONTAINER */
+.container{
+  max-width:900px;
+  margin:12px auto;
+  padding:0 10px
+}
+
+/* SECTION */
+.section{
+  background:#7b0000;
+  color:#fff;
+  border-radius:10px;
+  margin:14px 0;
+  padding:10px
+}
+.section h2{margin:0 0 8px;font-size:15px}
+
+/* CARD */
+.card{
+  background:#fff;
+  color:#222;
+  border-radius:8px;
+  padding:12px;
+  margin-top:8px
+}
+
+/* BUTTONS */
+.btns{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:10px
+}
+.btn{
+  display:block;
+  text-align:center;
+  padding:10px;
+  border-radius:6px;
+  font-size:14px;
+  color:#fff;
+  background:#7b0000
+}
+.btn.blue{background:#1976d2}
+.btn.green{background:#1fa463}
+.btn.black{background:#000}
+
+/* LIST */
+ol,ul{padding-left:18px;font-size:14px}
+
+/* FOOTER */
+footer{
+  background:#111;
+  color:#ccc;
+  text-align:center;
+  font-size:12px;
+  padding:14px;
+  margin-top:20px
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩</h1>
+  <p>स्वाभिमान • एकता • संगठन • राष्ट्र सेवा</p>
+</header>
+
+<nav>
+  <a href="index.html">Home</a>
+  <a href="verify.html">Verify Member</a>
+  <a href="members.html">Member Directory</a>
+  <a href="karyakarini.html">कार्यकारिणी</a>
+  <a href="gallery.html">Gallery</a>
+</nav>
+
+<div class="container">
+
+<!-- NOTICE -->
+<div class="section">
+  <h2>📢 सूचना</h2>
+  <div class="card">
+    सभी सदस्य अपना <b>ID Card, Certificate एवं Appointment Letter</b><br>
+    <b>Verify Member</b> के माध्यम से देखें।
+  </div>
+</div>
+
+<!-- PUBLIC SERVICES -->
+<div class="section">
+  <h2>🌐 Public Services</h2>
+  <div class="card btns">
+    <a class="btn" href="verify.html">🔍 Member Verify</a>
+    <a class="btn blue" href="members.html">🧑‍🤝‍🧑 Member Directory</a>
+    <a class="btn" href="certificate.html">📜 Certificate</a>
+    <a class="btn" href="appointment.html">📄 Appointment Letter</a>
+    <a class="btn" href="idcard_print.html">🪪 ID Card</a>
+  </div>
+</div>
+
+<!-- MEMBERSHIP -->
+<div class="section">
+  <h2>📝 Membership</h2>
+  <div class="card btns">
+    <a class="btn green" href="join.html">➕ Join / Membership Form</a>
+    <a class="btn black" href="member_login.html">🔐 Member Login</a>
+    <a class="btn black" href="member_dashboard.html">🧑‍💼 Member Dashboard</a>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="section">
+  <h2>🛡️ Admin Panel (Authorized)</h2>
+  <div class="card btns">
+    <a class="btn black" href="admin_secure.html">🔐 Admin Control Room</a>
+    <a class="btn black" href="admin_dashboard.html">📊 Admin Dashboard</a>
+    <a class="btn black" href="admin_bulk_approve.html">🚀 Bulk Approve</a>
+    <a class="btn black" href="admin_edit_member.html">✏️ Edit Member</a>
+    <a class="btn black" href="bulk_add_members.html">➕ Bulk Add Members</a>
+    <a class="btn black" href="bulk_whatsapp.html">📲 Bulk WhatsApp</a>
+  </div>
+</div>
+
+<!-- DATA & SYSTEM -->
+<div class="section">
+  <h2>📂 System & Data</h2>
+  <div class="card btns">
+    <a class="btn blue" href="data/members.json" target="_blank">members.json</a>
+    <a class="btn blue" href="data/karyakarini.json" target="_blank">karyakarini.json</a>
+    <a class="btn blue" href="events.html">📢 Events</a>
+    <a class="btn blue" href="gallery.html">🖼️ Gallery</a>
+  </div>
+</div>
+
+<!-- SOCIAL -->
+<div class="section">
+  <h2>🌐 Social & Contact</h2>
+  <div class="card btns">
+    <a class="btn blue" href="https://www.facebook.com/jbrrms" target="_blank">Facebook</a>
+    <a class="btn green" href="https://wa.me/91966377972" target="_blank">WhatsApp</a>
+    <a class="btn blue" href="https://jbrrms.in" target="_blank">Official Website</a>
+  </div>
+</div>
+
+<!-- LEGAL -->
+<div class="section">
+  <h2>⚠️ कानूनी घोषणा</h2>
+  <div class="card">
+    यह संगठन सामाजिक एवं सांस्कृतिक है।<br>
+    यह किसी सरकारी अथवा राजनीतिक संस्था से संबद्ध नहीं है।
+  </div>
+</div>
+
+</div>
+
+<footer>
+© <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Official Digital Portal
+</footer>
+
+<script>
+document.getElementById("yr").innerText=new Date().getFullYear();
+</script>
+
+</body>
 </html>
