@@ -92,17 +92,21 @@ if(!id){
   alert("❌ Member ID missing");
 }
 
-fetch("data/members.json")
+/* ===== LOAD MEMBERS.JSON FROM GITHUB ===== */
+fetch("https://gs9509590348-maker.github.io/jaybhavani-rastriya-rajput-mahasabha/members.json")
   .then(r => r.json())
   .then(list => {
+
     member = list.find(x =>
-      (x.member_id || x.memberId) === id
+      x.id && x.id.trim().toUpperCase() === id.trim().toUpperCase()
     );
+
     if(!member){
       alert("❌ Member not found");
       return;
     }
 
+    /* ===== FILL DATA ===== */
     name.innerText = member.name || "-";
     father.innerText = member.father || "-";
     post.innerText = member.post || "-";
@@ -111,20 +115,25 @@ fetch("data/members.json")
     district.innerText = member.district || "-";
     state.innerText = member.state || "-";
     status.innerText = member.status || "Active";
-    mid.innerText = member.member_id || member.memberId || "-";
+    mid.innerText = member.id;
 
-    if(member.photo){ photo.src = member.photo; }
+    if(member.photo){
+      photo.src = member.photo;
+    }
 
-    const verifyUrl = VERIFY_BASE + (member.member_id || member.memberId);
+    /* ===== VERIFY + QR ===== */
+    const verifyUrl = VERIFY_BASE + member.id;
     qr.src =
       "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
       encodeURIComponent(verifyUrl);
+
     verify.href = verifyUrl;
   })
   .catch(()=>{
     alert("❌ members.json load नहीं हुआ");
   });
 
+/* ===== DOWNLOAD CARD ===== */
 function download(){
   html2canvas(document.getElementById("card"),{scale:2}).then(c=>{
     const a=document.createElement("a");
@@ -134,20 +143,23 @@ function download(){
   });
 }
 
+/* ===== WHATSAPP SHARE ===== */
 function shareWhatsApp(){
   if(!member) return;
-  const midv = member.member_id || member.memberId;
+
   const msg =
 `मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
 
 नाम: ${member.name}
-पद: ${member.post}
-Department: ${member.department}
-Member ID: ${midv}
+Member ID: ${member.id}
 
 Verify Online 👇
-${VERIFY_BASE}${midv}`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+${VERIFY_BASE}${member.id}`;
+
+  window.open(
+    "https://wa.me/?text="+encodeURIComponent(msg),
+    "_blank"
+  );
 }
 </script>
 
