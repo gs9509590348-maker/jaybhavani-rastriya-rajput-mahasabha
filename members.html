@@ -4,70 +4,133 @@
 <meta charset="UTF-8">
 <title>Member Directory | JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
 header{background:#7b0000;color:#fff;padding:15px;text-align:center}
-.container{max-width:1100px;margin:20px auto;background:#fff;padding:15px;border-radius:10px}
-input{width:100%;padding:10px;margin:10px 0}
+.container{
+  max-width:1100px;margin:20px auto;
+  background:#fff;padding:15px;border-radius:10px
+}
+input{
+  width:100%;padding:10px;margin:10px 0;
+  font-size:14px
+}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{border:1px solid #ccc;padding:6px;text-align:left}
 th{background:#eee}
-.badge{background:#28a745;color:#fff;padding:3px 6px;border-radius:4px;font-size:12px}
+.badge{
+  background:#28a745;color:#fff;
+  padding:3px 6px;border-radius:4px;
+  font-size:12px
+}
+.footer{
+  text-align:center;font-size:12px;
+  color:#555;margin:30px 0
+}
+.no{color:#dc3545;font-weight:bold;text-align:center}
 </style>
 </head>
 
 <body>
+
 <header>
-<h2>📋 Public Member Directory</h2>
+  <h2>📋 Public Member Directory</h2>
+  <p>जय भवानी राष्ट्रीय राजपूत महासभा</p>
 </header>
 
 <div class="container">
-<input type="text" id="q" placeholder="नाम / मोबाइल / ID से खोजें…" onkeyup="filter()">
-<table id="tbl">
-<thead>
-<tr>
-<th>ID</th>
-<th>Name</th>
-<th>Mobile</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+  <input
+    type="text"
+    id="q"
+    placeholder="नाम / मोबाइल / Member ID से खोजें…"
+    onkeyup="filterMembers()"
+  >
+
+  <table id="tbl">
+    <thead>
+      <tr>
+        <th>Member ID</th>
+        <th>Name</th>
+        <th>Mobile</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div id="msg"></div>
+</div>
+
+<div class="footer">
+© जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Public Read-Only Directory
 </div>
 
 <script>
-let members=[];
+let members = [];
+const tbody = document.querySelector("#tbl tbody");
+const msg = document.getElementById("msg");
 
-fetch("members.json")
-.then(r=>r.json())
-.then(d=>{
-  members=d;
-  render(d);
-});
+/* ===== LOAD members.json (NO CACHE) ===== */
+fetch("members.json?v=" + Date.now())
+  .then(res => {
+    if(!res.ok) throw new Error("Load error");
+    return res.json();
+  })
+  .then(data => {
+    if(!Array.isArray(data)) throw new Error("Invalid JSON");
 
+    // ✅ clean invalid records
+    members = data.filter(m =>
+      m &&
+      m.id && m.id.toString().trim() !== ""
+    );
+
+    render(members);
+  })
+  .catch(err => {
+    msg.innerHTML = "<p class='no'>❌ Member data load नहीं हुआ</p>";
+    console.error(err);
+  });
+
+/* ===== RENDER TABLE ===== */
 function render(list){
-  const tb=document.querySelector("#tbl tbody");
-  tb.innerHTML="";
-  list.forEach(m=>{
-    tb.innerHTML+=`
+  tbody.innerHTML = "";
+
+  if(list.length === 0){
+    msg.innerHTML = "<p class='no'>❌ कोई सदस्य नहीं मिला</p>";
+    return;
+  }
+
+  msg.innerHTML = "";
+
+  list.forEach(m => {
+    tbody.innerHTML += `
       <tr>
         <td>${m.id}</td>
-        <td>${m.name}</td>
-        <td>${m.mobile}</td>
+        <td>${m.name || "-"}</td>
+        <td>${m.mobile || "-"}</td>
         <td><span class="badge">Verified</span></td>
-      </tr>`;
+      </tr>
+    `;
   });
 }
 
-function filter(){
-  const v=document.getElementById("q").value.toLowerCase();
-  render(members.filter(m=>
-    m.name.toLowerCase().includes(v) ||
-    m.mobile.includes(v) ||
-    m.id.toLowerCase().includes(v)
-  ));
+/* ===== SEARCH / FILTER ===== */
+function filterMembers(){
+  const v = document.getElementById("q").value
+    .toLowerCase().trim();
+
+  const filtered = members.filter(m =>
+    (m.name || "").toLowerCase().includes(v) ||
+    (m.mobile || "").toString().includes(v) ||
+    (m.id || "").toLowerCase().includes(v)
+  );
+
+  render(filtered);
 }
 </script>
+
 </body>
 </html>
