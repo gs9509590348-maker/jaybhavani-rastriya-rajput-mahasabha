@@ -125,7 +125,7 @@ footer a{color:#fff;text-decoration:underline}
 <!-- NAVIGATION -->
 <nav>
   <a href="karyakarini.html">👥 कार्यकारिणी</a>
-  <a href="directory.html">📂 सदस्य निर्देशिका</a>
+  <a href="members.html">📂 सदस्य निर्देशिका</a>
   <a href="gallery.html">🖼️ Gallery / Events</a>
 
   <a class="alt" target="_blank"
@@ -134,17 +134,19 @@ footer a{color:#fff;text-decoration:underline}
   </a>
 
   <a class="alt" target="_blank"
-     href="https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec">
+     href="https://script.google.com/macros/s/AKfycbxdCd3bPhNaxqGAdqckpYuCiKoEJOa-lSozU-F9aZbyMSHD08NajpUIv4UeB4QaRXYpsg/exec">
     🧑‍💼 Member Dashboard
   </a>
 
-  <a class="alt" target="_blank"
-     href="https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec?action=verify">
+  <a class="alt" href="verify.html">
     🔍 Verify Member
   </a>
 
-  <!-- ADMIN SAFE LOGIN -->
-  <a class="alt" href="#" onclick="openAdmin()">🛠️ Admin Login</a>
+  <!-- ADMIN SAFE LOGIN (SESSION BASED) -->
+  <a class="alt" target="_blank"
+     href="https://script.google.com/macros/s/AKfycbxdCd3bPhNaxqGAdqckpYuCiKoEJOa-lSozU-F9aZbyMSHD08NajpUIv4UeB4QaRXYpsg/exec?admin=1">
+    🛠️ Admin Login
+  </a>
 </nav>
 
 <div class="container">
@@ -175,14 +177,14 @@ footer a{color:#fff;text-decoration:underline}
     <div class="card">
       <h3>📂 Member Directory</h3>
       <p>सभी पंजीकृत सदस्यों की सूची।</p>
-      <a class="btn" href="directory.html">Open</a>
+      <a class="btn" href="members.html">Open</a>
     </div>
 
     <div class="card">
       <h3>🧑‍💼 Member Dashboard</h3>
       <p>ID Card, Certificate, Letter डाउनलोड।</p>
       <a class="btn" target="_blank"
-         href="https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec">
+         href="https://script.google.com/macros/s/AKfycbxdCd3bPhNaxqGAdqckpYuCiKoEJOa-lSozU-F9aZbyMSHD08NajpUIv4UeB4QaRXYpsg/exec">
         Login
       </a>
     </div>
@@ -190,16 +192,16 @@ footer a{color:#fff;text-decoration:underline}
     <div class="card">
       <h3>🔍 Verify Member</h3>
       <p>Member ID से सत्यापन।</p>
-      <a class="btn" target="_blank"
-         href="https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec?action=verify">
-        Verify
-      </a>
+      <a class="btn" href="verify.html">Verify</a>
     </div>
 
     <div class="card">
       <h3>🛠️ Admin Panel</h3>
-      <p>Approvals, Bulk, WhatsApp, CSV, Control.</p>
-      <a class="btn" href="#" onclick="openAdmin()">Admin Dashboard</a>
+      <p>Approvals, Bulk, Automation.</p>
+      <a class="btn" target="_blank"
+         href="https://script.google.com/macros/s/AKfycbxdCd3bPhNaxqGAdqckpYuCiKoEJOa-lSozU-F9aZbyMSHD08NajpUIv4UeB4QaRXYpsg/exec?admin=1">
+        Admin Dashboard
+      </a>
     </div>
 
   </div>
@@ -217,21 +219,6 @@ footer a{color:#fff;text-decoration:underline}
 
 <script>
 document.getElementById("yr").innerText = new Date().getFullYear();
-
-/* ========= ADMIN LOGIN (FINAL SAFE) ========= */
-function openAdmin(){
-  const p = prompt("Admin Password डालें:");
-  if(!p) return;
-
-  if(p === "JBRRMS@123"){
-    window.open(
-      "https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec?admin=1",
-      "_blank"
-    );
-  } else {
-    alert("❌ Wrong Password");
-  }
-}
 </script>
 
 </body>
