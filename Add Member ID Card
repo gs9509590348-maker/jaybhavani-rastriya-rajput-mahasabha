@@ -6,38 +6,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{background:#eee;font-family:Arial,sans-serif;margin:0}
-.card{
-  width:330px;margin:30px auto;background:#fff;
-  border:2px solid #7b0000;border-radius:12px;overflow:hidden
-}
+body{background:#eee;font-family:Arial;margin:0}
+.card{width:330px;margin:25px auto;background:#fff;border:2px solid #7b0000;border-radius:12px;overflow:hidden}
 .header{background:#7b0000;color:#fff;text-align:center;padding:10px}
-.header h3{margin:0;font-size:16px}
-.header small{font-size:12px}
 .photo{text-align:center;margin-top:10px}
-.photo img{
-  width:90px;height:90px;border-radius:50%;
-  border:2px solid #7b0000;object-fit:cover
-}
+.photo img{width:90px;height:90px;border-radius:50%;border:2px solid #7b0000;object-fit:cover}
 .info{padding:10px 15px;font-size:13px}
 .info p{margin:4px 0}
 .qr{text-align:center;padding:10px}
-.qr img{width:95px;height:95px}
-.footer-card{
-  background:#f4f4f4;text-align:center;font-size:12px;padding:8px
-}
-.btn{
-  display:block;width:92%;margin:10px auto;padding:10px;
-  background:#7b0000;color:#fff;border:none;border-radius:6px;
-  font-size:14px;text-align:center;cursor:pointer;text-decoration:none
-}
+.qr img{width:95px}
+.footer{background:#f4f4f4;text-align:center;font-size:12px;padding:8px}
+.btn{display:block;width:92%;margin:8px auto;padding:10px;background:#7b0000;color:#fff;border:none;border-radius:6px;font-size:14px}
 .gray{background:#555}
 .whatsapp{background:#25D366}
-.site-footer{
-  text-align:center;font-size:13px;color:#555;
-  margin:40px 0 20px;line-height:1.6
-}
-@media print{.no-print{display:none} body{background:#fff}}
+@media print{.no-print{display:none}}
 </style>
 </head>
 
@@ -45,123 +27,67 @@ body{background:#eee;font-family:Arial,sans-serif;margin:0}
 
 <div class="card" id="card">
   <div class="header">
-    <h3>जय भवानी राष्ट्रीय राजपूत महासभा</h3>
+    <b>जय भवानी राष्ट्रीय राजपूत महासभा</b><br>
     <small>Official Member ID Card</small>
   </div>
 
   <div class="photo">
-    <img id="photo"
-         src="https://via.placeholder.com/90"
-         onerror="this.src='../assets/no-photo.png'">
+    <img id="photo" src="https://via.placeholder.com/90">
   </div>
 
   <div class="info">
-    <p><b>Name:</b> <span id="name">-</span></p>
-    <p><b>Father:</b> <span id="father">-</span></p>
-    <p><b>Post:</b> <span id="post">-</span></p>
-    <p><b>Department:</b> <span id="department">-</span></p>
-    <p><b>Level:</b> <span id="level">-</span></p>
-    <p><b>District:</b> <span id="district">-</span></p>
-    <p><b>State:</b> <span id="state">-</span></p>
-    <p><b>Status:</b> <span id="status">Active</span></p>
-    <p><b>Member ID:</b> <span id="mid">-</span></p>
+    <p><b>Name:</b> <span id="name"></span></p>
+    <p><b>Father:</b> <span id="father"></span></p>
+    <p><b>Post:</b> <span id="post"></span></p>
+    <p><b>District:</b> <span id="district"></span></p>
+    <p><b>State:</b> <span id="state"></span></p>
+    <p><b>Member ID:</b> <span id="mid"></span></p>
   </div>
 
   <div class="qr">
-    <img id="qr" alt="QR Code">
+    <img id="qr">
   </div>
 
-  <div class="footer-card">
+  <div class="footer">
     Verify: https://jbrrms.in/verify.html
   </div>
 </div>
 
-<button class="btn no-print" onclick="window.print()">🖨️ Print / Save PDF</button>
-<button class="btn no-print" onclick="download()">⬇️ Download ID Card</button>
-<a id="verify" class="btn gray no-print" target="_blank">🔍 Verify Online</a>
-<button class="btn whatsapp no-print" onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<button class="btn no-print" onclick="window.print()">🖨️ Print</button>
+<a id="a4" class="btn gray no-print">🧾 A4 Print</a>
+<button class="btn whatsapp no-print" onclick="share()">📲 WhatsApp</button>
 
 <script>
-const qs = new URLSearchParams(location.search);
-const id = qs.get("id");
-const VERIFY_BASE = "https://jbrrms.in/verify.html?id=";
-let member = null;
+const id=new URLSearchParams(location.search).get("id");
+if(!id) alert("Member ID missing");
 
-if(!id){
-  alert("❌ Member ID missing in URL");
-}
+fetch("https://jbrrms.in/members.json")
+.then(r=>r.json())
+.then(list=>{
+  const m=list.find(x=>x.id===id);
+  if(!m) return alert("Member not found");
 
-/* LOAD MEMBERS.JSON (GitHub Pages) */
-fetch("../members.json")
-  .then(r => r.json())
-  .then(list => {
+  name.innerText=m.name||"";
+  father.innerText=m.father||"";
+  post.innerText=m.post||"";
+  district.innerText=m.district||"";
+  state.innerText=m.state||"";
+  mid.innerText=m.id;
+  if(m.photo) photo.src=m.photo;
 
-    member = list.find(x =>
-      x.id && x.id.trim().toUpperCase() === id.trim().toUpperCase()
-    );
+  const v="https://jbrrms.in/verify.html?id="+m.id;
+  qr.src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data="+encodeURIComponent(v);
+  a4.href="idcard-a4.html?id="+m.id;
 
-    if(!member){
-      alert("❌ Member not found");
-      return;
-    }
-
-    name.innerText = member.name || "-";
-    father.innerText = member.father || "-";
-    post.innerText = member.post || "-";
-    department.innerText = member.department || "-";
-    level.innerText = member.level || "-";
-    district.innerText = member.district || "-";
-    state.innerText = member.state || "-";
-    status.innerText = member.status || "Active";
-    mid.innerText = member.id;
-
-    if(member.photo){ photo.src = member.photo; }
-
-    const verifyUrl = VERIFY_BASE + member.id;
-    qr.src =
-      "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=" +
-      encodeURIComponent(verifyUrl);
-
-    verify.href = verifyUrl;
-  })
-  .catch(()=>{
-    alert("❌ members.json load failed");
-  });
-
-function download(){
-  html2canvas(document.getElementById("card"),{scale:2}).then(c=>{
-    const a=document.createElement("a");
-    a.download="JBRRMS_ID_"+id+".png";
-    a.href=c.toDataURL("image/png");
-    a.click();
-  });
-}
-
-function shareWhatsApp(){
-  if(!member) return;
-  const msg =
-`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
-
-नाम: ${member.name}
-Member ID: ${member.id}
-
-Verify 👇
-${VERIFY_BASE}${member.id}`;
-
-  window.open(
-    "https://wa.me/?text="+encodeURIComponent(msg),
-    "_blank"
-  );
-}
+  window.share=()=>window.open("https://wa.me/?text="+encodeURIComponent(
+`मैं जय भवानी राष्ट्रीय राजपूत महासभा का सदस्य हूँ ✅
+नाम: ${m.name}
+ID: ${m.id}
+Verify: ${v}`
+  ));
+})
+.catch(()=>alert("members.json load नहीं हुआ"));
 </script>
-
-<footer class="site-footer">
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-यह वेबसाइट केवल संगठनात्मक जानकारी हेतु है।<br>
-यह किसी सरकारी संस्था से संबद्ध नहीं है।
-</footer>
 
 </body>
 </html>
