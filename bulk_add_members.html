@@ -68,29 +68,32 @@ footer a{color:#7b0000;text-decoration:none}
 
 <body>
 
+<script>
+/* 🔐 SESSION BASED ADMIN CHECK */
+if(sessionStorage.getItem("admin")!=="1"){
+  alert("❌ Unauthorized Access");
+  location.href="admin_login.html";
+}
+</script>
+
 <header>
   <h2>👥 Bulk Add Members</h2>
   <p>Admin Panel – Master Data Entry Tool</p>
 </header>
 
-<!-- ADMIN NAVIGATION -->
 <nav>
-  <a href="admin_control.html">🔐 Control Room</a>
   <a href="admin_dashboard.html">📊 Dashboard</a>
-  <a href="admin_pending.html">⏳ Pending Members</a>
+  <a href="admin_pending.html">⏳ Pending</a>
   <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
   <a href="admin_edit_member.html">✏️ Edit Member</a>
   <a href="bulk_add_members.html">➕ Bulk Add</a>
   <a href="admin_karyakarini.html">🧑‍⚖️ कार्यकारिणी</a>
-  <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
-  <a href="verify.html" target="_blank">🔍 Verify</a>
-  <a href="certificate.html" target="_blank">📜 Certificate</a>
-  <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
-  <a href="appointment.html" target="_blank">📄 Appointment</a>
-  <a href="gallery.html" target="_blank">🖼️ Gallery</a>
-  <a href="events.html" target="_blank">📢 Events</a>
-  <a href="contact.html" target="_blank">📞 Contact</a>
-  <a href="index.html" target="_blank">🏠 Website</a>
+
+  <a href="../members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="../verify.html" target="_blank">🔍 Verify</a>
+  <a href="../certificate.html" target="_blank">📜 Certificate</a>
+  <a href="../idcard_print.html" target="_blank">🪪 ID Card</a>
+  <a href="../index.html" target="_blank">🏠 Website</a>
 </nav>
 
 <div class="container">
@@ -124,25 +127,23 @@ footer a{color:#7b0000;text-decoration:none}
 <textarea id="out" placeholder="यहाँ Generated JSON आएगा..."></textarea>
 
 <p class="note">
-👉 इस JSON को <b>data/members.json</b> में paste / merge करें  
-<br>👉 Default <b>status = pending</b> रहेगा  
-<br>👉 Approve करने के लिए <b>Bulk Approve</b> tool उपयोग करें  
-<br>👉 GitHub Pages = Static Mode (Manual Commit Required)
+👉 इस JSON को <b>/data/members.json</b> में merge करें<br>
+👉 Default <b>status = pending</b> रहेगा<br>
+👉 Approve के लिए <b>Bulk Approve</b> tool use करें<br>
+👉 GitHub Pages = Static (Manual Commit Required)
 </p>
 
 </div>
 
 <footer>
-© 2025 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Admin Tools – Authorized Use Only<br>
-<a href="privacy.html" target="_blank">Privacy</a> |
-<a href="terms.html" target="_blank">Terms</a> |
-<a href="verify.html" target="_blank">Verify</a>
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
+Admin Tools – Authorized Use Only
 </footer>
 
 <script>
-const tbody = document.querySelector("#tbl tbody");
+const tbody=document.querySelector("#tbl tbody");
 
+/* ADD ROW */
 function addRow(){
   const r=document.createElement("tr");
   r.innerHTML=`
@@ -160,10 +161,11 @@ function addRow(){
 }
 addRow();
 
+/* GENERATE JSON */
 function generate(){
   const rows=[...tbody.querySelectorAll("tr")];
   const data=[];
-  const today = new Date().toISOString().split("T")[0];
+  const today=new Date().toISOString().split("T")[0];
 
   rows.forEach(r=>{
     const c=[...r.querySelectorAll("input")].map(i=>i.value.trim());
@@ -185,7 +187,7 @@ function generate(){
     });
   });
 
-  document.getElementById("out").value =
+  document.getElementById("out").value=
     JSON.stringify(data,null,2);
 }
 </script>
