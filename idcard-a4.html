@@ -6,7 +6,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{font-family:Arial;background:#eee;margin:0}
+*{box-sizing:border-box}
+body{
+  font-family:Arial;
+  background:#eee;
+  margin:0
+}
 .page{
   width:210mm;
   height:297mm;
@@ -18,19 +23,51 @@ body{font-family:Arial;background:#eee;margin:0}
   border:2px solid #7b0000;
   padding:20px
 }
-h2{text-align:center;color:#7b0000;margin:5px 0}
-.row{display:flex;gap:20px;align-items:flex-start}
+h2{
+  text-align:center;
+  color:#7b0000;
+  margin:5px 0 15px
+}
+.row{
+  display:flex;
+  gap:20px;
+  align-items:flex-start
+}
 .photo img{
-  width:120px;height:120px;
+  width:120px;
+  height:120px;
   border-radius:8px;
   border:2px solid #7b0000;
   object-fit:cover
 }
-.info p{margin:6px 0;font-size:15px}
-.qr img{width:120px;height:120px}
-.verify{text-align:center;margin-top:30px;font-size:14px}
+.info p{
+  margin:6px 0;
+  font-size:15px
+}
+.qr img{
+  width:120px;
+  height:120px
+}
+.verify{
+  text-align:center;
+  margin-top:30px;
+  font-size:14px;
+  word-break:break-all
+}
+.badge{
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:13px;
+  color:#fff
+}
+.approved{background:#28a745}
+.pending{background:#ff9800}
+.rejected{background:#dc3545}
+
 @media print{
   body{background:#fff}
+  .page{margin:0}
 }
 </style>
 </head>
@@ -39,29 +76,37 @@ h2{text-align:center;color:#7b0000;margin:5px 0}
 
 <div class="page">
   <div class="card">
+
     <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
 
     <div class="row">
+
       <div class="photo">
         <img id="photo" src="assets/photo.png">
       </div>
 
       <div class="info">
-        <p><b>Name:</b> <span id="name"></span></p>
-        <p><b>District:</b> <span id="district"></span></p>
-        <p><b>State:</b> <span id="state"></span></p>
-        <p><b>Member ID:</b> <span id="mid"></span></p>
-        <p><b>Status:</b> <span id="status"></span></p>
+        <p><b>Name:</b> <span id="name">-</span></p>
+        <p><b>District:</b> <span id="district">-</span></p>
+        <p><b>State:</b> <span id="state">-</span></p>
+        <p><b>Member ID:</b> <span id="mid">-</span></p>
+        <p>
+          <b>Status:</b>
+          <span id="statusBadge" class="badge approved">Approved</span>
+        </p>
       </div>
 
       <div class="qr">
         <img id="qr">
       </div>
+
     </div>
 
     <div class="verify">
-      Verify: https://jbrrms.in/verify.html?id=<span id="vid"></span>
+      Verify:
+      <span id="verifyUrl"></span>
     </div>
+
   </div>
 </div>
 
@@ -70,40 +115,55 @@ const params = new URLSearchParams(location.search);
 const memberId = params.get("id");
 
 if(!memberId){
-  alert("Member ID missing");
-  throw new Error("No ID");
+  alert("❌ Member ID missing");
+  throw new Error("No Member ID");
 }
 
-fetch("members.json?v=" + Date.now())
-.then(r => r.json())
-.then(list => {
-  const m = list.find(x => x.member_id === memberId);
+/* ===== LOAD members.json ===== */
+fetch("data/members.json?v=" + Date.now())
+.then(r=>{
+  if(!r.ok) throw new Error("load error");
+  return r.json();
+})
+.then(list=>{
+  const m = list.find(x =>
+    x.member_id && x.member_id.toUpperCase() === memberId.toUpperCase()
+  );
+
   if(!m){
-    alert("Member not found");
+    alert("❌ Member not found");
     return;
   }
 
-  document.getElementById("name").innerText = m.name || "-";
-  document.getElementById("district").innerText = m.district || "-";
-  document.getElementById("state").innerText = m.state || "-";
-  document.getElementById("mid").innerText = m.member_id;
-  document.getElementById("status").innerText = m.status || "Approved";
-  document.getElementById("vid").innerText = m.member_id;
+  /* BASIC INFO */
+  name.innerText = m.name || "-";
+  district.innerText = m.district || "-";
+  state.innerText = m.state || "-";
+  mid.innerText = m.member_id;
 
-  // Photo (optional)
+  /* STATUS */
+  const st = (m.status || "approved").toLowerCase();
+  statusBadge.innerText = st.charAt(0).toUpperCase() + st.slice(1);
+  statusBadge.className = "badge " + st;
+
+  /* PHOTO */
   if(m.photo){
-    document.getElementById("photo").src = m.photo;
+    photo.src = m.photo;
   }
 
-  // QR code
-  document.getElementById("qr").src =
+  /* VERIFY URL */
+  const verifyLink =
+    location.origin + "/verify.html?id=" + m.member_id;
+
+  verifyUrl.innerText = verifyLink;
+
+  /* QR CODE */
+  qr.src =
     "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" +
-    encodeURIComponent(
-      "https://jbrrms.in/verify.html?id=" + m.member_id
-    );
+    encodeURIComponent(verifyLink);
 })
-.catch(err => {
-  alert("Data load error");
+.catch(err=>{
+  alert("❌ Data load error");
   console.error(err);
 });
 </script>
