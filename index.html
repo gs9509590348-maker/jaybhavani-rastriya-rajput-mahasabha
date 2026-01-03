@@ -29,9 +29,9 @@ header{
   background:linear-gradient(135deg,var(--dark),var(--main));
   color:#fff;
   text-align:center;
-  padding:24px 14px;
+  padding:26px 14px;
 }
-header h1{margin:0;font-size:22px}
+header h1{margin:0;font-size:24px}
 header p{margin:6px 0 0;font-size:13px}
 
 /* NAV */
@@ -66,13 +66,24 @@ nav a.primary{
 .card{
   background:var(--card);
   border-radius:14px;
-  padding:16px;
+  padding:18px;
   margin-bottom:18px;
 }
 .card h2{
   margin:0 0 12px;
   color:var(--main);
   font-size:18px;
+}
+
+/* HERO */
+.hero{
+  text-align:center;
+  padding:20px;
+}
+.hero p{
+  font-size:15px;
+  line-height:1.6;
+  color:#333;
 }
 
 /* STATS */
@@ -87,8 +98,22 @@ nav a.primary{
   padding:14px;
   text-align:center;
 }
-.stat b{display:block;font-size:20px}
+.stat b{display:block;font-size:22px;color:#000}
 .stat span{font-size:13px;color:#555}
+
+/* QUICK ACTIONS */
+.actions{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+}
+.action{
+  background:#fafafa;
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+  font-weight:600;
+}
 
 /* LIST */
 ul{padding-left:18px}
@@ -99,7 +124,7 @@ footer{
   background:#000;
   color:#fff;
   text-align:center;
-  padding:12px;
+  padding:14px;
   font-size:12px;
 }
 </style>
@@ -109,7 +134,7 @@ footer{
 
 <header>
   <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
-  <p>Official Digital Portal</p>
+  <p>राष्ट्रीय स्तर का सामाजिक संगठन</p>
 </header>
 
 <nav>
@@ -123,45 +148,58 @@ footer{
 
 <div class="container">
 
+<!-- HERO -->
+<div class="card hero">
+  <h2>🚩 जय राजपूताना</h2>
+  <p>
+    जय भवानी राष्ट्रीय राजपूत महासभा राजपूत समाज की एकता,  
+    संगठन, सम्मान एवं अधिकारों के संरक्षण हेतु समर्पित संगठन है।
+  </p>
+</div>
+
 <!-- LIVE STATS -->
 <div class="card">
-  <h2>📊 लाइव आँकड़े</h2>
+  <h2>📊 लाइव संगठन आँकड़े</h2>
   <div class="stats" id="stats">
-    <div class="stat"><b>–</b><span>Total</span></div>
-    <div class="stat"><b>–</b><span>Approved</span></div>
-    <div class="stat"><b>–</b><span>Pending</span></div>
-    <div class="stat"><b>–</b><span>Rejected</span></div>
+    <div class="stat"><b>—</b><span>Total Members</span></div>
+    <div class="stat"><b>—</b><span>Approved</span></div>
+    <div class="stat"><b>—</b><span>Pending</span></div>
+    <div class="stat"><b>—</b><span>Rejected</span></div>
+  </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="card">
+  <h2>⚡ त्वरित सेवाएँ</h2>
+  <div class="actions">
+    <a class="action" href="verify.html">🔍 Member Verify</a>
+    <a class="action" href="members.html">👥 Member Directory</a>
+    <a class="action" href="certificate.html">📜 Certificate</a>
+    <a class="action" href="appointment.html">📄 Appointment</a>
+    <a class="action" href="idcard-a4.html">🪪 ID Card</a>
+    <a class="action" href="stats.html">📊 Statistics</a>
   </div>
 </div>
 
 <!-- ABOUT -->
 <div class="card">
-  <h2>📜 संगठन परिचय</h2>
-  <p>
-    जय भवानी राष्ट्रीय राजपूत महासभा राजपूत समाज की एकता,
-    सम्मान एवं संगठनात्मक मजबूती हेतु कार्यरत एक राष्ट्रीय संगठन है।
-  </p>
-</div>
-
-<!-- QUICK LINKS -->
-<div class="card">
-  <h2>🔗 महत्वपूर्ण लिंक</h2>
+  <h2>📜 संगठन उद्देश्य</h2>
   <ul>
-    <li><a href="members.html">👥 सदस्य सूची</a></li>
-    <li><a href="verify.html">🔍 सदस्य सत्यापन</a></li>
-    <li><a href="certificate.html">📜 प्रमाण पत्र</a></li>
-    <li><a href="appointment.html">📄 नियुक्ति पत्र</a></li>
-    <li><a href="idcard-a4.html">🪪 ID Card</a></li>
+    <li>राजपूत समाज को संगठित करना</li>
+    <li>सामाजिक, शैक्षणिक एवं आर्थिक सहयोग</li>
+    <li>युवा नेतृत्व एवं कार्यकारिणी निर्माण</li>
+    <li>डिजिटल पहचान एवं सत्यापन प्रणाली</li>
   </ul>
 </div>
 
 </div>
 
 <footer>
-© 2026 JBRRMS · Powered by GitHub Pages
+© 2026 जय भवानी राष्ट्रीय राजपूत महासभा  
+<br>Powered by GitHub Pages
 </footer>
 
-<!-- ✅ DATA SCRIPT (ABSOLUTE PATH – SAFE) -->
+<!-- 🔐 SAFE DATA SCRIPT -->
 <script>
 const box = document.getElementById("stats");
 
@@ -183,15 +221,19 @@ fetch("/data/members.json?v=" + Date.now())
     });
 
     box.innerHTML = `
-      <div class="stat"><b>${total}</b><span>Total</span></div>
+      <div class="stat"><b>${total}</b><span>Total Members</span></div>
       <div class="stat"><b>${approved}</b><span>Approved</span></div>
       <div class="stat"><b>${pending}</b><span>Pending</span></div>
       <div class="stat"><b>${rejected}</b><span>Rejected</span></div>
     `;
   })
   .catch(()=>{
-    box.innerHTML =
-      "<div style='color:red'>❌ Data load failed</div>";
+    box.innerHTML = `
+      <div class="stat"><b>0</b><span>Total</span></div>
+      <div class="stat"><b>0</b><span>Approved</span></div>
+      <div class="stat"><b>0</b><span>Pending</span></div>
+      <div class="stat"><b>0</b><span>Rejected</span></div>
+    `;
   });
 </script>
 
