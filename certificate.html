@@ -6,32 +6,51 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body{background:#eee;font-family:Mangal,Arial,sans-serif;margin:0}
+body{
+  background:#eee;
+  font-family:Mangal,Arial,sans-serif;
+  margin:0
+}
 .paper{
-  width:700px;max-width:95%;
-  margin:30px auto;background:#fff;
-  padding:30px;border:4px double #7b0000
+  width:700px;
+  max-width:95%;
+  margin:30px auto;
+  background:#fff;
+  padding:30px;
+  border:4px double #7b0000
 }
 h1{text-align:center;color:#7b0000;margin:0}
 .sub{text-align:center;font-size:14px;margin-bottom:15px}
 hr{border:0;border-top:2px solid #7b0000;margin:15px 0}
 p{font-size:16px;line-height:1.8}
 .footer-row{
-  display:flex;justify-content:space-between;
-  margin-top:40px;font-size:15px
+  display:flex;
+  justify-content:space-between;
+  margin-top:40px;
+  font-size:15px
 }
 .btn{
-  display:block;margin:10px auto;
-  padding:10px 16px;background:#7b0000;
-  color:#fff;border:none;border-radius:6px;
-  text-decoration:none;text-align:center;
-  font-size:15px;cursor:pointer;max-width:320px
+  display:block;
+  margin:10px auto;
+  padding:10px 16px;
+  background:#7b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  text-decoration:none;
+  text-align:center;
+  font-size:15px;
+  cursor:pointer;
+  max-width:320px
 }
 .gray{background:#555}
 .whatsapp{background:#25D366}
 .site-footer{
-  text-align:center;font-size:13px;
-  color:#555;margin:40px 0 20px;line-height:1.6
+  text-align:center;
+  font-size:13px;
+  color:#555;
+  margin:40px 0 20px;
+  line-height:1.6
 }
 @media print{
   .no-print{display:none}
@@ -60,7 +79,7 @@ p{font-size:16px;line-height:1.8}
 राज्य : <b id="state"></b><br><br>
 
 को <b>जय भवानी राष्ट्रीय राजपूत महासभा</b> में<br>
-सत्यापित सदस्य के रूप में<br><br>
+<b>सत्यापित सदस्य</b> के रूप में<br><br>
 
 नियुक्त / स्वीकृत किया गया है।
 </p>
@@ -93,45 +112,51 @@ p{font-size:16px;line-height:1.8}
 
 <script>
 const qs = new URLSearchParams(location.search);
-const memberId = (qs.get("id")||"").trim().toUpperCase();
-const VERIFY_BASE = "verify.html?id=";
+const memberId = (qs.get("id") || "").trim().toUpperCase();
 
-let member=null;
+let member = null;
 
 if(!memberId){
   alert("❌ Member ID missing");
-  throw new Error("No ID");
+  throw new Error("No Member ID");
 }
 
 /* ===== LOAD members.json ===== */
-fetch("members.json?v="+Date.now())
-.then(r=>r.json())
+fetch("data/members.json?v=" + Date.now())
+.then(r=>{
+  if(!r.ok) throw new Error("load error");
+  return r.json();
+})
 .then(list=>{
   member = list.find(x =>
-    (x.member_id||"").toUpperCase() === memberId
+    (x.member_id || "").toUpperCase() === memberId
   );
+
   if(!member){
     alert("❌ Member not found");
     return;
   }
 
-  document.getElementById("name").innerText     = member.name || "-";
-  document.getElementById("district").innerText= member.district || "-";
-  document.getElementById("state").innerText   = member.state || "-";
-  document.getElementById("mid").innerText      = member.member_id;
-  document.getElementById("date").innerText     =
+  /* FILL CERTIFICATE */
+  name.innerText      = member.name || "-";
+  district.innerText = member.district || "-";
+  state.innerText    = member.state || "-";
+  mid.innerText      = member.member_id;
+  date.innerText     =
     new Date().toLocaleDateString("hi-IN");
 
-  document.getElementById("idcard").href =
-    "idcard-a4.html?id=" + member.member_id;
-
-  document.getElementById("verify").href =
-    VERIFY_BASE + member.member_id;
+  /* LINKS */
+  idcard.href = "idcard-a4.html?id=" + member.member_id;
+  verify.href = "verify.html?id=" + member.member_id;
+})
+.catch(()=>{
+  alert("❌ members.json load नहीं हुआ");
 });
 
 /* ===== WHATSAPP SHARE ===== */
 function shareWhatsApp(){
   if(!member) return;
+
   const msg =
 `मैं जय भवानी राष्ट्रीय राजपूत महासभा का सत्यापित सदस्य हूँ ✅
 
@@ -139,8 +164,12 @@ function shareWhatsApp(){
 Member ID: ${member.member_id}
 
 Verify Online 👇
-${location.origin}/${VERIFY_BASE}${member.member_id}`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg),"_blank");
+${location.origin}/verify.html?id=${member.member_id}`;
+
+  window.open(
+    "https://wa.me/?text="+encodeURIComponent(msg),
+    "_blank"
+  );
 }
 </script>
 
