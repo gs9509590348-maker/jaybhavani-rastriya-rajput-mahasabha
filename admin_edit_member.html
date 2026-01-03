@@ -7,25 +7,20 @@
 
 <style>
 body{font-family:Arial;background:#f4f4f4;margin:0}
-
-/* HEADER */
 header{background:#7b0000;color:#fff;padding:14px;text-align:center}
 header h2{margin:0}
 header div{font-size:13px}
-
-/* NAV */
 nav{background:#3b0000;display:flex;flex-wrap:wrap;justify-content:center}
 nav a{color:#fff;text-decoration:none;padding:8px 12px;font-size:14px}
 nav a:hover{background:#7b0000}
 
-/* BOX */
 .box{
   max-width:520px;margin:25px auto;
   background:#fff;padding:20px;
   border:2px solid #7b0000;border-radius:10px
 }
 h3{text-align:center;color:#7b0000;margin-top:0}
-input{
+input,select{
   width:100%;padding:9px;margin:6px 0;
   font-size:14px
 }
@@ -36,10 +31,24 @@ button{
   font-size:15px;cursor:pointer
 }
 .gray{background:#555}
+.green{background:#28a745}
+.red{background:#dc3545}
 .note{font-size:13px;color:#555;margin-top:10px}
 footer{text-align:center;font-size:12px;color:#555;margin:30px 10px}
 .ok{color:#28a745;font-weight:bold}
 .no{color:#dc3545;font-weight:bold}
+.badge{
+  display:inline-block;padding:4px 10px;
+  border-radius:20px;font-size:12px;color:#fff
+}
+.approved{background:#28a745}
+.rejected{background:#dc3545}
+.pending{background:#ff9800}
+.photo{text-align:center;margin:10px 0}
+.photo img{
+  width:90px;height:90px;border-radius:50%;
+  object-fit:cover;border:2px solid #7b0000
+}
 </style>
 </head>
 
@@ -54,8 +63,8 @@ if(sessionStorage.getItem("admin") !== "1"){
 </script>
 
 <header>
-  <h2>🔐 JBRRMS – Admin Control</h2>
-  <div>Edit Member Panel (GitHub Static)</div>
+  <h2>✏️ Edit Member – Admin Panel</h2>
+  <div>Jay Bhavani Rashtriya Rajput Mahasabha</div>
 </header>
 
 <nav>
@@ -63,35 +72,46 @@ if(sessionStorage.getItem("admin") !== "1"){
   <a href="admin_pending.html">⏳ Pending</a>
   <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
   <a href="admin_edit_member.html">✏️ Edit Member</a>
-  <a href="members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
-  <a href="verify.html" target="_blank">🔍 Verify</a>
-  <a href="certificate.html" target="_blank">📜 Certificate</a>
-  <a href="idcard_print.html" target="_blank">🪪 ID Card</a>
-  <a href="index.html" target="_blank">🌐 Website</a>
+
+  <a href="../members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="../verify.html" target="_blank">🔍 Verify</a>
+  <a href="../index.html" target="_blank">🌐 Website</a>
 </nav>
 
 <div class="box">
-  <h3>✏️ Edit Member Details</h3>
+  <h3>🔍 Search Member</h3>
 
-  <input id="mid" placeholder="Enter Member ID (JBRRMS-XXXX)">
-  <button onclick="loadMember()">🔎 Load Member</button>
+  <input id="mid" placeholder="Search by Member ID (JBRRMS-XXXX)">
+  <input id="mobileSearch" placeholder="Live search by Mobile">
 
   <div id="msg"></div>
 
   <hr>
 
+  <div class="photo" id="photoBox" style="display:none">
+    <img id="photoPreview">
+  </div>
+
   <input id="name" placeholder="Member Name">
   <input id="father" placeholder="Father Name">
   <input id="post" placeholder="Post / Position">
   <input id="level" placeholder="Level (District / State / National)">
-  <input id="photo" placeholder="Photo URL">
+
+  <div>
+    <b>Status:</b>
+    <span id="statusBadge" class="badge pending">Pending</span>
+  </div>
+
+  <button class="green" onclick="setStatus('Approved')">✅ Approve</button>
+  <button class="red" onclick="setStatus('Rejected')">❌ Reject</button>
+  <button class="gray" onclick="setStatus('Pending')">⏳ Pending</button>
 
   <button onclick="downloadJSON()">⬇️ Download Updated members.json</button>
   <button class="gray" onclick="location.reload()">🔄 Reset</button>
 
   <p class="note">
     ⚠️ Download की गई <b>members.json</b> फ़ाइल को  
-    GitHub repo में <b>same path ( /data/members.json )</b> पर replace करें।
+    GitHub repo में <b>/data/members.json</b> path पर replace करें।
   </p>
 </div>
 
@@ -101,56 +121,78 @@ Admin Panel – Authorized Use Only
 </footer>
 
 <script>
-let members = [];
-let index = -1;
-const msg = document.getElementById("msg");
+let members=[];
+let index=-1;
+const msg=document.getElementById("msg");
 
-/* ===== LOAD members.json (CACHE SAFE) ===== */
-fetch("data/members.json?v=" + Date.now())
-  .then(r=>{
-    if(!r.ok) throw new Error("load error");
-    return r.json();
-  })
-  .then(d=>{
-    if(!Array.isArray(d)) throw new Error("invalid json");
-    members = d.filter(m=>m && m.id);
-  })
-  .catch(()=>{
-    msg.innerHTML="<p class='no'>❌ members.json load नहीं हुआ</p>";
-  });
+/* ===== LOAD JSON ===== */
+fetch("../data/members.json?v="+Date.now())
+.then(r=>r.json())
+.then(d=>{
+  members=d.filter(m=>m && m.member_id);
+})
+.catch(()=>{
+  msg.innerHTML="<p class='no'>❌ members.json load नहीं हुआ</p>";
+});
 
-/* ===== LOAD MEMBER BY ID ===== */
-function loadMember(){
-  const id=document.getElementById("mid").value.trim().toUpperCase();
-  index = members.findIndex(m=>m.id && m.id.toUpperCase()===id);
+/* ===== LOAD BY ID ===== */
+mid.addEventListener("change",()=>{
+  loadById(mid.value);
+});
 
-  if(index<0){
-    msg.innerHTML="<p class='no'>❌ Member Not Found</p>";
-    return;
+/* ===== LIVE SEARCH BY MOBILE ===== */
+mobileSearch.addEventListener("input",()=>{
+  const v=mobileSearch.value.trim();
+  if(v.length<5) return;
+  const i=members.findIndex(m=>m.mobile && m.mobile.toString().includes(v));
+  if(i>=0) loadMember(i);
+});
+
+/* ===== LOAD MEMBER ===== */
+function loadById(id){
+  const i=members.findIndex(m=>m.member_id.toUpperCase()===id.trim().toUpperCase());
+  if(i>=0) loadMember(i);
+  else msg.innerHTML="<p class='no'>❌ Member Not Found</p>";
+}
+
+function loadMember(i){
+  index=i;
+  const m=members[i];
+  name.value=m.name||"";
+  father.value=m.father||"";
+  post.value=m.post||"";
+  level.value=m.level||"";
+
+  updateStatus(m.status||"Pending");
+
+  if(m.photo){
+    photoPreview.src=m.photo;
+    photoBox.style.display="block";
+  }else{
+    photoBox.style.display="none";
   }
-
-  const m=members[index];
-  name.value   = m.name   || "";
-  father.value = m.father || "";
-  post.value   = m.post   || "";
-  level.value  = m.level  || "";
-  photo.value  = m.photo  || "";
 
   msg.innerHTML="<p class='ok'>✅ Member Loaded</p>";
 }
 
-/* ===== DOWNLOAD UPDATED JSON ===== */
-function downloadJSON(){
-  if(index<0){
-    alert("❌ पहले Member load करें");
-    return;
-  }
+/* ===== STATUS ===== */
+function updateStatus(s){
+  statusBadge.innerText=s;
+  statusBadge.className="badge "+s.toLowerCase();
+}
+function setStatus(s){
+  if(index<0){alert("Member load करें");return;}
+  members[index].status=s;
+  updateStatus(s);
+}
 
-  members[index].name   = name.value.trim();
-  members[index].father= father.value.trim();
-  members[index].post  = post.value.trim();
-  members[index].level = level.value.trim();
-  members[index].photo = photo.value.trim();
+/* ===== DOWNLOAD ===== */
+function downloadJSON(){
+  if(index<0){alert("Member load करें");return;}
+  members[index].name=name.value.trim();
+  members[index].father=father.value.trim();
+  members[index].post=post.value.trim();
+  members[index].level=level.value.trim();
 
   const blob=new Blob(
     [JSON.stringify(members,null,2)],
