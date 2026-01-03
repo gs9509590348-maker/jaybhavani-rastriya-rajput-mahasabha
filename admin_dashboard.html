@@ -12,10 +12,18 @@ body{margin:0;font-family:Segoe UI,Arial;background:#f4f4f4}
 /* HEADER */
 header{
   background:#7b0000;color:#fff;
-  padding:16px;text-align:center
+  padding:16px;text-align:center;
+  position:relative
 }
 header h2{margin:0}
 header p{margin:6px 0 0;font-size:13px}
+.logout{
+  position:absolute;right:15px;top:15px;
+  background:#fff;color:#7b0000;
+  border:none;border-radius:6px;
+  padding:6px 10px;font-size:13px;
+  cursor:pointer
+}
 
 /* NAV */
 nav{
@@ -69,91 +77,72 @@ nav a:hover{background:#7b0000}
 .quick a.green{background:#28a745}
 .quick a.blue{background:#0066cc}
 
+/* CHART */
+.chart{
+  max-width:420px;margin:auto
+}
+
 /* FOOTER */
 footer{
   text-align:center;font-size:12px;
   color:#555;margin:30px 10px
 }
-footer a{color:#7b0000;text-decoration:none}
 </style>
 </head>
 
 <body>
 
 <script>
-/* 🔐 SESSION BASED ADMIN CHECK */
-if(sessionStorage.getItem("admin") !== "1"){
+/* 🔐 SESSION CHECK */
+if(sessionStorage.getItem("admin")!=="1"){
   alert("❌ Unauthorized Access");
-  location.href = "../admin_login.html";
+  location.href="admin_login.html";
 }
 </script>
 
 <header>
+  <button class="logout" onclick="logout()">🚪 Logout</button>
   <h2>📊 Admin Dashboard</h2>
   <p>Jay Bhavani Rashtriya Rajput Mahasabha</p>
 </header>
 
 <nav>
-  <a href="../admin_control.html">🔐 Control</a>
-  <a href="../admin_dashboard.html">📊 Dashboard</a>
-  <a href="../admin_pending.html">⏳ Pending</a>
-  <a href="../admin_bulk_approve.html">🚀 Bulk Approve</a>
-  <a href="../bulk_add_members.html">➕ Bulk Add</a>
-  <a href="../bulk_whatsapp.html">📲 WhatsApp</a>
-  <a href="../admin_edit_member.html">✏️ Edit Member</a>
-
-  <a href="../karyakarini.html" target="_blank">👥 कार्यकारिणी</a>
-  <a href="../members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
+  <a href="admin_dashboard.html">📊 Dashboard</a>
+  <a href="admin_pending.html">⏳ Pending</a>
+  <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
+  <a href="bulk_add_members.html">➕ Bulk Add</a>
+  <a href="bulk_whatsapp.html">📲 WhatsApp</a>
   <a href="../verify.html" target="_blank">🔍 Verify</a>
-  <a href="../certificate.html" target="_blank">📜 Certificate</a>
-  <a href="../idcard_print.html" target="_blank">🪪 ID Card</a>
   <a href="../index.html" target="_blank">🏠 Website</a>
 </nav>
 
 <div class="container">
 
-  <!-- STATS CARDS -->
-  <div class="cards">
-    <div class="card blue">
-      <h3 id="total">0</h3>
-      <p>Total Members</p>
-    </div>
-    <div class="card green">
-      <h3 id="approved">0</h3>
-      <p>Approved Members</p>
-    </div>
-    <div class="card red">
-      <h3 id="pending">0</h3>
-      <p>Pending Members</p>
-    </div>
-    <div class="card orange">
-      <h3 id="kcount">0</h3>
-      <p>कार्यकारिणी Members</p>
-    </div>
-  </div>
+<!-- STATS -->
+<div class="cards">
+  <div class="card blue"><h3 id="total">0</h3><p>Total Members</p></div>
+  <div class="card green"><h3 id="approved">0</h3><p>Approved</p></div>
+  <div class="card red"><h3 id="pending">0</h3><p>Pending</p></div>
+  <div class="card orange"><h3 id="kcount">0</h3><p>कार्यकारिणी</p></div>
+</div>
 
-  <!-- QUICK ACTIONS -->
-  <div class="section">
-    <h3>⚡ Quick Actions</h3>
-    <div class="quick">
-      <a href="../admin_pending.html">⏳ Pending</a>
-      <a href="../admin_bulk_approve.html" class="green">🚀 Bulk Approve</a>
-      <a href="../bulk_add_members.html" class="blue">➕ Bulk Add</a>
-      <a href="../bulk_whatsapp.html">📲 WhatsApp</a>
-      <a href="../admin_karyakarini.html" class="gray">🧑‍💼 कार्यकारिणी</a>
-    </div>
+<!-- CHART -->
+<div class="section">
+  <h3>📊 Member Status Chart</h3>
+  <div class="chart">
+    <canvas id="statusChart"></canvas>
   </div>
+</div>
 
-  <!-- SYSTEM INFO -->
-  <div class="section">
-    <h3>ℹ️ System Info</h3>
-    <p>
-      ✔ Hosting: <b>GitHub Pages (Static)</b><br>
-      ✔ Data Source: <b>JSON Files</b><br>
-      ✔ Update Flow: Edit → Download → GitHub Replace<br>
-      🔐 Admin Access: Session Based
-    </p>
+<!-- QUICK -->
+<div class="section">
+  <h3>⚡ Quick Actions</h3>
+  <div class="quick">
+    <a href="#" onclick="exportCSV()">🧾 Export CSV</a>
+    <a href="admin_bulk_approve.html" class="green">🚀 Bulk Approve</a>
+    <a href="bulk_whatsapp.html" class="blue">📲 WhatsApp</a>
   </div>
+</div>
 
 </div>
 
@@ -162,50 +151,76 @@ if(sessionStorage.getItem("admin") !== "1"){
 Admin Dashboard – Authorized Use Only
 </footer>
 
+<!-- CHART JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
-const totalEl    = document.getElementById("total");
-const approvedEl = document.getElementById("approved");
-const pendingEl  = document.getElementById("pending");
-const kcountEl   = document.getElementById("kcount");
+const totalEl=document.getElementById("total");
+const approvedEl=document.getElementById("approved");
+const pendingEl=document.getElementById("pending");
+const kcountEl=document.getElementById("kcount");
 
-/* ===== LOAD MEMBERS STATS ===== */
-fetch("../data/members.json?v=" + Date.now())
-  .then(r=>{
-    if(!r.ok) throw new Error("members load error");
-    return r.json();
-  })
-  .then(list=>{
-    if(!Array.isArray(list)) return;
+let chart;
 
-    let total=list.length, approved=0, pending=0;
-    list.forEach(m=>{
-      const s=(m.status||"pending").toLowerCase();
-      if(s==="approved") approved++;
-      else pending++;
-    });
+/* ===== LOGOUT ===== */
+function logout(){
+  sessionStorage.removeItem("admin");
+  location.href="admin_login.html";
+}
 
-    totalEl.innerText=total;
-    approvedEl.innerText=approved;
-    pendingEl.innerText=pending;
-  })
-  .catch(()=>{
-    totalEl.innerText="—";
-    approvedEl.innerText="—";
-    pendingEl.innerText="—";
+/* ===== LOAD STATS ===== */
+async function loadStats(){
+  const members=await fetch("../data/members.json?v="+Date.now()).then(r=>r.json());
+  const kar=await fetch("../data/karyakarini.json?v="+Date.now()).then(r=>r.json());
+
+  let approved=0,pending=0;
+  members.forEach(m=>{
+    (m.status||"pending").toLowerCase()==="approved"?approved++:pending++;
   });
 
-/* ===== LOAD KARYAKARINI COUNT ===== */
-fetch("../data/karyakarini.json?v=" + Date.now())
-  .then(r=>{
-    if(!r.ok) throw new Error("karyakarini load error");
-    return r.json();
-  })
-  .then(j=>{
-    kcountEl.innerText=(j.karyakarini||[]).length;
-  })
-  .catch(()=>{
-    kcountEl.innerText="0";
+  totalEl.innerText=members.length;
+  approvedEl.innerText=approved;
+  pendingEl.innerText=pending;
+  kcountEl.innerText=(kar.karyakarini||[]).length;
+
+  drawChart(approved,pending);
+}
+
+/* ===== CHART ===== */
+function drawChart(a,p){
+  if(chart) chart.destroy();
+  chart=new Chart(
+    document.getElementById("statusChart"),
+    {
+      type:"pie",
+      data:{
+        labels:["Approved","Pending"],
+        datasets:[{
+          data:[a,p],
+          backgroundColor:["#28a745","#ff9800"]
+        }]
+      }
+    }
+  );
+}
+
+/* ===== EXPORT CSV ===== */
+async function exportCSV(){
+  const data=await fetch("../data/members.json").then(r=>r.json());
+  let csv="Member ID,Name,Mobile,Status\n";
+  data.forEach(m=>{
+    csv+=`${m.member_id},${m.name},${m.mobile},${m.status}\n`;
   });
+  const blob=new Blob([csv],{type:"text/csv"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="members.csv";
+  a.click();
+}
+
+/* ===== AUTO REFRESH (30s) ===== */
+loadStats();
+setInterval(loadStats,30000);
 </script>
 
 </body>
