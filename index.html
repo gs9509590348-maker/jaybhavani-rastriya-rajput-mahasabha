@@ -2,114 +2,105 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Statistics | JBRRMS</title>
+<title>जय भवानी राष्ट्रीय राजपूत महासभा | Official Portal</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#7b0000">
+<meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – Official Digital Portal">
+<link rel="canonical" href="https://jbrrms.in/">
 
 <style>
+:root{
+  --main:#7b0000;
+  --dark:#3b0000;
+  --bg:#f2f2f2;
+  --card:#ffffff;
+}
 *{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Arial;
-  background:#f2f2f2
+  background:var(--bg);
 }
+a{text-decoration:none;color:inherit}
+
+/* HEADER */
 header{
-  background:#7b0000;
+  background:linear-gradient(135deg,var(--dark),var(--main));
   color:#fff;
   text-align:center;
-  padding:18px 12px
+  padding:24px 14px;
 }
-header h1{margin:0;font-size:20px}
+header h1{margin:0;font-size:22px}
 header p{margin:6px 0 0;font-size:13px}
 
-.container{
-  max-width:1100px;
-  margin:15px auto;
-  padding:12px
-}
-
-.card{
+/* NAV */
+nav{
   background:#fff;
-  border-radius:14px;
-  padding:14px;
-  margin-bottom:16px
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  padding:10px;
+  flex-wrap:wrap;
 }
-
-h2{
-  margin:0 0 10px;
-  color:#7b0000;
-  font-size:18px
-}
-
-/* SUMMARY */
-.summary{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:10px;
-  margin-bottom:16px
-}
-.sum{
-  background:#fff;
-  border-radius:12px;
-  padding:12px;
-  text-align:center
-}
-.sum b{font-size:20px;display:block}
-.sum span{font-size:13px;color:#555}
-
-/* FILTER */
-.filters{
-  text-align:center;
-  margin-bottom:10px
-}
-.filters button{
-  padding:6px 12px;
-  margin:4px;
-  border:none;
+nav a{
+  padding:8px 14px;
   border-radius:20px;
   background:#eee;
-  font-size:13px;
-  cursor:pointer
-}
-.filters button.active{
-  background:#7b0000;
-  color:#fff
-}
-
-/* CHART */
-.chart-box{
-  position:relative;
-  width:100%;
-  height:320px
-}
-.scroll-x{
-  overflow-x:auto
-}
-
-@media(max-width:600px){
-  h2{font-size:16px}
-  .chart-box{height:260px}
-}
-
-.note{
-  font-size:12px;
-  color:#555;
-  margin-top:6px
-}
-
-.loading{
-  text-align:center;
   font-size:14px;
-  color:#555;
-  padding:20px
+  font-weight:600;
+}
+nav a.primary{
+  background:var(--main);
+  color:#fff;
 }
 
+/* CONTAINER */
+.container{
+  max-width:1100px;
+  margin:18px auto;
+  padding:12px;
+}
+
+/* CARD */
+.card{
+  background:var(--card);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:18px;
+}
+.card h2{
+  margin:0 0 12px;
+  color:var(--main);
+  font-size:18px;
+}
+
+/* STATS */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+}
+.stat{
+  background:#fafafa;
+  border-radius:12px;
+  padding:14px;
+  text-align:center;
+}
+.stat b{display:block;font-size:20px}
+.stat span{font-size:13px;color:#555}
+
+/* LIST */
+ul{padding-left:18px}
+li{margin:6px 0}
+
+/* FOOTER */
 footer{
   background:#000;
   color:#fff;
   text-align:center;
   padding:12px;
-  font-size:12px
+  font-size:12px;
 }
 </style>
 </head>
@@ -117,148 +108,91 @@ footer{
 <body>
 
 <header>
-  <h1>📊 संगठन आँकड़े</h1>
-  <p>जय भवानी राष्ट्रीय राजपूत महासभा</p>
+  <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
+  <p>Official Digital Portal</p>
 </header>
+
+<nav>
+  <a href="members.html">👥 सदस्य</a>
+  <a href="verify.html">🔍 सत्यापन</a>
+  <a href="events.html">📅 कार्यक्रम</a>
+  <a href="stats.html">📊 आँकड़े</a>
+  <a href="contact.html">📞 संपर्क</a>
+  <a class="primary" href="admin/admin_login.html">🛠️ Admin</a>
+</nav>
 
 <div class="container">
 
-<!-- SUMMARY -->
-<div class="summary">
-  <div class="sum"><b id="tTotal">0</b><span>Total</span></div>
-  <div class="sum"><b id="tApproved">0</b><span>Approved</span></div>
-  <div class="sum"><b id="tPending">0</b><span>Pending</span></div>
-  <div class="sum"><b id="tRejected">0</b><span>Rejected</span></div>
-</div>
-
-<!-- FILTER -->
-<div class="filters">
-  <button class="active" onclick="setFilter('all',this)">All</button>
-  <button onclick="setFilter('approved',this)">Approved</button>
-  <button onclick="setFilter('pending',this)">Pending</button>
-  <button onclick="setFilter('rejected',this)">Rejected</button>
-</div>
-
-<!-- STATUS -->
+<!-- LIVE STATS -->
 <div class="card">
-  <h2>📌 सदस्य स्थिति</h2>
-  <div class="chart-box">
-    <canvas id="statusChart"></canvas>
+  <h2>📊 लाइव आँकड़े</h2>
+  <div class="stats" id="stats">
+    <div class="stat"><b>–</b><span>Total</span></div>
+    <div class="stat"><b>–</b><span>Approved</span></div>
+    <div class="stat"><b>–</b><span>Pending</span></div>
+    <div class="stat"><b>–</b><span>Rejected</span></div>
   </div>
 </div>
 
-<!-- DISTRICT -->
+<!-- ABOUT -->
 <div class="card">
-  <h2>🗺️ जिला अनुसार सदस्य</h2>
-  <div class="scroll-x">
-    <div class="chart-box" style="min-width:600px">
-      <canvas id="districtChart"></canvas>
-    </div>
-  </div>
-  <div class="note">✔ Top 10 districts</div>
+  <h2>📜 संगठन परिचय</h2>
+  <p>
+    जय भवानी राष्ट्रीय राजपूत महासभा राजपूत समाज की एकता,
+    सम्मान एवं संगठनात्मक मजबूती हेतु कार्यरत एक राष्ट्रीय संगठन है।
+  </p>
 </div>
 
-<div class="note" id="updated"></div>
-<div class="loading" id="loading">Loading data…</div>
+<!-- QUICK LINKS -->
+<div class="card">
+  <h2>🔗 महत्वपूर्ण लिंक</h2>
+  <ul>
+    <li><a href="members.html">👥 सदस्य सूची</a></li>
+    <li><a href="verify.html">🔍 सदस्य सत्यापन</a></li>
+    <li><a href="certificate.html">📜 प्रमाण पत्र</a></li>
+    <li><a href="appointment.html">📄 नियुक्ति पत्र</a></li>
+    <li><a href="idcard-a4.html">🪪 ID Card</a></li>
+  </ul>
+</div>
 
 </div>
 
 <footer>
-© 2026 JBRRMS · Live Stats
+© 2026 JBRRMS · Powered by GitHub Pages
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<!-- ✅ DATA SCRIPT (ABSOLUTE PATH – SAFE) -->
 <script>
-let raw=[],filter="all";
-let statusChart,districtChart;
+const box = document.getElementById("stats");
 
-function setFilter(f,btn){
-  filter=f;
-  document.querySelectorAll(".filters button")
-    .forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  buildCharts();
-}
-
-function loadStats(){
-  document.getElementById("loading").style.display="block";
-  fetch("data/members.json?v="+Date.now())
-  .then(r=>r.json())
+fetch("/data/members.json?v=" + Date.now())
+  .then(r=>{
+    if(!r.ok) throw new Error("data error");
+    return r.json();
+  })
   .then(list=>{
-    raw=list.filter(m=>m.member_id);
-    document.getElementById("loading").style.display="none";
-    buildCharts();
-    document.getElementById("updated").innerText=
-      "Last updated: "+new Date().toLocaleTimeString("hi-IN");
+    let total=0,approved=0,pending=0,rejected=0;
+
+    list.forEach(m=>{
+      if(!m || !m.member_id) return;
+      total++;
+      const s=(m.status||"pending").toLowerCase();
+      if(s==="approved") approved++;
+      else if(s==="rejected") rejected++;
+      else pending++;
+    });
+
+    box.innerHTML = `
+      <div class="stat"><b>${total}</b><span>Total</span></div>
+      <div class="stat"><b>${approved}</b><span>Approved</span></div>
+      <div class="stat"><b>${pending}</b><span>Pending</span></div>
+      <div class="stat"><b>${rejected}</b><span>Rejected</span></div>
+    `;
   })
   .catch(()=>{
-    document.getElementById("loading").innerText="❌ Data load failed";
+    box.innerHTML =
+      "<div style='color:red'>❌ Data load failed</div>";
   });
-}
-
-function buildCharts(){
-  let data=raw.filter(m=>{
-    if(filter==="all") return true;
-    return (m.status||"pending").toLowerCase()===filter;
-  });
-
-  let st={approved:0,pending:0,rejected:0};
-  let dist={};
-
-  raw.forEach(m=>{
-    const s=(m.status||"pending").toLowerCase();
-    st[s]=(st[s]||0)+1;
-  });
-
-  data.forEach(m=>{
-    const d=(m.district||"Unknown").trim();
-    dist[d]=(dist[d]||0)+1;
-  });
-
-  tTotal.innerText=raw.length;
-  tApproved.innerText=st.approved||0;
-  tPending.innerText=st.pending||0;
-  tRejected.innerText=st.rejected||0;
-
-  if(statusChart) statusChart.destroy();
-  statusChart=new Chart(statusChartEl,{
-    type:"pie",
-    data:{
-      labels:["Approved","Pending","Rejected"],
-      datasets:[{
-        data:[st.approved||0,st.pending||0,st.rejected||0],
-        backgroundColor:["#28a745","#ff9800","#dc3545"]
-      }]
-    },
-    options:{responsive:true,maintainAspectRatio:false}
-  });
-
-  const top=Object.entries(dist).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  if(districtChart) districtChart.destroy();
-  districtChart=new Chart(districtChartEl,{
-    type:"bar",
-    data:{
-      labels:top.map(e=>e[0]),
-      datasets:[{
-        label:"Members",
-        data:top.map(e=>e[1]),
-        backgroundColor:"#7b0000"
-      }]
-    },
-    options:{
-      responsive:true,
-      maintainAspectRatio:false,
-      scales:{y:{beginAtZero:true}}
-    }
-  });
-}
-
-const statusChartEl=document.getElementById("statusChart");
-const districtChartEl=document.getElementById("districtChart");
-
-loadStats();
-setInterval(loadStats,60000);
 </script>
 
 </body>
