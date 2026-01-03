@@ -20,7 +20,8 @@ nav a:hover{background:#7b0000}
   border:2px solid #7b0000;border-radius:10px
 }
 h3{text-align:center;color:#7b0000;margin-top:0}
-input,select{
+
+input{
   width:100%;padding:9px;margin:6px 0;
   font-size:14px
 }
@@ -30,13 +31,14 @@ button{
   border:none;border-radius:6px;
   font-size:15px;cursor:pointer
 }
+
 .gray{background:#555}
 .green{background:#28a745}
 .red{background:#dc3545}
-.note{font-size:13px;color:#555;margin-top:10px}
-footer{text-align:center;font-size:12px;color:#555;margin:30px 10px}
+
 .ok{color:#28a745;font-weight:bold}
 .no{color:#dc3545;font-weight:bold}
+
 .badge{
   display:inline-block;padding:4px 10px;
   border-radius:20px;font-size:12px;color:#fff
@@ -44,21 +46,30 @@ footer{text-align:center;font-size:12px;color:#555;margin:30px 10px}
 .approved{background:#28a745}
 .rejected{background:#dc3545}
 .pending{background:#ff9800}
+
 .photo{text-align:center;margin:10px 0}
 .photo img{
   width:90px;height:90px;border-radius:50%;
   object-fit:cover;border:2px solid #7b0000
 }
+
+.links a{
+  display:block;margin:6px 0;
+  padding:8px;border-radius:6px;
+  text-align:center;text-decoration:none;
+  background:#eee;color:#333;font-size:13px
+}
+.links a.green{background:#28a745;color:#fff}
 </style>
 </head>
 
 <body>
 
 <script>
-/* 🔐 SESSION BASED ADMIN CHECK */
-if(sessionStorage.getItem("admin") !== "1"){
+/* 🔐 SESSION CHECK */
+if(sessionStorage.getItem("admin")!=="1"){
   alert("❌ Unauthorized Access");
-  location.href = "admin_login.html";
+  location.href="admin_login.html";
 }
 </script>
 
@@ -72,85 +83,63 @@ if(sessionStorage.getItem("admin") !== "1"){
   <a href="admin_pending.html">⏳ Pending</a>
   <a href="admin_bulk_approve.html">🚀 Bulk Approve</a>
   <a href="admin_edit_member.html">✏️ Edit Member</a>
-
-  <a href="../members.html" target="_blank">🧑‍🤝‍🧑 Members</a>
-  <a href="../verify.html" target="_blank">🔍 Verify</a>
-  <a href="../index.html" target="_blank">🌐 Website</a>
 </nav>
 
 <div class="box">
-  <h3>🔍 Search Member</h3>
+<h3>🔍 Search Member</h3>
 
-  <input id="mid" placeholder="Search by Member ID (JBRRMS-XXXX)">
-  <input id="mobileSearch" placeholder="Live search by Mobile">
+<input id="mid" placeholder="Search by Member ID">
+<input id="mobileSearch" placeholder="Live search by Mobile">
 
-  <div id="msg"></div>
+<div id="msg"></div>
+<hr>
 
-  <hr>
-
-  <div class="photo" id="photoBox" style="display:none">
-    <img id="photoPreview">
-  </div>
-
-  <input id="name" placeholder="Member Name">
-  <input id="father" placeholder="Father Name">
-  <input id="post" placeholder="Post / Position">
-  <input id="level" placeholder="Level (District / State / National)">
-
-  <div>
-    <b>Status:</b>
-    <span id="statusBadge" class="badge pending">Pending</span>
-  </div>
-
-  <button class="green" onclick="setStatus('Approved')">✅ Approve</button>
-  <button class="red" onclick="setStatus('Rejected')">❌ Reject</button>
-  <button class="gray" onclick="setStatus('Pending')">⏳ Pending</button>
-
-  <button onclick="downloadJSON()">⬇️ Download Updated members.json</button>
-  <button class="gray" onclick="location.reload()">🔄 Reset</button>
-
-  <p class="note">
-    ⚠️ Download की गई <b>members.json</b> फ़ाइल को  
-    GitHub repo में <b>/data/members.json</b> path पर replace करें।
-  </p>
+<div class="photo" id="photoBox" style="display:none">
+  <img id="photoPreview">
 </div>
 
-<footer>
-© 2026 जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Admin Panel – Authorized Use Only
-</footer>
+<input id="name" placeholder="Name">
+<input id="father" placeholder="Father">
+<input id="post" placeholder="Post">
+<input id="level" placeholder="Level">
+
+<div>
+  <b>Status:</b>
+  <span id="statusBadge" class="badge pending">Pending</span>
+</div>
+
+<button class="green" onclick="approveMember()">✅ Approve (Auto WhatsApp)</button>
+<button class="red" onclick="setStatus('rejected')">❌ Reject</button>
+<button class="gray" onclick="setStatus('pending')">⏳ Pending</button>
+
+<div class="links" id="autoLinks" style="display:none">
+  <a id="certLink" target="_blank">📜 View Certificate</a>
+  <a id="apptLink" target="_blank">🧾 View Appointment</a>
+  <a id="verifyLink" class="green" target="_blank">🔍 Verify Online</a>
+</div>
+
+<button onclick="downloadJSON()">⬇️ Download Updated members.json</button>
+</div>
 
 <script>
-let members=[];
-let index=-1;
+let members=[],index=-1;
 const msg=document.getElementById("msg");
 
-/* ===== LOAD JSON ===== */
+/* LOAD JSON */
 fetch("../data/members.json?v="+Date.now())
 .then(r=>r.json())
-.then(d=>{
-  members=d.filter(m=>m && m.member_id);
-})
-.catch(()=>{
-  msg.innerHTML="<p class='no'>❌ members.json load नहीं हुआ</p>";
-});
+.then(d=>members=d.filter(m=>m.member_id));
 
-/* ===== LOAD BY ID ===== */
-mid.addEventListener("change",()=>{
-  loadById(mid.value);
-});
-
-/* ===== LIVE SEARCH BY MOBILE ===== */
-mobileSearch.addEventListener("input",()=>{
-  const v=mobileSearch.value.trim();
+mid.onchange=()=>loadById(mid.value);
+mobileSearch.oninput=()=>{
+  const v=mobileSearch.value.replace(/\D/g,"");
   if(v.length<5) return;
-  const i=members.findIndex(m=>m.mobile && m.mobile.toString().includes(v));
+  const i=members.findIndex(m=>String(m.mobile||"").replace(/\D/g,"").includes(v));
   if(i>=0) loadMember(i);
-});
+};
 
-/* ===== LOAD MEMBER ===== */
 function loadById(id){
-  const i=members.findIndex(m=>m.member_id.toUpperCase()===id.trim().toUpperCase());
+  const i=members.findIndex(m=>m.member_id.toUpperCase()===id.toUpperCase());
   if(i>=0) loadMember(i);
   else msg.innerHTML="<p class='no'>❌ Member Not Found</p>";
 }
@@ -162,42 +151,78 @@ function loadMember(i){
   father.value=m.father||"";
   post.value=m.post||"";
   level.value=m.level||"";
-
-  updateStatus(m.status||"Pending");
+  updateStatus(m.status||"pending");
 
   if(m.photo){
     photoPreview.src=m.photo;
     photoBox.style.display="block";
-  }else{
-    photoBox.style.display="none";
-  }
+  }else photoBox.style.display="none";
 
   msg.innerHTML="<p class='ok'>✅ Member Loaded</p>";
 }
 
-/* ===== STATUS ===== */
 function updateStatus(s){
-  statusBadge.innerText=s;
-  statusBadge.className="badge "+s.toLowerCase();
+  statusBadge.innerText=s.charAt(0).toUpperCase()+s.slice(1);
+  statusBadge.className="badge "+s;
 }
+
 function setStatus(s){
-  if(index<0){alert("Member load करें");return;}
+  if(index<0) return alert("Member load करें");
   members[index].status=s;
   updateStatus(s);
 }
 
-/* ===== DOWNLOAD ===== */
+/* ✅ APPROVE + AUTO WHATSAPP */
+function approveMember(){
+  if(index<0) return alert("Member load करें");
+
+  setStatus("approved");
+
+  const m=members[index];
+  const base=location.origin;
+
+  const verify=base+"/verify.html?id="+m.member_id;
+  const cert=base+"/certificate.html?id="+m.member_id;
+  const appt=base+"/appointment.html?id="+m.member_id;
+
+  certLink.href=cert;
+  apptLink.href=appt;
+  verifyLink.href=verify;
+  autoLinks.style.display="block";
+
+  const msgTxt =
+`जय भवानी | जय राजपूताना 🚩
+
+आपकी सदस्यता APPROVED हो गई है ✅
+
+नाम: ${m.name}
+Member ID: ${m.member_id}
+
+Verify:
+${verify}
+
+Certificate:
+${cert}
+
+Appointment:
+${appt}`;
+
+  window.open(
+    "https://wa.me/91"+String(m.mobile).replace(/\D/g,"")+
+    "?text="+encodeURIComponent(msgTxt),
+    "_blank"
+  );
+}
+
+/* DOWNLOAD JSON */
 function downloadJSON(){
-  if(index<0){alert("Member load करें");return;}
+  if(index<0) return alert("Member load करें");
   members[index].name=name.value.trim();
   members[index].father=father.value.trim();
   members[index].post=post.value.trim();
   members[index].level=level.value.trim();
 
-  const blob=new Blob(
-    [JSON.stringify(members,null,2)],
-    {type:"application/json"}
-  );
+  const blob=new Blob([JSON.stringify(members,null,2)],{type:"application/json"});
   const a=document.createElement("a");
   a.href=URL.createObjectURL(blob);
   a.download="members.json";
