@@ -7,190 +7,184 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#7b0000">
 <meta name="description" content="जय भवानी राष्ट्रीय राजपूत महासभा – Official Digital Portal">
-<meta name="robots" content="index, follow">
 <link rel="canonical" href="https://jbrrms.in/">
 
 <style>
-*{box-sizing:border-box}
+:root{
+  --main:#7b0000;
+  --dark:#3b0000;
+  --bg:#f2f2f2;
+}
 body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Arial;
-  background:#f2f2f2;
-  color:#222
+  font-family:Arial, sans-serif;
+  background:var(--bg);
 }
 a{text-decoration:none;color:inherit}
-
-/* HEADER */
 header{
-  background:#7b0000;
+  background:linear-gradient(135deg,var(--dark),var(--main));
   color:#fff;
   text-align:center;
-  padding:20px 10px
+  padding:22px;
 }
-header h1{margin:0;font-size:20px}
-header p{margin:6px 0 0;font-size:13px}
-
-/* NAV */
 nav{
   background:#fff;
   display:flex;
   justify-content:center;
-  gap:8px;
-  padding:10px;
-  flex-wrap:wrap
+  gap:10px;
+  padding:12px;
+  flex-wrap:wrap;
 }
 nav a{
-  padding:6px 12px;
+  padding:8px 16px;
   border-radius:20px;
-  background:#f5f5f5;
-  font-size:13px;
-  color:#7b0000;
-  border:1px solid #ddd
+  background:#eee;
+  font-weight:600;
 }
-
-/* LAYOUT */
-.container{
-  max-width:900px;
-  margin:14px auto;
-  padding:0 10px
-}
-.section{
-  background:#7b0000;
+nav a.alt{
+  background:var(--main);
   color:#fff;
-  border-radius:10px;
-  margin:16px 0;
-  padding:10px
 }
-.section h2{margin:0 0 8px;font-size:15px}
+.container{
+  max-width:1100px;
+  margin:20px auto;
+  padding:15px;
+}
 .card{
   background:#fff;
-  color:#222;
-  border-radius:8px;
-  padding:12px
+  border-radius:12px;
+  padding:20px;
+  margin-bottom:18px;
 }
-
-/* BUTTONS */
-.btns{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:10px
-}
-.btn{
-  display:block;
-  text-align:center;
-  padding:10px;
-  border-radius:6px;
-  font-size:14px;
-  color:#fff;
-  background:#7b0000
-}
-.btn.blue{background:#1976d2}
-.btn.green{background:#1fa463}
-.btn.black{background:#000}
-
-/* FOOTER */
 footer{
-  background:#111;
-  color:#ccc;
+  background:#000;
+  color:#fff;
   text-align:center;
-  font-size:12px;
-  padding:14px;
-  margin-top:24px
+  padding:12px;
+  font-size:13px;
 }
+.stat{
+  display:inline-block;
+  margin:10px 15px;
+  font-size:16px;
+}
+ul{padding-left:18px}
+li{margin:6px 0}
 </style>
 </head>
 
 <body>
 
 <header>
-  <h1>🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩</h1>
-  <p>स्वाभिमान • एकता • संगठन • राष्ट्र सेवा</p>
+  <h1>जय भवानी राष्ट्रीय राजपूत महासभा</h1>
+  <p>Official Digital Portal</p>
 </header>
 
 <nav>
-  <a href="index.html">Home</a>
-  <a href="verify.html">Verify Member</a>
-  <a href="members.html">Member Directory</a>
-  <a href="karyakarini.html">कार्यकारिणी</a>
-  <a href="gallery.html">Gallery</a>
+  <a href="members.html">👥 सदस्य सूची</a>
+  <a href="verify.html">🔍 सत्यापन</a>
+  <a href="events.html">📅 कार्यक्रम</a>
+  <a href="apply.html">📝 आवेदन</a>
+  <a href="stats.html">📊 आँकड़े</a>
+
+  <a class="alt" target="_blank"
+     href="https://script.google.com/macros/s/AKfycby7O8drqGovRnM7H5_IVQiM3EHRpahjOXv24uaxh0wdzLXJ8k4wJqepOpGlQbgtwfqy/exec?admin=1">
+    🛠️ Admin
+  </a>
 </nav>
 
 <div class="container">
 
-<div class="section">
-  <h2>📢 सूचना</h2>
-  <div class="card">
-    सभी सदस्य अपना <b>ID Card, Certificate एवं Appointment Letter</b><br>
-    <b>Verify Member</b> के माध्यम से देखें।
-  </div>
+<!-- LIVE STATS -->
+<div class="card">
+  <h2>📊 Live Statistics</h2>
+  <div id="stats">Loading…</div>
 </div>
 
-<div class="section">
-  <h2>🌐 Public Services</h2>
-  <div class="card btns">
-    <a class="btn" href="verify.html">🔍 Member Verify</a>
-    <a class="btn blue" href="members.html">🧑‍🤝‍🧑 Member Directory</a>
-    <a class="btn" href="certificate.html">📜 Certificate</a>
-    <a class="btn" href="appointment.html">📄 Appointment Letter</a>
-    <a class="btn" href="idcard_print.html">🪪 ID Card</a>
-  </div>
+<!-- ABOUT -->
+<div class="card">
+  <h2>📜 संगठन परिचय</h2>
+  <p>
+    जय भवानी राष्ट्रीय राजपूत महासभा राजपूत समाज की एकता,
+    सम्मान एवं संगठनात्मक मजबूती हेतु कार्यरत एक राष्ट्रीय संगठन है।
+  </p>
 </div>
 
-<div class="section">
-  <h2>📝 Membership</h2>
-  <div class="card btns">
-    <a class="btn green" href="join.html">➕ Join / Membership Form</a>
-    <a class="btn black" href="member_login.html">🔐 Member Login</a>
-    <a class="btn black" href="member_dashboard.html">🧑‍💼 Member Dashboard</a>
-  </div>
+<!-- IMPORTANT LINKS -->
+<div class="card">
+  <h2>🔗 महत्वपूर्ण लिंक</h2>
+  <ul>
+    <li>📝 <a target="_blank"
+      href="https://docs.google.com/forms/d/e/1FAIpQLSdv8aK9SvqAUOES59Kd1vtGqdayTxE7wJEISdVvr15XT1doBQ/viewform">
+      सदस्यता आवेदन (Google Form)</a></li>
+
+    <li>💬 <a target="_blank"
+      href="https://chat.whatsapp.com/LKEnm3MPwS23hMtsuMVbpO">
+      WhatsApp Group</a></li>
+
+    <li>📘 <a target="_blank"
+      href="https://www.facebook.com/share/1AJvLXTyww/">
+      Facebook Official Page</a></li>
+
+    <li>⚙️ <a target="_blank"
+      href="https://script.google.com/macros/s/AKfycby7O8drqGovRnM7H5_IVQiM3EHRpahjOXv24uaxh0wdzLXJ8k4wJqepOpGlQbgtwfqy/exec">
+      Public System API (GAS)</a></li>
+  </ul>
 </div>
 
-<div class="section">
-  <h2>🛡️ Admin Panel (Authorized)</h2>
-  <div class="card btns">
-    <a class="btn black" target="_blank"
-       href="https://script.google.com/macros/s/AKfycbzEzWsafpi42qLX8Xi6nFm5kD0IXZ1QtlxeNgNW_DZjz2GGp6ETG9_n2VsL91Q1MlZdzw/exec?admin=1">
-       🔐 Admin Control Room
-    </a>
-  </div>
+<!-- ADMIN CONTROL PANEL -->
+<div class="card">
+  <h2>🛠️ Admin Control Panel (Internal Use)</h2>
+  <ul>
+    <li>👤 Member Edit / Approve / Reject</li>
+    <li>🧑‍💼 कार्यकारिणी Assign / Update</li>
+    <li>📸 Member Photo Edit / Upload</li>
+    <li>📅 Events Add / Edit / Photo Upload</li>
+    <li>🆔 ID Card Generate / Edit</li>
+    <li>📄 Appointment Letter Generate / Edit</li>
+    <li>🏅 Certificate Generate / Edit</li>
+    <li>📊 Live Stats & Reports</li>
+    <li>🔄 GitHub Auto Sync (members.json)</li>
+    <li>🔐 Security & Admin Access Control</li>
+  </ul>
+
+  <p>🔒 ये सभी कार्य केवल Google Apps Script Admin Panel से किए जाते हैं।</p>
+
+  <a class="alt" target="_blank"
+     href="https://script.google.com/macros/s/AKfycby7O8drqGovRnM7H5_IVQiM3EHRpahjOXv24uaxh0wdzLXJ8k4wJqepOpGlQbgtwfqy/exec?admin=1">
+    ➡️ Go to Admin Panel
+  </a>
 </div>
 
-<div class="section">
-  <h2>📂 System & Data</h2>
-  <div class="card btns">
-    <a class="btn blue" href="data/members.json" target="_blank">members.json</a>
-    <a class="btn blue" href="data/karyakarini.json" target="_blank">karyakarini.json</a>
-    <a class="btn blue" href="events.html">📢 Events</a>
-    <a class="btn blue" href="gallery.html">🖼️ Gallery</a>
-  </div>
-</div>
-
-<div class="section">
-  <h2>🌐 Social & Contact</h2>
-  <div class="card btns">
-    <a class="btn blue" href="https://www.facebook.com/jbrrms" target="_blank">Facebook</a>
-    <a class="btn green" href="https://wa.me/91966377972" target="_blank">WhatsApp</a>
-    <a class="btn blue" href="https://jbrrms.in" target="_blank">Official Website</a>
-  </div>
-</div>
-
-<div class="section">
-  <h2>⚠️ कानूनी घोषणा</h2>
-  <div class="card">
-    यह संगठन सामाजिक एवं सांस्कृतिक है।<br>
-    यह किसी सरकारी अथवा राजनीतिक संस्था से संबद्ध नहीं है।
-  </div>
+<!-- SYSTEM INFO -->
+<div class="card">
+  <h2>🆔 System Information</h2>
+  <ul>
+    <li>📄 Data Source: Google Sheets (Single Source of Truth)</li>
+    <li>🆔 Sheet ID:
+      <code>1oa-uam_98Dg7G0wdLyDRUy39G1Px5Yy4XJzQSTunDbo</code>
+    </li>
+    <li>🔄 Auto Sync: Google Apps Script → GitHub Pages</li>
+    <li>🌐 Public UI: GitHub Pages</li>
+    <li>🔐 Admin & Security: Google Apps Script</li>
+  </ul>
 </div>
 
 </div>
 
 <footer>
-© <span id="yr"></span> जय भवानी राष्ट्रीय राजपूत महासभा<br>
-Official Digital Portal
+© 2026 JBRRMS · Powered by GitHub Pages + Google Apps Script
 </footer>
 
 <script>
-document.getElementById("yr").innerText = new Date().getFullYear();
+fetch("https://script.google.com/macros/s/AKfycby7O8drqGovRnM7H5_IVQiM3EHRpahjOXv24uaxh0wdzLXJ8k4wJqepOpGlQbgtwfqy/exec?action=stats")
+.then(r=>r.json())
+.then(d=>{
+  document.getElementById("stats").innerHTML =
+    `<span class="stat">👥 Total: <b>${d.total}</b></span>
+     <span class="stat">✅ Approved: <b>${d.approved}</b></span>
+     <span class="stat">⏳ Pending: <b>${d.pending}</b></span>`;
+});
 </script>
 
 </body>
