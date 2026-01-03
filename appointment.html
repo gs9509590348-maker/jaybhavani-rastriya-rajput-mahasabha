@@ -109,16 +109,16 @@ p{font-size:16px;line-height:1.8}
 
 <script>
 const qs = new URLSearchParams(location.search);
-const id = qs.get("id");
-const VERIFY_BASE = "verify.html?id=";
+const memberId = qs.get("id");
 
 let member = null;
 
-if(!id){
+if(!memberId){
   alert("❌ Member ID missing");
+  throw new Error("No Member ID");
 }
 
-/* ===== LOAD MEMBERS.JSON (GITHUB STATIC) ===== */
+/* ===== LOAD members.json ===== */
 fetch("data/members.json?v=" + Date.now())
 .then(r=>{
   if(!r.ok) throw new Error("load error");
@@ -126,7 +126,7 @@ fetch("data/members.json?v=" + Date.now())
 })
 .then(list=>{
   member = list.find(x =>
-    x.id && x.id.toUpperCase() === id.toUpperCase()
+    x.member_id && x.member_id.toUpperCase() === memberId.toUpperCase()
   );
 
   if(!member){
@@ -134,7 +134,7 @@ fetch("data/members.json?v=" + Date.now())
     return;
   }
 
-  /* ===== FILL LETTER DATA ===== */
+  /* ===== FILL LETTER ===== */
   name.innerText   = member.name || "";
   father.innerText = member.father || "";
   post.innerText   = member.post || "";
@@ -143,23 +143,23 @@ fetch("data/members.json?v=" + Date.now())
   area.innerText   =
     (member.district||"") + " / " + (member.state||"");
 
-  mid.innerText = member.id;
+  mid.innerText  = member.member_id;
   date.innerText = new Date().toLocaleDateString("hi-IN");
 
   /* ===== LINKS ===== */
-  idcard.href = "idcard_print.html?id=" + member.id;
-  verify.href = VERIFY_BASE + member.id;
+  idcard.href = "idcard-a4.html?id=" + member.member_id;
+  verify.href = "verify.html?id=" + member.member_id;
 })
 .catch(()=>{
   alert("❌ members.json load नहीं हुआ");
 });
 
-/* ===== DOWNLOAD LETTER AS IMAGE ===== */
+/* ===== DOWNLOAD AS IMAGE ===== */
 function download(){
   html2canvas(document.getElementById("app"),{scale:2})
   .then(c=>{
     const a=document.createElement("a");
-    a.download="JBRRMS_Appointment_"+id+".png";
+    a.download="JBRRMS_Appointment_"+memberId+".png";
     a.href=c.toDataURL("image/png");
     a.click();
   });
@@ -174,10 +174,10 @@ function shareWhatsApp(){
 
 नाम: ${member.name}
 पद: ${member.post || ""}
-Member ID: ${member.id}
+Member ID: ${member.member_id}
 
 Verify Online 👇
-${location.origin}/${VERIFY_BASE}${member.id}`;
+${location.origin}/verify.html?id=${member.member_id}`;
 
   window.open(
     "https://wa.me/?text="+encodeURIComponent(msg),
