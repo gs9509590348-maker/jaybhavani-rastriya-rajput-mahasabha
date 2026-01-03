@@ -30,8 +30,6 @@ textarea{
   background:#fff3cd;border-left:5px solid #ff9800;
   padding:10px;font-size:13px;margin:12px 0
 }
-.ok{color:#28a745;font-weight:bold}
-.no{color:#dc3545;font-weight:bold}
 footer{
   text-align:center;font-size:13px;
   color:#555;margin:30px 0
@@ -41,13 +39,21 @@ footer{
 
 <body>
 
+<script>
+/* 🔐 SESSION BASED ADMIN CHECK */
+if(sessionStorage.getItem("admin")!=="1"){
+  alert("❌ Unauthorized Access");
+  location.href="admin_login.html";
+}
+</script>
+
 <div class="box">
 <h2>📄 CSV → JSON Bulk Members Tool</h2>
 
 <div class="warn">
 ⚠️ <b>Admin Use Only</b><br>
 यह tool सिर्फ <b>GitHub Static Mode</b> के लिए है।  
-Generated JSON को manually <b>data/members.json</b> में paste करना होगा।
+Generated JSON को manually <b>/data/members.json</b> में paste / merge करना होगा।
 </div>
 
 <p><b>Step-1:</b> CSV file upload करें</p>
@@ -60,12 +66,12 @@ Generated JSON को manually <b>data/members.json</b> में paste कर�
 <textarea id="out" placeholder="Generated JSON will appear here…"></textarea>
 
 <div class="note">
-<b>CSV Header (Required – Order matter नहीं करता):</b><br>
-Member_ID, Name, Father, Mobile, Post, Department, Level, District, State, Photo_URL
+<b>CSV Header (Required – order matter नहीं करता):</b><br>
+member_id, name, father, mobile, post, department, level, district, state, photo_url
 <br><br>
 ✔ Status default <b>pending</b> रहेगा<br>
-✔ Duplicate Member ID auto-skip होंगे<br>
-✔ Final JSON → <b>data/members.json</b><br>
+✔ Duplicate <b>member_id</b> auto-skip होंगे<br>
+✔ Final JSON → <b>/data/members.json</b><br>
 ✔ Approve → <b>Bulk Approve Panel</b>
 </div>
 </div>
@@ -76,42 +82,53 @@ function clean(v){
 }
 
 function parseCSV(){
-  const file = document.getElementById("csv").files[0];
+  const file=document.getElementById("csv").files[0];
   if(!file){
     alert("❌ CSV file select करें");
     return;
   }
 
-  const reader = new FileReader();
-  reader.onload = e => {
-    const text = e.target.result.trim();
-    const lines = text.split(/\r?\n/);
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const text=e.target.result.trim();
+    const lines=text.split(/\r?\n/);
 
-    if(lines.length < 2){
+    if(lines.length<2){
       alert("❌ CSV में data नहीं है");
       return;
     }
 
-    // header mapping
-    const headers = lines[0].split(",").map(h => h.trim().toLowerCase());
-    const idx = name => headers.indexOf(name);
+    /* HEADER MAP */
+    const headers=lines[0]
+      .split(",")
+      .map(h=>h.trim().toLowerCase());
 
-    const usedIds = new Set();
-    const result = [];
-    const today = new Date().toISOString().split("T")[0];
+    const idx=name=>headers.indexOf(name);
+
+    if(idx("member_id")<0){
+      alert("❌ CSV में member_id column missing है");
+      return;
+    }
+
+    const usedIds=new Set();
+    const result=[];
+    const today=new Date().toISOString().split("T")[0];
 
     for(let i=1;i<lines.length;i++){
-      const row = lines[i].trim();
+      const row=lines[i].trim();
       if(!row) continue;
 
-      const cols = row.split(",").map(c => c.replace(/^"|"$/g,"").trim());
-      const memberId = clean(cols[idx("member_id")]);
+      const cols=row
+        .split(",")
+        .map(c=>c.replace(/^"|"$/g,"").trim());
 
+      const memberId=clean(cols[idx("member_id")]);
       if(!memberId || usedIds.has(memberId)) continue;
+
       usedIds.add(memberId);
 
       result.push({
-        id: memberId,
+        member_id: memberId,
         name: clean(cols[idx("name")]),
         father: clean(cols[idx("father")]),
         mobile: clean(cols[idx("mobile")]),
@@ -131,10 +148,10 @@ function parseCSV(){
       return;
     }
 
-    document.getElementById("out").value =
-      JSON.stringify(result, null, 2);
+    document.getElementById("out").value=
+      JSON.stringify(result,null,2);
 
-    alert("✅ JSON Generated Successfully ("+result.length+" members)");
+    alert("✅ JSON Generated ("+result.length+" members)");
   };
 
   reader.readAsText(file);
