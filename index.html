@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>जय भवानी राष्ट्रीय राजपूत महासभा - डिजिटल पोर्टल</title>
+<title>जय भवानी राष्ट्रीय राजपूत महासभा - डिजिटल सदस्यता</title>
 
 <style>
 body{font-family:Arial;background:#f3f3f3;margin:0}
@@ -15,8 +15,8 @@ button{padding:10px;background:#ff9933;border:0;color:#fff;cursor:pointer}
 .idcard,.certificate,.appointment{border:2px solid #ff9933;padding:10px;margin-top:10px}
 footer{text-align:center;padding:15px;color:#555}
 </style>
-
 </head>
+
 <body>
 
 <header>
@@ -26,9 +26,7 @@ footer{text-align:center;padding:15px;color:#555}
 
 <div class="container">
 
-<h3>सदस्य पंजीकरण फॉर्म</h3>
-
-<div id="register">
+<h3>सदस्य पंजीकरण</h3>
 <input id="name" placeholder="पूरा नाम">
 <input id="mobile" placeholder="मोबाइल नंबर">
 <input id="address" placeholder="पता">
@@ -38,9 +36,7 @@ footer{text-align:center;padding:15px;color:#555}
 <option>प्रदेश अध्यक्ष</option>
 <option>महामंत्री</option>
 </select>
-
 <button onclick="register()">सदस्य बनें</button>
-</div>
 
 <hr>
 
@@ -67,14 +63,13 @@ footer{text-align:center;padding:15px;color:#555}
 <h3>नियुक्ति-पत्र</h3>
 <p id="appt"></p>
 </div>
-
 </div>
 
 <hr>
 
 <h3>एडमिन लॉगिन</h3>
 <input id="adminUser" placeholder="Admin Username">
-<input id="adminPass" placeholder="Admin Password" type="password">
+<input id="adminPass" type="password" placeholder="Admin Password">
 <button onclick="adminLogin()">लॉगिन</button>
 
 <div id="adminPanel" class="hidden">
@@ -84,64 +79,94 @@ footer{text-align:center;padding:15px;color:#555}
 
 </div>
 
-<footer>
-जय भवानी • राष्ट्र • राजपूताना
-</footer>
+<footer>जय भवानी • राष्ट्र • राजपूताना</footer>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
 
 <script>
-let members = JSON.parse(localStorage.getItem("members") || "[]");
+// ========= अपने Firebase Config यहाँ डालें =========
+const firebaseConfig = {
+ apiKey: "YOUR_KEY",
+ authDomain: "YOUR_DOMAIN",
+ projectId: "YOUR_PROJECT",
+ storageBucket: "YOUR_BUCKET",
+ messagingSenderId: "XXXX",
+ appId: "XXXX"
+};
+// ===================================================
 
-function register(){
- let m = {
-  name: name.value,
-  mobile: mobile.value,
-  address: address.value,
-  role: role.value,
-  id: "JBNRM" + (members.length+1)
- };
- members.push(m);
- localStorage.setItem("members",JSON.stringify(members));
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// ------- सदस्य पंजीकरण -------
+async function register(){
+ if(!name.value || !mobile.value) return alert("सभी जानकारी भरें");
+
+ await db.collection("members").add({
+  name:name.value,
+  mobile:mobile.value,
+  address:address.value,
+  role:role.value,
+  id:"JBNRM"+Date.now()
+ });
+
  alert("पंजीकरण सफल — आपका आई-कार्ड तैयार है");
+ name.value=mobile.value=address.value="";
 }
 
-function login(){
- let m = members.find(x=>x.mobile==loginMobile.value);
- if(!m) return alert("सदस्य नहीं मिला");
+// ------- सदस्य लॉगिन -------
+async function login(){
+ let q = await db.collection("members").where("mobile","==",loginMobile.value).get();
+ if(q.empty) return alert("सदस्य नहीं मिला");
+
+ let m = q.docs[0].data();
+
  memberArea.classList.remove("hidden");
- mname.innerText = "नाम: " + m.name;
- mrole.innerText = "पद: " + m.role;
- idc.innerText = "सदस्य ID: " + m.id;
- cert.innerText = "यह प्रमाणित किया जाता है कि " + m.name + " संगठन का अधिकृत सदस्य है।";
+ mname.innerText="नाम: "+m.name;
+ mrole.innerText="पद: "+m.role;
+ idc.innerText="सदस्य ID: "+m.id;
+ cert.innerText="यह प्रमाणित किया जाता है कि "+m.name+" संगठन का अधिकृत सदस्य है।";
+
  if(m.role!="सदस्य"){
   apptBox.classList.remove("hidden");
-  appt.innerText = m.name + " को " + m.role + " पद पर नियुक्त किया जाता है।";
+  appt.innerText=m.name+" को "+m.role+" पद पर नियुक्त किया जाता है।";
  }
 }
 
+// ------- एडमिन लॉगिन -------
 function adminLogin(){
- if(adminUser.value=="admin" && adminPass.value=="12345"){
+ if(adminUser.value=="admin@jbrrms.in" && adminPass.value=="password123"){
   adminPanel.classList.remove("hidden");
-  showMembers();
- } else alert("गलत विवरण");
+  loadMembers();
+ } else alert("गलत एडमिन विवरण");
 }
 
-function showMembers(){
- members = JSON.parse(localStorage.getItem("members")||"[]");
- membersDiv = document.getElementById("members");
- membersDiv.innerHTML="";
- members.forEach(m=>{
-  membersDiv.innerHTML += `<div class='card'>
-  नाम: ${m.name}<br>मोबाइल: ${m.mobile}<br>
-  पद: <input value="${m.role}" onchange="changeRole('${m.mobile}',this.value)">
+// ------- सभी सदस्य दिखाएँ -------
+async function loadMembers(){
+ let box=document.getElementById("members");
+ box.innerHTML="";
+
+ let q = await db.collection("members").get();
+
+ q.forEach(d=>{
+  let m=d.data();
+  box.innerHTML += `
+  <div class='card'>
+   नाम: ${m.name}<br>
+   मोबाइल: ${m.mobile}<br>
+   पद:
+   <input value="${m.role}" onchange="updateRole('${d.id}',this.value)">
   </div>`;
  });
 }
 
-function changeRole(mobile,newRole){
- let m = members.find(x=>x.mobile==mobile);
- m.role = newRole;
- localStorage.setItem("members",JSON.stringify(members));
+// ------- पद अपडेट -------
+async function updateRole(id,newRole){
+ await db.collection("members").doc(id).update({role:newRole});
  alert("पद अपडेट हुआ");
+ loadMembers();
 }
 </script>
 
