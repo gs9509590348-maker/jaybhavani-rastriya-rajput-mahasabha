@@ -2,18 +2,22 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>जय भवानी राष्ट्रीय राजपूत महासभा - डिजिटल सदस्यता</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JB RRMS Membership System</title>
 
 <style>
-body{font-family:Arial;background:#f3f3f3;margin:0}
-header{background:#ff9933;color:#fff;padding:15px;text-align:center}
-.container{max-width:900px;margin:auto;background:#fff;padding:20px}
-.card{border:1px solid #ddd;padding:10px;margin:10px 0}
-input,select{width:100%;padding:8px;margin:5px 0}
-button{padding:10px;background:#ff9933;border:0;color:#fff;cursor:pointer}
+body{font-family:Arial;background:#eef3ff;margin:0}
+header{background:#c72e1f;color:#fff;padding:15px;text-align:center}
+.container{max-width:900px;margin:auto;padding:15px}
+.card{background:#fff;padding:18px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.12);margin-bottom:18px}
+input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #bbb}
+button{padding:10px 14px;border:none;border-radius:8px;background:#1f36c7;color:#fff;cursor:pointer}
+button:hover{background:#162aa1}
 .hidden{display:none}
-.idcard,.certificate,.appointment{border:2px solid #ff9933;padding:10px;margin-top:10px}
-footer{text-align:center;padding:15px;color:#555}
+.logo{width:140px;border-radius:12px}
+.social a{padding:10px;display:inline-block;text-decoration:none;font-weight:bold}
+.whatsapp{color:green}
+.fb{color:#1877f2}
 </style>
 </head>
 
@@ -21,153 +25,222 @@ footer{text-align:center;padding:15px;color:#555}
 
 <header>
 <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-<h4>डिजिटल सदस्यता एवं पहचान प्रणाली</h4>
 </header>
 
 <div class="container">
 
-<h3>सदस्य पंजीकरण</h3>
-<input id="name" placeholder="पूरा नाम">
-<input id="mobile" placeholder="मोबाइल नंबर">
-<input id="address" placeholder="पता">
-<select id="role">
-<option>सदस्य</option>
-<option>जिला अध्यक्ष</option>
-<option>प्रदेश अध्यक्ष</option>
-<option>महामंत्री</option>
-</select>
-<button onclick="register()">सदस्य बनें</button>
+<!-- HOME -->
+<div id="home" class="card">
+
+<center>
+<img src="LOGO_LINK_HERE" class="logo"><br><br>
+<h3>🚩 जय भवानी राष्ट्रीय राजपूत महासभा में आपका स्वागत है 🚩</h3>
+
+<div class="social">
+<a class="whatsapp" href="https://wa.me/9166377972" target="_blank">📞 WhatsApp</a>
+<a class="fb" href="https://facebook.com" target="_blank">📘 Facebook</a>
+</div>
+</center>
 
 <hr>
 
-<h3>सदस्य लॉगिन</h3>
+<button onclick="showObjective()">🎯 उद्देश्य</button>
+<button onclick="showExecutive()">👥 कार्यकारिणी</button>
+
+</div>
+
+<!-- OBJECTIVE -->
+<div id="objective" class="card hidden">
+<button onclick="goBack()">⬅ वापस</button>
+<h3>🎯 संगठन का उद्देश्य</h3>
+<p>राजपूत समाज के स्वाभिमान, एकता और संगठन की मजबूती हमारा लक्ष्य है।</p>
+</div>
+
+<!-- EXECUTIVE -->
+<div id="executive" class="card hidden">
+<button onclick="goBack()">⬅ वापस</button>
+<h3>👥 राष्ट्रीय कार्यकारिणी</h3>
+<p><b>वेबसाइट हेल्पलाइन:</b> 9166377972</p>
+</div>
+
+<!-- MEMBER FORM -->
+<div class="card">
+<h3>ऑनलाइन सदस्यता फॉर्म</h3>
+<input id="mName" placeholder="पूरा नाम">
+<input id="mFather" placeholder="पिता का नाम">
+<input id="mPhone" placeholder="मोबाइल नंबर">
+<input id="mEmail" placeholder="ईमेल">
+<input id="mDistrict" placeholder="जिला">
+<input id="mPhoto" type="file">
+<button onclick="joinMember()">Save</button>
+</div>
+
+<!-- LOGIN -->
+<div class="card">
+<h3>सदस्य लॉगिन (OTP)</h3>
 <input id="loginMobile" placeholder="मोबाइल नंबर">
-<button onclick="login()">लॉगिन</button>
-
-<div id="memberArea" class="hidden">
-<h3>आपका डैशबोर्ड</h3>
-<p id="mname"></p>
-<p id="mrole"></p>
-
-<div class="idcard">
-<h3>डिजिटल आई-कार्ड</h3>
-<p id="idc"></p>
+<div id="recaptcha"></div>
+<button onclick="sendOTP()">Send OTP</button>
+<input id="otpCode" placeholder="OTP दर्ज करें">
+<button onclick="verifyOTP()">Verify & Login</button>
 </div>
 
-<div class="certificate">
-<h3>सदस्यता प्रमाणपत्र</h3>
-<p id="cert"></p>
+<!-- MEMBER PANEL -->
+<div id="memberPanel" class="card hidden">
+<h3>स्वागत है 🙏</h3>
+
+<img id="profilePic" width="120" style="border-radius:10px"><br>
+
+<p><b>नाम :</b> <span id="pName"></span></p>
+<p><b>मोबाइल :</b> <span id="pPhone"></span></p>
+<p><b>जिला :</b> <span id="pDistrict"></span></p>
+
+<button onclick="downloadID()">🆔 ID Card</button>
+<button onclick="downloadCert()">🎓 Certificate</button>
+<button onclick="downloadLetter()">📜 Appointment Letter</button>
+
+<br><br>
+<button onclick="memberLogout()">Logout</button>
 </div>
 
-<div class="appointment hidden" id="apptBox">
-<h3>नियुक्ति-पत्र</h3>
-<p id="appt"></p>
+<!-- ADMIN LOGIN -->
+<div class="card">
+<h3>Admin Login</h3>
+<input id="adminEmail" placeholder="Email">
+<input id="adminPass" type="password" placeholder="Password">
+<button onclick="adminLogin()">Login</button>
 </div>
-</div>
 
-<hr>
-
-<h3>एडमिन लॉगिन</h3>
-<input id="adminUser" placeholder="Admin Username">
-<input id="adminPass" type="password" placeholder="Admin Password">
-<button onclick="adminLogin()">लॉगिन</button>
-
-<div id="adminPanel" class="hidden">
-<h3>एडमिन कंट्रोल पैनल</h3>
-<div id="members"></div>
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="card hidden">
+<h3>सभी सदस्य</h3>
+<div id="memberList"></div>
+<button onclick="adminLogout()">Logout</button>
 </div>
 
 </div>
 
-<footer>जय भवानी • राष्ट्र • राजपूताना</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+<script type="module">
+
+import {initializeApp} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {getAuth,signInWithPhoneNumber,RecaptchaVerifier,signInWithEmailAndPassword,signOut,onAuthStateChanged}
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {getFirestore,addDoc,collection,query,where,getDocs}
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import {getStorage,ref,uploadBytes,getDownloadURL}
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
+const firebaseConfig={
+  apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+  authDomain:"jb-rrms-membership-system.firebaseapp.com",
+  projectId:"jb-rrms-membership-system",
+  storageBucket:"jb-rrms-membership-system.firebasestorage.app",
+  messagingSenderId:"493815911364",
+  appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
+};
+
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const storage=getStorage(app);
+
+/* SAVE MEMBER */
+window.joinMember=async()=>{
+let file=mPhoto.files[0];
+let r=ref(storage,"photos/"+Date.now());
+await uploadBytes(r,file);
+let url=await getDownloadURL(r);
+
+await addDoc(collection(db,"members"),{
+name:mName.value,
+father:mFather.value,
+phone:"+91"+mPhone.value,
+email:mEmail.value,
+district:mDistrict.value,
+photo:url
+});
+
+alert("Member Registered Successfully 🎉");
+}
+
+/* OTP LOGIN */
+window.recaptchaVerifier=new RecaptchaVerifier(auth,"recaptcha",{size:"normal"});
+let c;
+
+window.sendOTP=async()=>{
+c=await signInWithPhoneNumber(auth,"+91"+loginMobile.value,window.recaptchaVerifier);
+alert("OTP Sent");
+}
+
+window.verifyOTP=async()=>{
+await c.confirm(otpCode.value);
+loadProfile();
+}
+
+/* LOAD PROFILE */
+async function loadProfile(){
+const q=query(collection(db,"members"),where("phone","==","+91"+loginMobile.value));
+const s=await getDocs(q);
+
+s.forEach(d=>{
+memberPanel.classList.remove("hidden");
+pName.innerText=d.data().name;
+pPhone.innerText=d.data().phone;
+pDistrict.innerText=d.data().district;
+profilePic.src=d.data().photo;
+window.memData=d.data();
+});
+}
+
+window.memberLogout=()=>signOut(auth);
+
+/* ADMIN LOGIN */
+window.adminLogin=()=>signInWithEmailAndPassword(auth,adminEmail.value,adminPass.value);
+window.adminLogout=()=>signOut(auth);
+
+/* ADMIN STATUS */
+onAuthStateChanged(auth,user=>{
+if(user && user.email==="admin@gmail.com"){
+adminPanel.classList.remove("hidden");
+}else{
+adminPanel.classList.add("hidden");
+}
+});
+
+/* PDF */
+window.downloadID=()=>{
+const{jsPDF}=window.jspdf;
+let d=new jsPDF();
+d.text("JB RRMS – ID CARD",60,20);
+d.text("Name: "+memData.name,20,40);
+d.text("Phone: "+memData.phone,20,50);
+d.save("ID_CARD.pdf");
+}
+
+window.downloadCert=()=>{
+const{jsPDF}=window.jspdf;
+let d=new jsPDF();
+d.text("CERTIFICATE OF MEMBERSHIP",40,40);
+d.text(memData.name+" is a member of JB RRMS",20,60);
+d.save("Certificate.pdf");
+}
+
+window.downloadLetter=()=>{
+const{jsPDF}=window.jspdf;
+let d=new jsPDF();
+d.text("APPOINTMENT LETTER",60,40);
+d.text("This certifies "+memData.name,20,60);
+d.save("Appointment_Letter.pdf");
+}
+
+</script>
 
 <script>
-// ========= अपने Firebase Config यहाँ डालें =========
-const firebaseConfig = {
- apiKey: "YOUR_KEY",
- authDomain: "YOUR_DOMAIN",
- projectId: "YOUR_PROJECT",
- storageBucket: "YOUR_BUCKET",
- messagingSenderId: "XXXX",
- appId: "XXXX"
-};
-// ===================================================
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-
-// ------- सदस्य पंजीकरण -------
-async function register(){
- if(!name.value || !mobile.value) return alert("सभी जानकारी भरें");
-
- await db.collection("members").add({
-  name:name.value,
-  mobile:mobile.value,
-  address:address.value,
-  role:role.value,
-  id:"JBNRM"+Date.now()
- });
-
- alert("पंजीकरण सफल — आपका आई-कार्ड तैयार है");
- name.value=mobile.value=address.value="";
-}
-
-// ------- सदस्य लॉगिन -------
-async function login(){
- let q = await db.collection("members").where("mobile","==",loginMobile.value).get();
- if(q.empty) return alert("सदस्य नहीं मिला");
-
- let m = q.docs[0].data();
-
- memberArea.classList.remove("hidden");
- mname.innerText="नाम: "+m.name;
- mrole.innerText="पद: "+m.role;
- idc.innerText="सदस्य ID: "+m.id;
- cert.innerText="यह प्रमाणित किया जाता है कि "+m.name+" संगठन का अधिकृत सदस्य है।";
-
- if(m.role!="सदस्य"){
-  apptBox.classList.remove("hidden");
-  appt.innerText=m.name+" को "+m.role+" पद पर नियुक्त किया जाता है।";
- }
-}
-
-// ------- एडमिन लॉगिन -------
-function adminLogin(){
- if(adminUser.value=="admin@jbrrms.in" && adminPass.value=="password123"){
-  adminPanel.classList.remove("hidden");
-  loadMembers();
- } else alert("गलत एडमिन विवरण");
-}
-
-// ------- सभी सदस्य दिखाएँ -------
-async function loadMembers(){
- let box=document.getElementById("members");
- box.innerHTML="";
-
- let q = await db.collection("members").get();
-
- q.forEach(d=>{
-  let m=d.data();
-  box.innerHTML += `
-  <div class='card'>
-   नाम: ${m.name}<br>
-   मोबाइल: ${m.mobile}<br>
-   पद:
-   <input value="${m.role}" onchange="updateRole('${d.id}',this.value)">
-  </div>`;
- });
-}
-
-// ------- पद अपडेट -------
-async function updateRole(id,newRole){
- await db.collection("members").doc(id).update({role:newRole});
- alert("पद अपडेट हुआ");
- loadMembers();
-}
+function showObjective(){home.classList.add("hidden");objective.classList.remove("hidden")}
+function showExecutive(){home.classList.add("hidden");executive.classList.remove("hidden")}
+function goBack(){home.classList.remove("hidden");objective.classList.add("hidden");executive.classList.add("hidden")}
 </script>
 
 </body>
