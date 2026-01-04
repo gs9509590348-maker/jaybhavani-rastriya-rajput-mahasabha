@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>जय भवानी राष्ट्रीय राजपूत महासभा - डिजिटल पोर्टल</title>
+
+<style>
+body{font-family:Arial;background:#f3f3f3;margin:0}
+header{background:#ff9933;color:#fff;padding:15px;text-align:center}
+.container{max-width:900px;margin:auto;background:#fff;padding:20px}
+.card{border:1px solid #ddd;padding:10px;margin:10px 0}
+input,select{width:100%;padding:8px;margin:5px 0}
+button{padding:10px;background:#ff9933;border:0;color:#fff;cursor:pointer}
+.hidden{display:none}
+.idcard,.certificate,.appointment{border:2px solid #ff9933;padding:10px;margin-top:10px}
+footer{text-align:center;padding:15px;color:#555}
+</style>
+
+</head>
+<body>
+
+<header>
+<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+<h4>डिजिटल सदस्यता एवं पहचान प्रणाली</h4>
+</header>
+
+<div class="container">
+
+<h3>सदस्य पंजीकरण फॉर्म</h3>
+
+<div id="register">
+<input id="name" placeholder="पूरा नाम">
+<input id="mobile" placeholder="मोबाइल नंबर">
+<input id="address" placeholder="पता">
+<select id="role">
+<option>सदस्य</option>
+<option>जिला अध्यक्ष</option>
+<option>प्रदेश अध्यक्ष</option>
+<option>महामंत्री</option>
+</select>
+
+<button onclick="register()">सदस्य बनें</button>
+</div>
+
+<hr>
+
+<h3>सदस्य लॉगिन</h3>
+<input id="loginMobile" placeholder="मोबाइल नंबर">
+<button onclick="login()">लॉगिन</button>
+
+<div id="memberArea" class="hidden">
+<h3>आपका डैशबोर्ड</h3>
+<p id="mname"></p>
+<p id="mrole"></p>
+
+<div class="idcard">
+<h3>डिजिटल आई-कार्ड</h3>
+<p id="idc"></p>
+</div>
+
+<div class="certificate">
+<h3>सदस्यता प्रमाणपत्र</h3>
+<p id="cert"></p>
+</div>
+
+<div class="appointment hidden" id="apptBox">
+<h3>नियुक्ति-पत्र</h3>
+<p id="appt"></p>
+</div>
+
+</div>
+
+<hr>
+
+<h3>एडमिन लॉगिन</h3>
+<input id="adminUser" placeholder="Admin Username">
+<input id="adminPass" placeholder="Admin Password" type="password">
+<button onclick="adminLogin()">लॉगिन</button>
+
+<div id="adminPanel" class="hidden">
+<h3>एडमिन कंट्रोल पैनल</h3>
+<div id="members"></div>
+</div>
+
+</div>
+
+<footer>
+जय भवानी • राष्ट्र • राजपूताना
+</footer>
+
+<script>
+let members = JSON.parse(localStorage.getItem("members") || "[]");
+
+function register(){
+ let m = {
+  name: name.value,
+  mobile: mobile.value,
+  address: address.value,
+  role: role.value,
+  id: "JBNRM" + (members.length+1)
+ };
+ members.push(m);
+ localStorage.setItem("members",JSON.stringify(members));
+ alert("पंजीकरण सफल — आपका आई-कार्ड तैयार है");
+}
+
+function login(){
+ let m = members.find(x=>x.mobile==loginMobile.value);
+ if(!m) return alert("सदस्य नहीं मिला");
+ memberArea.classList.remove("hidden");
+ mname.innerText = "नाम: " + m.name;
+ mrole.innerText = "पद: " + m.role;
+ idc.innerText = "सदस्य ID: " + m.id;
+ cert.innerText = "यह प्रमाणित किया जाता है कि " + m.name + " संगठन का अधिकृत सदस्य है।";
+ if(m.role!="सदस्य"){
+  apptBox.classList.remove("hidden");
+  appt.innerText = m.name + " को " + m.role + " पद पर नियुक्त किया जाता है।";
+ }
+}
+
+function adminLogin(){
+ if(adminUser.value=="admin" && adminPass.value=="12345"){
+  adminPanel.classList.remove("hidden");
+  showMembers();
+ } else alert("गलत विवरण");
+}
+
+function showMembers(){
+ members = JSON.parse(localStorage.getItem("members")||"[]");
+ membersDiv = document.getElementById("members");
+ membersDiv.innerHTML="";
+ members.forEach(m=>{
+  membersDiv.innerHTML += `<div class='card'>
+  नाम: ${m.name}<br>मोबाइल: ${m.mobile}<br>
+  पद: <input value="${m.role}" onchange="changeRole('${m.mobile}',this.value)">
+  </div>`;
+ });
+}
+
+function changeRole(mobile,newRole){
+ let m = members.find(x=>x.mobile==mobile);
+ m.role = newRole;
+ localStorage.setItem("members",JSON.stringify(members));
+ alert("पद अपडेट हुआ");
+}
+</script>
+
+</body>
+</html>
