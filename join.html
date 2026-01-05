@@ -1,4 +1,5 @@
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -19,14 +20,14 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-document.getElementById("joinBtn").onclick = async ()=>{
+joinBtn.onclick = async ()=>{
 
- const name = name.value.trim();
- const father = father.value.trim();
- const mobile = mobile.value.trim();
- const state = state.value.trim();
+ const name = document.getElementById("name").value.trim();
+ const father = document.getElementById("father").value.trim();
+ const mobile = document.getElementById("mobile").value.trim();
+ const state = document.getElementById("state").value.trim();
  const district = document.getElementById("district").value.trim();
- const address = address.value.trim();
+ const address = document.getElementById("address").value.trim();
  const photoFile = document.getElementById("photo").files[0];
  const msg = document.getElementById("msg");
 
@@ -64,12 +65,10 @@ document.getElementById("joinBtn").onclick = async ()=>{
    return;
   }
 
-  // --- फोटो Firebase Storage में Upload ---
   const photoRef = ref(storage, "member_photos/"+mobile+".jpg");
   await uploadBytes(photoRef, photoFile);
   const photoURL = await getDownloadURL(photoRef);
 
-  // --- Firestore में डेटा सेव ---
   await addDoc(collection(db,"pending_members"),{
    name,
    father,
@@ -93,4 +92,5 @@ document.getElementById("joinBtn").onclick = async ()=>{
  }
 
 };
+
 </script>
