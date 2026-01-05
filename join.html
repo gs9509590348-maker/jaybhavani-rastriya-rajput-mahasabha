@@ -20,7 +20,9 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-joinBtn.onclick = async ()=>{
+const joinBtn = document.getElementById("joinBtn");
+
+joinBtn.addEventListener("click", async ()=>{
 
  const name = document.getElementById("name").value.trim();
  const father = document.getElementById("father").value.trim();
@@ -91,6 +93,6 @@ joinBtn.onclick = async ()=>{
   msg.innerText="सबमिट करते समय समस्या आई ❌";
  }
 
-};
+});
 
 </script>
