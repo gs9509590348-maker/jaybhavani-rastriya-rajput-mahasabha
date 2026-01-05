@@ -1,48 +1,10 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-<meta charset="UTF-8">
-<title>Join - JB RRMS</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{font-family:system-ui;background:#f3f3f3;text-align:center;padding:10px}
-.card{background:#fff;padding:15px;border-radius:12px;max-width:420px;margin:auto;
-box-shadow:0 2px 6px rgba(0,0,0,.2)}
-input{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
-button{width:100%;padding:12px;border:none;border-radius:8px;background:#d92323;
-color:#fff;font-size:16px}
-.logo{width:90px;margin-bottom:8px}
-</style>
-</head>
-
-<body>
-
-<img class="logo" src="logo.png">
-
-<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-<h3>📝 सदस्य पंजीकरण फॉर्म</h3>
-
-<div class="card">
-
-<input id="name" placeholder="पूरा नाम दर्ज करें">
-<input id="father" placeholder="पिता का नाम दर्ज करें">
-<input id="mobile" placeholder="मोबाइल नंबर" maxlength="10">
-<input id="state" placeholder="राज्य (State)">
-<input id="address" placeholder="पूरा पता">
-<input id="photo" placeholder="फोटो लिंक (Google Drive / Link)">
-
-<button id="joinBtn">Submit</button>
-
-<p id="msg" style="font-weight:600;"></p>
-
-</div>
-
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import { getStorage, ref, uploadBytes, getDownloadURL } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
  apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
@@ -55,26 +17,33 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 document.getElementById("joinBtn").onclick = async ()=>{
 
- const name = document.getElementById("name").value.trim();
- const father = document.getElementById("father").value.trim();
- const mobile = document.getElementById("mobile").value.trim();
- const state = document.getElementById("state").value.trim();
- const address = document.getElementById("address").value.trim();
- const photo = document.getElementById("photo").value.trim();
+ const name = name.value.trim();
+ const father = father.value.trim();
+ const mobile = mobile.value.trim();
+ const state = state.value.trim();
+ const district = document.getElementById("district").value.trim();
+ const address = address.value.trim();
+ const photoFile = document.getElementById("photo").files[0];
  const msg = document.getElementById("msg");
 
  const role = "सदस्य";
 
- if(name=="" || father=="" || mobile=="" || state=="" || address==""){
+ if(!name || !father || !mobile || !state || !district || !address){
   alert("कृपया सभी विवरण भरें");
   return;
  }
 
  if(mobile.length!=10){
   alert("सही मोबाइल नंबर दर्ज करें");
+  return;
+ }
+
+ if(!photoFile){
+  alert("कृपया फोटो अपलोड करें");
   return;
  }
 
@@ -95,13 +64,20 @@ document.getElementById("joinBtn").onclick = async ()=>{
    return;
   }
 
+  // --- फोटो Firebase Storage में Upload ---
+  const photoRef = ref(storage, "member_photos/"+mobile+".jpg");
+  await uploadBytes(photoRef, photoFile);
+  const photoURL = await getDownloadURL(photoRef);
+
+  // --- Firestore में डेटा सेव ---
   await addDoc(collection(db,"pending_members"),{
    name,
    father,
    mobile,
    state,
+   district,
    address,
-   photo,
+   photo: photoURL,
    role,
    status:"pending",
    created:new Date()
@@ -111,13 +87,10 @@ document.getElementById("joinBtn").onclick = async ()=>{
   msg.innerText="आपका फॉर्म सफलतापूर्वक सबमिट हो गया है 🙏";
 
  } catch(e){
+  console.log(e);
   msg.style.color="red";
   msg.innerText="सबमिट करते समय समस्या आई ❌";
  }
 
 };
-
 </script>
-
-</body>
-</html>
