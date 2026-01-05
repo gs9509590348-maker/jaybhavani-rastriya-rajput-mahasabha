@@ -20,78 +20,87 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const joinBtn = document.getElementById("joinBtn");
+window.addEventListener("DOMContentLoaded", ()=>{
 
-joinBtn.addEventListener("click", async ()=>{
-
- const name = document.getElementById("name").value.trim();
- const father = document.getElementById("father").value.trim();
- const mobile = document.getElementById("mobile").value.trim();
- const state = document.getElementById("state").value.trim();
- const district = document.getElementById("district").value.trim();
- const address = document.getElementById("address").value.trim();
- const photoFile = document.getElementById("photo").files[0];
+ const joinBtn = document.getElementById("joinBtn");
  const msg = document.getElementById("msg");
 
- const role = "सदस्य";
-
- if(!name || !father || !mobile || !state || !district || !address){
-  alert("कृपया सभी विवरण भरें");
-  return;
+ if(!joinBtn){
+   alert("❌ joinBtn नहीं मिला — ID चेक करें");
+   return;
  }
 
- if(mobile.length!=10){
-  alert("सही मोबाइल नंबर दर्ज करें");
-  return;
- }
+ joinBtn.addEventListener("click", async ()=>{
 
- if(!photoFile){
-  alert("कृपया फोटो अपलोड करें");
-  return;
- }
+  const name = document.getElementById("name").value.trim();
+  const father = document.getElementById("father").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const state = document.getElementById("state").value.trim();
+  const district = document.getElementById("district").value.trim();
+  const address = document.getElementById("address").value.trim();
+  const photoFile = document.getElementById("photo").files[0];
 
- msg.style.color="blue";
- msg.innerText="कृपया प्रतीक्षा करें...";
+  const role = "सदस्य";
 
- try {
-
-  const q1 = query(collection(db,"approved_members"), where("mobile","==",mobile));
-  const r1 = await getDocs(q1);
-
-  const q2 = query(collection(db,"pending_members"), where("mobile","==",mobile));
-  const r2 = await getDocs(q2);
-
-  if(!r1.empty || !r2.empty){
-   msg.style.color="red";
-   msg.innerText="यह मोबाइल पहले से Registered है 🚫";
+  if(!name || !father || !mobile || !state || !district || !address){
+   alert("कृपया सभी विवरण भरें");
    return;
   }
 
-  const photoRef = ref(storage, "member_photos/"+mobile+".jpg");
-  await uploadBytes(photoRef, photoFile);
-  const photoURL = await getDownloadURL(photoRef);
+  if(mobile.length!=10){
+   alert("सही मोबाइल नंबर दर्ज करें");
+   return;
+  }
 
-  await addDoc(collection(db,"pending_members"),{
-   name,
-   father,
-   mobile,
-   state,
-   district,
-   address,
-   photo: photoURL,
-   role,
-   status:"pending",
-   created:new Date()
-  });
+  if(!photoFile){
+   alert("कृपया फोटो अपलोड करें");
+   return;
+  }
 
-  msg.style.color="green";
-  msg.innerText="आपका फॉर्म सफलतापूर्वक सबमिट हो गया है 🙏";
+  msg.style.color="blue";
+  msg.innerText="कृपया प्रतीक्षा करें...";
 
- } catch(e){
-  console.log(e);
-  msg.style.color="red";
-  msg.innerText="सबमिट करते समय समस्या आई ❌";
- }
+  try {
+
+   const q1 = query(collection(db,"approved_members"), where("mobile","==",mobile));
+   const r1 = await getDocs(q1);
+
+   const q2 = query(collection(db,"pending_members"), where("mobile","==",mobile));
+   const r2 = await getDocs(q2);
+
+   if(!r1.empty || !r2.empty){
+    msg.style.color="red";
+    msg.innerText="यह मोबाइल पहले से Registered है 🚫";
+    return;
+   }
+
+   const photoRef = ref(storage, "member_photos/"+mobile+".jpg");
+   await uploadBytes(photoRef, photoFile);
+   const photoURL = await getDownloadURL(photoRef);
+
+   await addDoc(collection(db,"pending_members"),{
+    name,
+    father,
+    mobile,
+    state,
+    district,
+    address,
+    photo: photoURL,
+    role,
+    status:"pending",
+    created:new Date()
+   });
+
+   msg.style.color="green";
+   msg.innerText="आपका फॉर्म सफलतापूर्वक सबमिट हो गया है 🙏";
+
+  } catch(e){
+   console.log(e);
+   msg.style.color="red";
+   msg.innerText="सबमिट करते समय समस्या आई ❌";
+  }
+
+ });
 
 });
 
