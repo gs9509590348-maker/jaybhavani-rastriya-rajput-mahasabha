@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Admin Settings - JB RRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body{font-family:Arial;background:#f5f6fa;margin:0}
+.header{background:#8e0000;color:#fff;padding:12px;font-size:20px;text-align:center}
+.box{max-width:450px;margin:20px auto;background:#fff;border-radius:10px;padding:15px;box-shadow:0 0 5px rgba(0,0,0,.2)}
+input,textarea{width:100%;padding:8px;margin-top:5px;border:1px solid #ccc;border-radius:5px}
+label{font-weight:bold}
+button{width:100%;background:#8e0000;color:#fff;border:0;padding:10px;border-radius:5px;margin-top:10px;font-size:16px}
+.msg{margin-top:10px;color:green;font-weight:bold;text-align:center}
+</style>
+</head>
+
+<body>
+
+<div class="header">Admin Settings</div>
+
+<div class="box">
+<h3>Organization Settings</h3>
+
+<label>Organization Name</label>
+<input id="orgName">
+
+<label>Contact Number</label>
+<input id="contact">
+
+<label>Email</label>
+<input id="email">
+
+<label>Address</label>
+<textarea id="address"></textarea>
+
+<button id="saveSettings">Save Settings</button>
+
+<div class="msg" id="msg1"></div>
+</div>
+
+
+<div class="box">
+<h3>Change Admin Password</h3>
+
+<label>Old Password</label>
+<input type="password" id="oldPass">
+
+<label>New Password</label>
+<input type="password" id="newPass">
+
+<button id="changePass">Update Password</button>
+
+<div class="msg" id="msg2"></div>
+</div>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain: "jb-rrms-membership-system.firebaseapp.com",
+ projectId: "jb-rrms-membership-system",
+ storageBucket: "jb-rrms-membership-system.firebasestorage.app",
+ messagingSenderId: "493815911364",
+ appId: "1:493815911364:web:e8f2270cf73d93dd368a91",
+ measurementId: "G-07R6MZ6SL9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+// ================= LOAD DATA =================
+
+async function loadSettings(){
+ const ref = doc(db,"system","settings");
+ const snap = await getDoc(ref);
+
+ if(snap.exists()){
+   let d = snap.data();
+   orgName.value = d.orgName || "";
+   contact.value = d.contact || "";
+   email.value = d.email || "";
+   address.value = d.address || "";
+ }
+}
+
+loadSettings();
+
+
+// ================= SAVE SETTINGS =================
+
+saveSettings.onclick = async ()=>{
+
+ await setDoc(doc(db,"system","settings"),{
+  orgName: orgName.value,
+  contact: contact.value,
+  email: email.value,
+  address: address.value
+ });
+
+ msg1.innerText = "Settings Updated Successfully ✔";
+};
+
+
+
+// ================= CHANGE PASSWORD =================
+
+async function getAdminPassword(){
+ const ref = doc(db,"system","admin");
+ const snap = await getDoc(ref);
+ return snap.exists() ? snap.data().password : "";
+}
+
+changePass.onclick = async ()=>{
+
+ let oldPassDB = await getAdminPassword();
+
+ if(oldPass.value !== oldPassDB){
+  msg2.innerText = "Old Password is Wrong ❌";
+  msg2.style.color="red";
+  return;
+ }
+
+ await updateDoc(doc(db,"system","admin"),{
+  password:newPass.value
+ });
+
+ msg2.innerText = "Password Updated Successfully ✔";
+ msg2.style.color="green";
+};
+
+</script>
+
+</body>
+</html>
