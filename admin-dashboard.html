@@ -1,98 +1,71 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>Admin Dashboard - JB RRMS</title>
+<title>Admin Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body{font-family:system-ui;background:#f3f3f3;padding:10px}
-.card{background:#fff;padding:15px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.2);margin-bottom:15px}
+body{font-family:Arial;background:#f5f6fa}
+.box{max-width:400px;margin:60px auto;background:#fff;padding:15px;border-radius:10px}
+input{width:100%;padding:10px;margin-top:5px;border:1px solid #ccc;border-radius:5px}
+button{width:100%;padding:10px;background:#8e0000;color:#fff;border:0;border-radius:5px;margin-top:10px}
 h2{text-align:center}
-button{padding:8px 10px;border:none;border-radius:8px;margin-right:6px}
-.approve{background:#0a7a20;color:#fff}
-.reject{background:#8b0000;color:#fff}
-.delete{background:#000;color:#fff}
-.status{font-weight:bold}
+#msg{text-align:center;margin-top:10px}
 </style>
 </head>
 
 <body>
 
-<h2>🛡 Admin Dashboard</h2>
+<div class="box">
+<h2>Admin Login</h2>
 
-<div id="memberList"></div>
+<input type="password" id="pass" placeholder="Enter Admin Password">
+<button id="loginBtn">Login</button>
+
+<div id="msg"></div>
+</div>
+
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getFirestore, collection, getDocs, updateDoc, deleteDoc, doc }
+import { getFirestore, doc, getDoc } 
 from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
- apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
- authDomain:"jb-rrms-membership-system.firebaseapp.com",
- projectId:"jb-rrms-membership-system",
- storageBucket:"jb-rrms-membership-system.firebasestorage.app",
- messagingSenderId:"493815911364",
- appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
+ apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain: "jb-rrms-membership-system.firebaseapp.com",
+ projectId: "jb-rrms-membership-system",
+ storageBucket: "jb-rrms-membership-system.firebasestorage.app",
+ messagingSenderId: "493815911364",
+ appId: "1:493815911364:web:e8f2270cf73d93dd368a91"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-async function loadMembers(){
+loginBtn.onclick = async ()=>{
 
- let lst=document.getElementById("memberList");
- lst.innerHTML="लोड हो रहा है...";
+ let ref = doc(db,"system","admin");
+ let snap = await getDoc(ref);
 
- const q = await getDocs(collection(db,"members"));
- lst.innerHTML="";
+ if(!snap.exists()){
+   msg.innerText = "Admin Password Not Set!";
+   return;
+ }
 
- q.forEach(d=>{
+ let realPass = snap.data().password;
+ let typed = pass.value.trim();
 
- let m=d.data();
-
- let div=document.createElement("div");
- div.className="card";
-
- div.innerHTML=`
- <p><b>नाम:</b> ${m.name}</p>
- <p><b>मोबाइल:</b> ${m.mobile}</p>
- <p><b>पता:</b> ${m.address}</p>
- <p><b>पद:</b> ${m.role}</p>
- <p class="status">स्टेटस: ${m.status}</p>
-
- <button class="approve">Approve</button>
- <button class="reject">Reject</button>
- <button class="delete">Delete</button>
- `;
-
- div.querySelector(".approve").onclick=()=>updateMember(d.id,"approved");
- div.querySelector(".reject").onclick=()=>updateMember(d.id,"rejected");
- div.querySelector(".delete").onclick=()=>removeMember(d.id);
-
- lst.appendChild(div);
-
- });
-
-}
-
-async function updateMember(id,status){
- await updateDoc(doc(db,"members",id),{status:status});
- alert("Updated Successfully");
- loadMembers();
-}
-
-async function removeMember(id){
- if(confirm("Delete Member?")){
-  await deleteDoc(doc(db,"members",id));
-  alert("Deleted");
-  loadMembers();
+ if(realPass === typed){
+   localStorage.setItem("adminLogin","true");
+   window.location.href="admin-dashboard.html";
+ }
+ else{
+   msg.innerText="Wrong Password ❌";
+   msg.style.color="red";
  }
 }
-
-loadMembers();
 
 </script>
 
