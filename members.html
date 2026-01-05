@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>सदस्य पैनल</title>
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card">
+<h3>Registration</h3>
+<input id="name" placeholder="नाम">
+<input id="mobile" placeholder="मोबाइल">
+<input id="address" placeholder="पता">
+<input id="role" placeholder="पद (जैसे सदस्य)">
+<button onclick="register()">Register</button>
+</div>
+
+<div class="card">
+<h3>Login</h3>
+<input id="loginMobile" placeholder="मोबाइल">
+<button onclick="login()">Login</button>
+</div>
+
+<div id="memberArea" class="card hidden">
+<p id="mname"></p>
+<p id="mrole"></p>
+<p id="idc"></p>
+<p id="cert"></p>
+
+<div id="apptBox" class="hidden">
+<p id="appt"></p>
+</div>
+</div>
+
+</div>
+
+</body>
+</html>
