@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pending Members - JB RRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:system-ui;background:#f4f4f4;padding:10px}
+.box{background:#fff;padding:12px;border-radius:10px;
+margin-bottom:10px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+button{padding:6px 10px;margin-top:6px}
+</style>
+</head>
+
+<body>
+
+<h2>⏳ Pending Members</h2>
+
+<div id="list">Loading...</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, getDocs, doc, deleteDoc, addDoc }
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain:"jb-rrms-membership-system.firebaseapp.com",
+ projectId:"jb-rrms-membership-system"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function load(){
+
+ let box=document.getElementById("list");
+ box.innerHTML="";
+
+ const res=await getDocs(collection(db,"pending_members"));
+
+ res.forEach(m=>{
+  let d=m.data();
+
+  box.innerHTML += `
+   <div class="box">
+    <b>नाम:</b> ${d.name}<br>
+    <b>मोबाइल:</b> ${d.mobile}<br>
+    <b>पता:</b> ${d.address}<br>
+    <b>पद:</b> ${d.role}<br>
+
+    <button onclick="approve('${m.id}','${d.name}','${d.mobile}','${d.address}','${d.role}')">
+      ✔ Approve
+    </button>
+
+    <button onclick="reject('${m.id}')">
+      ❌ Reject
+    </button>
+   </div>
+  `;
+ });
+
+}
+
+window.approve = async(id,name,mobile,address,role)=>{
+ await addDoc(collection(db,"approved_members"),{
+  name,mobile,address,role,status:"approved",created:new Date()
+});
+ await deleteDoc(doc(db,"pending_members",id));
+ alert("Approved Successfully");
+ location.reload();
+}
+
+window.reject = async(id)=>{
+ await deleteDoc(doc(db,"pending_members",id));
+ alert("Member Rejected & Removed");
+ location.reload();
+}
+
+load();
+
+</script>
+
+</body>
+</html>
