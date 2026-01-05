@@ -1,107 +1,152 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>JB RRMS Join Form</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- QR Code -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#fafafa;padding:10px}
+.box{max-width:650px;margin:auto;background:#fff;padding:15px;border-radius:10px;
+box-shadow:0 0 8px #ccc}
+input,select{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #bbb}
+button{padding:10px 15px;border:none;background:#c72e1f;color:#fff;
+border-radius:8px;font-size:16px}
+h2{text-align:center;color:#c72e1f}
+</style>
+</head>
+
+<body>
+<div class="box">
+  <h2>जय भवानी राष्ट्रीय राजपूत महासभा<br>📝 सदस्य पंजीकरण फॉर्म</h2>
+
+  <input id="name" placeholder="पूरा नाम*" required>
+  <input id="father" placeholder="पिता का नाम*" required>
+  <input id="phone" placeholder="मोबाइल नंबर*" required>
+  <input id="district" placeholder="जिला*" required>
+  <input id="state" placeholder="राज्य*" required>
+
+  <label>पासपोर्ट साइज फोटो *</label>
+  <input id="photo" type="file" accept="image/*">
+
+  <button onclick="submitForm()">Submit</button>
+
+  <p id="msg" style="color:green;font-weight:bold"></p>
+</div>
+
 <script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, query, where, getDocs } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-import { getStorage, ref, uploadBytes, getDownloadURL } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import { initializeApp } 
+  from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+import { getFirestore, collection, addDoc, Timestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL }
+  from "https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js";
 
 const firebaseConfig = {
- apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
- authDomain:"jb-rrms-membership-system.firebaseapp.com",
- projectId:"jb-rrms-membership-system",
- storageBucket:"jb-rrms-membership-system.appspot.com",
- messagingSenderId:"493815911364",
- appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_APP.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-window.addEventListener("DOMContentLoaded", ()=>{
+window.submitForm = async function(){
 
- const joinBtn = document.getElementById("joinBtn");
- const msg = document.getElementById("msg");
+  const name=document.getElementById("name").value;
+  const father=document.getElementById("father").value;
+  const phone=document.getElementById("phone").value;
+  const district=document.getElementById("district").value;
+  const state=document.getElementById("state").value;
+  const photo=document.getElementById("photo").files[0];
 
- if(!joinBtn){
-   alert("❌ joinBtn नहीं मिला — ID चेक करें");
-   return;
- }
-
- joinBtn.addEventListener("click", async ()=>{
-
-  const name = document.getElementById("name").value.trim();
-  const father = document.getElementById("father").value.trim();
-  const mobile = document.getElementById("mobile").value.trim();
-  const state = document.getElementById("state").value.trim();
-  const district = document.getElementById("district").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const photoFile = document.getElementById("photo").files[0];
-
-  const role = "सदस्य";
-
-  if(!name || !father || !mobile || !state || !district || !address){
-   alert("कृपया सभी विवरण भरें");
-   return;
-  }
-
-  if(mobile.length!=10){
-   alert("सही मोबाइल नंबर दर्ज करें");
-   return;
-  }
-
-  if(!photoFile){
-   alert("कृपया फोटो अपलोड करें");
-   return;
-  }
-
-  msg.style.color="blue";
-  msg.innerText="कृपया प्रतीक्षा करें...";
-
-  try {
-
-   const q1 = query(collection(db,"approved_members"), where("mobile","==",mobile));
-   const r1 = await getDocs(q1);
-
-   const q2 = query(collection(db,"pending_members"), where("mobile","==",mobile));
-   const r2 = await getDocs(q2);
-
-   if(!r1.empty || !r2.empty){
-    msg.style.color="red";
-    msg.innerText="यह मोबाइल पहले से Registered है 🚫";
+  if(!name||!father||!phone||!district||!state||!photo){
+    alert("कृपया सभी जानकारी भरें");
     return;
-   }
+  }
 
-   const photoRef = ref(storage, "member_photos/"+mobile+".jpg");
-   await uploadBytes(photoRef, photoFile);
-   const photoURL = await getDownloadURL(photoRef);
+  // 🔹 Auto Member ID
+  const memberId = "JB"+Date.now();
 
-   await addDoc(collection(db,"pending_members"),{
+  // 🔹 Upload Photo
+  const storageRef = ref(storage,"members/"+memberId+".jpg");
+  await uploadBytes(storageRef,photo);
+  const photoURL = await getDownloadURL(storageRef);
+
+  // 🔹 Save to Firestore
+  await addDoc(collection(db,"members"),{
+    memberId,
     name,
     father,
-    mobile,
-    state,
+    phone,
     district,
-    address,
-    photo: photoURL,
-    role,
-    status:"pending",
-    created:new Date()
-   });
+    state,
+    photoURL,
+    created: Timestamp.now(),
+    status:"pending"
+  });
 
-   msg.style.color="green";
-   msg.innerText="आपका फॉर्म सफलतापूर्वक सबमिट हो गया है 🙏";
+  document.getElementById("msg").innerText =
+   "सफलतापूर्वक पंजीकरण हो गया ✔ — आपका Member ID: "+memberId;
 
-  } catch(e){
-   console.log(e);
-   msg.style.color="red";
-   msg.innerText="सबमिट करते समय समस्या आई ❌";
-  }
+  // 🔹 Generate PDF ID Card
+  await generatePDF(memberId,name,father,phone,district,state,photoURL);
+}
 
- });
 
-});
+// ========== PDF GENERATOR ==========
+async function generatePDF(id,name,father,phone,district,state,photo){
+
+  const { jsPDF } = window.jspdf;
+  const pdf = new jsPDF();
+
+  // Title
+  pdf.setFontSize(16);
+  pdf.text("जय भवानी राष्ट्रीय राजपूत महासभा",20,15);
+
+  pdf.setFontSize(12);
+  pdf.text("Member ID Card",70,25);
+
+  // Photo
+  const img = await toBase64(photo);
+  pdf.addImage(img,"JPEG",140,35,45,45);
+
+  // QR
+  const temp=document.createElement("div");
+  new QRCode(temp,{text:id,width:120,height:120});
+  const qrImg=temp.querySelector("img").src;
+  pdf.addImage(qrImg,"PNG",10,80,40,40);
+
+  // Details
+  pdf.text("Member ID : "+id,20,40);
+  pdf.text("Name : "+name,20,50);
+  pdf.text("Father : "+father,20,60);
+  pdf.text("Mobile : "+phone,20,70);
+  pdf.text("District : "+district,20,90);
+  pdf.text("State : "+state,20,100);
+
+  pdf.save(id+"_JB_RRMS_IDCARD.pdf");
+}
+
+// Convert image url → base64
+function toBase64(url){
+  return fetch(url).then(r=>r.blob()).then(blob=>new Promise(res=>{
+    const reader=new FileReader();
+    reader.onload=()=>res(reader.result);
+    reader.readAsDataURL(blob);
+  }))
+}
 
 </script>
+</body>
+</html>
