@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Member Login - JB RRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:system-ui;background:#f3f3f3;padding:10px;text-align:center}
+.card{background:#fff;padding:15px;border-radius:12px;max-width:420px;margin:auto;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+input,button{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
+button{background:#8b0000;color:#fff;border:none}
+</style>
+</head>
+
+<body>
+
+<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+<h3>👤 Member Login</h3>
+
+<div class="card">
+<input id="mobile" maxlength="10" placeholder="मोबाइल नंबर दर्ज करें">
+<button id="loginBtn">Login</button>
+
+<p id="msg"></p>
+
+<div id="memberBox" style="display:none;text-align:left">
+  <p><b>नाम:</b> <span id="mname"></span></p>
+  <p><b>मोबाइल:</b> <span id="mmobile"></span></p>
+  <p><b>पता:</b> <span id="maddress"></span></p>
+  <p><b>पद:</b> <span id="mrole"></span></p>
+  <p><b>स्टेटस:</b> <span id="mstatus"></span></p>
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs }
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain:"jb-rrms-membership-system.firebaseapp.com",
+ projectId:"jb-rrms-membership-system",
+ storageBucket:"jb-rrms-membership-system.firebasestorage.app",
+ messagingSenderId:"493815911364",
+ appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+loginBtn.onclick = async ()=>{
+
+ let mobile = document.getElementById("mobile").value.trim();
+
+ if(mobile.length!=10){
+   alert("सही मोबाइल डालें");
+   return;
+ }
+
+ const q = query(collection(db,"members"), where("mobile","==",mobile));
+ const snap = await getDocs(q);
+
+ if(snap.empty){
+   msg.innerText="❌ आपका रिकॉर्ड नहीं मिला";
+   return;
+ }
+
+ snap.forEach(d=>{
+   let m = d.data();
+   memberBox.style.display="block";
+   mname.innerText = m.name;
+   mmobile.innerText = m.mobile;
+   maddress.innerText = m.address;
+   mrole.innerText = m.role;
+   mstatus.innerText = m.status=="approved" ? "✔ Approved Member" : "⏳ Pending Approval";
+ });
+
+};
+
+</script>
+
+</body>
+</html>
