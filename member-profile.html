@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Member Profile - JB RRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+ font-family: system-ui;
+ background:#f3f3f3;
+ padding:10px;
+ text-align:center;
+}
+
+.card{
+ background:#fff;
+ padding:15px;
+ border-radius:12px;
+ max-width:450px;
+ margin:auto;
+ box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+
+input{
+ width:100%;
+ padding:10px;
+ margin:6px 0;
+ border-radius:8px;
+ border:1px solid #ccc;
+}
+
+button{
+ width:100%;
+ padding:12px;
+ border:none;
+ border-radius:8px;
+ background:#0b57d0;
+ color:#fff;
+ font-size:16px;
+}
+
+.status{
+ font-size:18px;
+ font-weight:bold;
+ padding:8px;
+ border-radius:8px;
+}
+
+.pending{background:#fff3cd;color:#b58100}
+.approved{background:#d1fae5;color:#065f46}
+.rejected{background:#ffe5e5;color:#9b1c1c}
+</style>
+</head>
+
+<body>
+
+<h2>सदस्य स्थिति / प्रोफाइल</h2>
+
+<div class="card">
+
+<input id="mobile" placeholder="मोबाइल नंबर दर्ज करें" maxlength="10">
+<button id="checkBtn">🔍 स्टेटस देखें</button>
+
+<hr>
+
+<div id="result"></div>
+
+</div>
+
+<p>📞 हेल्पलाइन : 9166377972<br>✉ Email : jbrrms1@gmail.com</p>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+authDomain:"jb-rrms-membership-system.firebaseapp.com",
+projectId:"jb-rrms-membership-system",
+storageBucket:"jb-rrms-membership-system.firebasestorage.app",
+messagingSenderId:"493815911364",
+appId:"1:493815911364:web:e8f2270cf73d93dd368a91",
+measurementId:"G-07R6MZ6SL9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ---- BUTTON CLICK ----
+checkBtn.onclick = async ()=>{
+
+ let mobile = document.getElementById("mobile").value.trim();
+
+ if(mobile.length != 10){
+   alert("सही मोबाइल नंबर दर्ज करें");
+   return;
+ }
+
+ // Search in members collection
+ const q = query(collection(db,"members"), where("mobile","==",mobile));
+ const snap = await getDocs(q);
+
+ if(snap.empty){
+   result.innerHTML="❌ आपका रिकॉर्ड नहीं मिला";
+   return;
+ }
+
+ snap.forEach(m=>{
+   let d = m.data();
+
+   let statusClass = 
+     d.status=="approved" ? "approved" :
+     d.status=="rejected" ? "rejected" : "pending";
+
+   let statusText =
+     d.status=="approved" ? "✔ आपका सदस्यता आवेदन स्वीकृत हो गया है" :
+     d.status=="rejected" ? "❌ आपका आवेदन अस्वीकृत किया गया है" :
+     "⏳ आपका आवेदन लंबित है";
+
+   result.innerHTML = `
+    <div class="status ${statusClass}">
+      ${statusText}
+    </div>
+    <br>
+    <b>नाम:</b> ${d.name}<br>
+    <b>मोबाइल:</b> ${d.mobile}<br>
+    <b>पता:</b> ${d.address}<br>
+    <b>पद:</b> ${d.role}<br>
+   `;
+ });
+
+}
+
+</script>
+
+</body>
+</html>
