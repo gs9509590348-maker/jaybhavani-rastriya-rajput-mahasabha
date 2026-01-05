@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Rejected Members - JB RRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+ font-family: system-ui;
+ background:#f3f3f3;
+ padding:10px;
+}
+.card{
+ background:#fff;
+ padding:15px;
+ border-radius:12px;
+ max-width:600px;
+ margin:auto;
+ box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+.member{
+ background:#ffe5e5;
+ border-left:4px solid red;
+ padding:10px;
+ margin:8px 0;
+ border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<h2 style="text-align:center;">❌ Rejected Applications</h2>
+
+<div class="card" id="content">
+लोड हो रहा है...
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, collection, query, where, getDocs } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+authDomain:"jb-rrms-membership-system.firebaseapp.com",
+projectId:"jb-rrms-membership-system",
+storageBucket:"jb-rrms-membership-system.firebasestorage.app",
+messagingSenderId:"493815911364",
+appId:"1:493815911364:web:e8f2270cf73d93dd368a91",
+measurementId:"G-07R6MZ6SL9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// -------- Admin Only Access --------
+onAuthStateChanged(auth, async(user)=>{
+ if(!user){
+   document.getElementById("content").innerHTML = 
+   "⛔ यह पेज सिर्फ Admin के लिए है। कृपया लॉगिन करें।";
+   return;
+ }
+
+ loadRejected();
+});
+
+// -------- Load Rejected Members --------
+async function loadRejected(){
+
+ const q = query(collection(db,"members"), where("status","==","rejected"));
+ const snap = await getDocs(q);
+
+ let html = "";
+
+ if(snap.empty){
+   html = "कोई Rejected Application नहीं है 🙂";
+ }
+
+ snap.forEach(d=>{
+   let m = d.data();
+   html += `
+    <div class="member">
+     <b>नाम:</b> ${m.name}<br>
+     <b>मोबाइल:</b> ${m.mobile}<br>
+     <b>पता:</b> ${m.address}<br>
+     <b>पद:</b> ${m.role}<br>
+    </div>
+   `;
+ });
+
+ document.getElementById("content").innerHTML = html;
+}
+
+</script>
+
+</body>
+</html>
