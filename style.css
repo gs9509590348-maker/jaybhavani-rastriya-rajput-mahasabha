@@ -1,0 +1,142 @@
+/* ---------- RESET ---------- */
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family: system-ui, -apple-system, Arial;
+  background:#f4f6f9;
+  color:#222;
+}
+
+/* ---------- HEADER ---------- */
+header{
+  text-align:center;
+  padding:15px;
+  background:#800000;
+  color:#fff;
+}
+
+.logo{
+  width:80px;
+  height:auto;
+  margin-bottom:5px;
+}
+
+/* ---------- BANNER ---------- */
+.banner{
+  background:#ffe6cc;
+  padding:10px;
+  text-align:center;
+  font-weight:bold;
+  color:#cc5200;
+}
+
+/* ---------- MAIN CONTAINER ---------- */
+.container{
+  padding:15px;
+  max-width:700px;
+  margin:auto;
+  text-align:center;
+}
+
+/* ---------- BUTTONS ---------- */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  background:#0055a5;
+  color:white;
+  border-radius:10px;
+  font-size:15px;
+}
+
+button:hover{
+  background:#003e7a;
+  cursor:pointer;
+}
+
+/* ---------- CARD ---------- */
+.card{
+  background:white;
+  margin-top:15px;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card h3{
+  margin-bottom:10px;
+}
+
+/* ---------- SOCIAL LINKS ---------- */
+.social a{
+  display:inline-block;
+  padding:10px 14px;
+  margin:5px;
+  border-radius:8px;
+  text-decoration:none;
+  color:white;
+}
+
+.social .whatsapp{ background:#25d366; }
+.social .fb{ background:#1877f2; }
+.social a:nth-child(3){ background:#d62976; }
+.social a:nth-child(4){ background:#ff0000; }
+
+/* ---------- FOOTER ---------- */
+footer{
+  margin-top:25px;
+  padding:15px;
+  text-align:center;
+  background:#222;
+  color:#ddd;
+  font-size:14px;
+}
+
+/* ---------- FORMS ---------- */
+input, select, textarea{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+
+label{
+  font-weight:600;
+}
+
+/* ---------- TABLES ---------- */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:15px;
+  background:white;
+}
+
+th, td{
+  padding:10px;
+  border:1px solid #ddd;
+}
+
+th{
+  background:#0055a5;
+  color:white;
+}
+
+/* ---------- MOBILE ---------- */
+@media(max-width:600px){
+
+  .logo{
+    width:65px;
+  }
+
+  button{
+    font-size:14px;
+  }
+
+}
