@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>JB RRMS Admin Panel</title>
+<style>
+body{font-family:Arial;background:#f5f5f5;padding:20px}
+.card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 10px #ccc;margin:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+input,select,button{padding:8px;margin:5px;width:95%}
+h3{margin:5px 0}
+</style>
+</head>
+
+<body>
+
+<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+<h3>🔐 Admin Login</h3>
+
+<div id="loginBox" class="card">
+  <input id="email" placeholder="Admin Email">
+  <input id="password" type="password" placeholder="Password">
+  <button id="loginBtn">Login</button>
+</div>
+
+<div id="adminPanel" style="display:none">
+
+<div class="card">
+<h3>🛡 Welcome Admin</h3>
+<p>यहां से आप वेबसाइट को मैनेज कर सकते हैं</p>
+<button id="logoutBtn">Logout</button>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<h3>👥 नया मेंबर जोड़ें</h3>
+<input id="addName" placeholder="नाम">
+<input id="addMobile" placeholder="मोबाइल">
+<input id="addAddress" placeholder="पता">
+<select id="addRole">
+<option>सदस्य</option>
+<option>जिला अध्यक्ष</option>
+<option>जिला उपाध्यक्ष</option>
+<option>महामंत्री</option>
+</select>
+<button id="addBtn">Save</button>
+<p id="addMsg"></p>
+</div>
+
+<div class="card">
+<h3>✏ मेंबर एडिट / पद असाइन</h3>
+<input id="searchMobile" placeholder="मोबाइल से सर्च">
+<button id="searchBtn">Search</button>
+<hr>
+<input id="editName" placeholder="नाम">
+<input id="editMobile" placeholder="मोबाइल">
+<input id="editAddress" placeholder="पता">
+<select id="editRole">
+<option>सदस्य</option>
+<option>जिला अध्यक्ष</option>
+<option>जिला उपाध्यक्ष</option>
+<option>महामंत्री</option>
+</select>
+<input id="docId" type="hidden">
+<button id="updateBtn">Update</button>
+<p id="editMsg"></p>
+</div>
+
+<div class="card">
+<h3>🛂 Pending Member Approval</h3>
+<div id="pendingList"></div>
+</div>
+
+</div>
+</div>
+
+<p>📞 हेल्पलाइन : 9166377972</p>
+<p>✉ Email : jbrrms1@gmail.com</p>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+authDomain:"jb-rrms-membership-system.firebaseapp.com",
+projectId:"jb-rrms-membership-system",
+storageBucket:"jb-rrms-membership-system.firebasestorage.app",
+messagingSenderId:"493815911364",
+appId:"1:493815911364:web:e8f2270cf73d93dd368a91",
+measurementId:"G-07R6MZ6SL9"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ---------- LOGIN ----------
+loginBtn.onclick = () => {
+signInWithEmailAndPassword(auth,email.value,password.value)
+.then(()=>alert("Login Success"))
+.catch(()=>alert("Login Failed"));
+};
+
+// ---------- AUTH STATE ----------
+onAuthStateChanged(auth,user=>{
+if(user){
+loginBox.style.display="none";
+adminPanel.style.display="block";
+loadPending();
+}else{
+loginBox.style.display="block";
+adminPanel.style.display="none";
+}
+});
+
+// ---------- LOGOUT ----------
+logoutBtn.onclick = ()=>signOut(auth);
+
+// ---------- ADD MEMBER ----------
+addBtn.onclick = async ()=>{
+
+// check duplicate mobile
+const q = query(collection(db,"members"),where("mobile","==",addMobile.value));
+const snap = await getDocs(q);
+if(!snap.empty){
+addMsg.innerText = "❌ यह मोबाइल पहले से रजिस्टर है";
+return;
+}
+
+await addDoc(collection(db,"members"),{
+name:addName.value,
+mobile:addMobile.value,
+address:addAddress.value,
+role:addRole.value,
+status:"pending"
+});
+
+addMsg.innerText="✔ Member Added (Pending Approval)";
+};
+
+// ---------- SEARCH ----------
+searchBtn.onclick = async ()=>{
+
+const q = query(collection(db,"members"),where("mobile","==",searchMobile.value));
+const snap = await getDocs(q);
+
+if(snap.empty){ editMsg.innerText="❌ Member नहीं मिला"; return; }
+
+snap.forEach(d=>{
+docId.value = d.id;
+editName.value = d.data().name;
+editMobile.value = d.data().mobile;
+editAddress.value = d.data().address;
+editRole.value = d.data().role;
+});
+editMsg.innerText="✔ Member Loaded";
+};
+
+// ---------- UPDATE ----------
+updateBtn.onclick = async ()=>{
+
+await updateDoc(doc(db,"members",docId.value),{
+name:editName.value,
+mobile:editMobile.value,
+address:editAddress.value,
+role:editRole.value
+});
+
+editMsg.innerText="✔ Update Done";
+};
+
+// ---------- LOAD PENDING ----------
+async function loadPending(){
+pendingList.innerHTML="";
+
+const q = query(collection(db,"members"),where("status","==","pending"));
+const snap = await getDocs(q);
+
+snap.forEach(d=>{
+let div = document.createElement("div");
+div.innerHTML = `
+<b>${d.data().name}</b> (${d.data().mobile})
+<button onclick="approve('${d.id}')">Approve</button>
+<hr>
+`;
+pendingList.appendChild(div);
+});
+}
+
+window.approve = async(id)=>{
+await updateDoc(doc(db,"members",id),{status:"approved"});
+alert("Approved");
+loadPending();
+};
+
+</script>
+</body>
+</html>
