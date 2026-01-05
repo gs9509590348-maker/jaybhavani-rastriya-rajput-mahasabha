@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Approved Members - JB RRMS</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:system-ui;background:#f6f6f6;padding:10px}
+.card{background:#fff;padding:12px;border-radius:10px;margin-bottom:10px;
+box-shadow:0 2px 6px rgba(0,0,0,.2)}
+h2{text-align:center}
+</style>
+</head>
+
+<body>
+
+<h2>✔ Approved Members List</h2>
+
+<div id="list"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs }
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain:"jb-rrms-membership-system.firebaseapp.com",
+ projectId:"jb-rrms-membership-system"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function load(){
+ let box=document.getElementById("list");
+ box.innerHTML="Loading...";
+
+ const q=query(collection(db,"approved_members"));
+ const data=await getDocs(q);
+
+ box.innerHTML="";
+
+ data.forEach(d=>{
+  let m=d.data();
+
+  box.innerHTML += `
+  <div class="card">
+   <b>नाम:</b> ${m.name}<br>
+   <b>मोबाइल:</b> ${m.mobile}<br>
+   <b>पद:</b> ${m.role}<br>
+   <b>जिला/पता:</b> ${m.address}
+  </div>
+  `;
+ });
+
+}
+
+load();
+
+</script>
+
+</body>
+</html>
