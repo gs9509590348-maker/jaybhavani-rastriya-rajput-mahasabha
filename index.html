@@ -29,9 +29,7 @@ button:hover{background:#162aa1}
 
 <div class="container">
 
-<!-- HOME -->
 <div id="home" class="card">
-
 <center>
 <img src="LOGO_LINK_HERE" class="logo"><br><br>
 <h3>🚩 जय भवानी राष्ट्रीय राजपूत महासभा में आपका स्वागत है 🚩</h3>
@@ -49,21 +47,21 @@ button:hover{background:#162aa1}
 
 </div>
 
-<!-- OBJECTIVE -->
+
 <div id="objective" class="card hidden">
 <button onclick="goBack()">⬅ वापस</button>
 <h3>🎯 संगठन का उद्देश्य</h3>
 <p>राजपूत समाज के स्वाभिमान, एकता और संगठन की मजबूती हमारा लक्ष्य है।</p>
 </div>
 
-<!-- EXECUTIVE -->
+
 <div id="executive" class="card hidden">
 <button onclick="goBack()">⬅ वापस</button>
 <h3>👥 राष्ट्रीय कार्यकारिणी</h3>
 <p><b>वेबसाइट हेल्पलाइन:</b> 9166377972</p>
 </div>
 
-<!-- MEMBER FORM -->
+
 <div class="card">
 <h3>ऑनलाइन सदस्यता फॉर्म</h3>
 <input id="mName" placeholder="पूरा नाम">
@@ -75,7 +73,7 @@ button:hover{background:#162aa1}
 <button onclick="joinMember()">Save</button>
 </div>
 
-<!-- LOGIN -->
+
 <div class="card">
 <h3>सदस्य लॉगिन (OTP)</h3>
 <input id="loginMobile" placeholder="मोबाइल नंबर">
@@ -85,7 +83,7 @@ button:hover{background:#162aa1}
 <button onclick="verifyOTP()">Verify & Login</button>
 </div>
 
-<!-- MEMBER PANEL -->
+
 <div id="memberPanel" class="card hidden">
 <h3>स्वागत है 🙏</h3>
 
@@ -103,7 +101,7 @@ button:hover{background:#162aa1}
 <button onclick="memberLogout()">Logout</button>
 </div>
 
-<!-- ADMIN LOGIN -->
+
 <div class="card">
 <h3>Admin Login</h3>
 <input id="adminEmail" placeholder="Email">
@@ -111,7 +109,7 @@ button:hover{background:#162aa1}
 <button onclick="adminLogin()">Login</button>
 </div>
 
-<!-- ADMIN PANEL -->
+
 <div id="adminPanel" class="card hidden">
 <h3>सभी सदस्य</h3>
 <div id="memberList"></div>
@@ -136,7 +134,7 @@ const firebaseConfig={
   apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
   authDomain:"jb-rrms-membership-system.firebaseapp.com",
   projectId:"jb-rrms-membership-system",
-  storageBucket:"jb-rrms-membership-system.firebasestorage.app",
+  storageBucket:"jb-rrms-membership-system.appspot.com",
   messagingSenderId:"493815911364",
   appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
 };
@@ -146,93 +144,119 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 const storage=getStorage(app);
 
+const mName=document.getElementById("mName");
+const mFather=document.getElementById("mFather");
+const mPhone=document.getElementById("mPhone");
+const mEmail=document.getElementById("mEmail");
+const mDistrict=document.getElementById("mDistrict");
+const mPhoto=document.getElementById("mPhoto");
+const loginMobile=document.getElementById("loginMobile");
+const otpCode=document.getElementById("otpCode");
+
+let confirmation;
+
+/* RECAPTCHA */
+window.recaptchaVerifier=new RecaptchaVerifier(auth,"recaptcha",{size:"normal"});
+
+
 /* SAVE MEMBER */
 window.joinMember=async()=>{
-let file=mPhoto.files[0];
-let r=ref(storage,"photos/"+Date.now());
-await uploadBytes(r,file);
-let url=await getDownloadURL(r);
+ try{
+ let file=mPhoto.files[0];
+ let r=ref(storage,"photos/"+Date.now());
+ await uploadBytes(r,file);
+ let url=await getDownloadURL(r);
 
-await addDoc(collection(db,"members"),{
-name:mName.value,
-father:mFather.value,
-phone:"+91"+mPhone.value,
-email:mEmail.value,
-district:mDistrict.value,
-photo:url
-});
+ await addDoc(collection(db,"members"),{
+  name:mName.value,
+  father:mFather.value,
+  phone:"+91"+mPhone.value,
+  email:mEmail.value,
+  district:mDistrict.value,
+  photo:url
+ });
 
-alert("Member Registered Successfully 🎉");
+ alert("Member Registered Successfully 🎉");
+ }catch(e){
+  alert(e.message);
+ }
 }
 
-/* OTP LOGIN */
-window.recaptchaVerifier=new RecaptchaVerifier(auth,"recaptcha",{size:"normal"});
-let c;
-
+/* OTP SEND */
 window.sendOTP=async()=>{
-c=await signInWithPhoneNumber(auth,"+91"+loginMobile.value,window.recaptchaVerifier);
-alert("OTP Sent");
+ try{
+  confirmation=await signInWithPhoneNumber(auth,"+91"+loginMobile.value,window.recaptchaVerifier);
+  alert("OTP Sent");
+ }catch(e){
+  alert(e.message);
+ }
 }
 
+/* VERIFY OTP */
 window.verifyOTP=async()=>{
-await c.confirm(otpCode.value);
-loadProfile();
+ try{
+  await confirmation.confirm(otpCode.value);
+  loadProfile();
+ }catch(e){
+  alert("गलत OTP");
+ }
 }
 
-/* LOAD PROFILE */
+/* LOAD MEMBER */
 async function loadProfile(){
-const q=query(collection(db,"members"),where("phone","==","+91"+loginMobile.value));
-const s=await getDocs(q);
+ const q=query(collection(db,"members"),where("phone","==","+91"+loginMobile.value));
+ const s=await getDocs(q);
 
-s.forEach(d=>{
-memberPanel.classList.remove("hidden");
-pName.innerText=d.data().name;
-pPhone.innerText=d.data().phone;
-pDistrict.innerText=d.data().district;
-profilePic.src=d.data().photo;
-window.memData=d.data();
-});
+ s.forEach(d=>{
+  memberPanel.classList.remove("hidden");
+  pName.innerText=d.data().name;
+  pPhone.innerText=d.data().phone;
+  pDistrict.innerText=d.data().district;
+  profilePic.src=d.data().photo;
+  window.memData=d.data();
+ });
 }
 
 window.memberLogout=()=>signOut(auth);
+
 
 /* ADMIN LOGIN */
 window.adminLogin=()=>signInWithEmailAndPassword(auth,adminEmail.value,adminPass.value);
 window.adminLogout=()=>signOut(auth);
 
-/* ADMIN STATUS */
 onAuthStateChanged(auth,user=>{
-if(user && user.email==="admin@gmail.com"){
-adminPanel.classList.remove("hidden");
-}else{
-adminPanel.classList.add("hidden");
-}
+ if(user && user.email==="admin@gmail.com"){
+  adminPanel.classList.remove("hidden");
+ }else{
+  adminPanel.classList.add("hidden");
+ }
 });
+
 
 /* PDF */
 window.downloadID=()=>{
-const{jsPDF}=window.jspdf;
-let d=new jsPDF();
-d.text("JB RRMS – ID CARD",60,20);
-d.text("Name: "+memData.name,20,40);
-d.text("Phone: "+memData.phone,20,50);
-d.save("ID_CARD.pdf");
+ const{jsPDF}=window.jspdf;
+ let d=new jsPDF();
+ d.text("JB RRMS – ID CARD",60,20);
+ d.text("Name: "+memData.name,20,40);
+ d.text("Phone: "+memData.phone,20,50);
+ d.save("ID_CARD.pdf");
 }
 
 window.downloadCert=()=>{
-const{jsPDF}=window.jspdf;
-let d=new jsPDF();
-d.text("CERTIFICATE OF MEMBERSHIP",40,40);
-d.text(memData.name+" is a member of JB RRMS",20,60);
-d.save("Certificate.pdf");
+ const{jsPDF}=window.jspdf;
+ let d=new jsPDF();
+ d.text("CERTIFICATE OF MEMBERSHIP",40,40);
+ d.text(memData.name+" is a member of JB RRMS",20,60);
+ d.save("Certificate.pdf");
 }
 
 window.downloadLetter=()=>{
-const{jsPDF}=window.jspdf;
-let d=new jsPDF();
-d.text("APPOINTMENT LETTER",60,40);
-d.text("This certifies "+memData.name,20,60);
-d.save("Appointment_Letter.pdf");
+ const{jsPDF}=window.jspdf;
+ let d=new jsPDF();
+ d.text("APPOINTMENT LETTER",60,40);
+ d.text("This certifies "+memData.name,20,60);
+ d.save("Appointment_Letter.pdf");
 }
 
 </script>
