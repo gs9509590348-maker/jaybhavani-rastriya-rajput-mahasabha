@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Members List | JBRRMS</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f4f4;
+    margin:0;
+}
+
+.header{
+    background:#8b0000;
+    color:white;
+    padding:12px;
+    text-align:center;
+    font-size:20px;
+}
+
+.container{
+    width:95%;
+    margin:auto;
+    margin-top:15px;
+    background:white;
+    padding:10px;
+    border-radius:8px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ccc;
+    padding:8px;
+    text-align:center;
+    font-size:14px;
+}
+
+th{
+    background:#ffe2e2;
+}
+
+.actions a{
+    margin:2px;
+    display:inline-block;
+    padding:5px 8px;
+    border-radius:5px;
+    text-decoration:none;
+    font-size:12px;
+}
+
+.view{ background:#008CBA; color:white; }
+.edit{ background:#f39c12; color:white; }
+.approve{ background:#2ecc71; color:white; }
+.reject{ background:#e74c3c; color:white; }
+.transfer{ background:#6f42c1; color:white; }
+
+.footer{
+    text-align:center;
+    padding:10px;
+    color:#777;
+}
+</style>
+
+</head>
+<body>
+
+<div class="header">
+    Admin Panel – Members List
+</div>
+
+<div class="container">
+
+<table>
+<tr>
+    <th>Member ID</th>
+    <th>Name</th>
+    <th>Mobile</th>
+    <th>Status</th>
+    <th>Actions</th>
+</tr>
+
+<tr>
+    <td>JBRRMS001</td>
+    <td>Rahul Singh</td>
+    <td>9999999999</td>
+    <td>Pending</td>
+    <td class="actions">
+        <a href="admin-member-view.html" class="view">View</a>
+        <a href="admin-members-edit.html" class="edit">Edit</a>
+        <a href="#" class="approve">Approve</a>
+        <a href="#" class="reject">Reject</a>
+        <a href="admin-member-transfer.html" class="transfer">Transfer</a>
+    </td>
+</tr>
+
+<tr>
+    <td>JBRRMS002</td>
+    <td>Vikram Rathore</td>
+    <td>8888888888</td>
+    <td>Approved</td>
+    <td class="actions">
+        <a href="admin-member-view.html" class="view">View</a>
+        <a href="admin-members-edit.html" class="edit">Edit</a>
+        <a href="admin-member-transfer.html" class="transfer">Transfer</a>
+    </td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="footer">
+    Jai Bhavani Rashtriya Rajput Mahasabha (JBRRMS)
+</div>
+
+</body>
+</html>
