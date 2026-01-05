@@ -5,24 +5,20 @@
 <title>JB RRMS Join Form</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- QR Code -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
 body{font-family:Arial;background:#fafafa;padding:10px}
-.box{max-width:650px;margin:auto;background:#fff;padding:15px;border-radius:10px;
-box-shadow:0 0 8px #ccc}
-input,select{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #bbb}
-button{padding:10px 15px;border:none;background:#c72e1f;color:#fff;
-border-radius:8px;font-size:16px}
+.box{max-width:650px;margin:auto;background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 8px #ccc}
+input{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #bbb}
+button{padding:10px 15px;border:none;background:#c72e1f;color:#fff;border-radius:8px;font-size:16px}
 h2{text-align:center;color:#c72e1f}
 </style>
 </head>
 
 <body>
+
 <div class="box">
   <h2>जय भवानी राष्ट्रीय राजपूत महासभा<br>📝 सदस्य पंजीकरण फॉर्म</h2>
 
@@ -35,39 +31,42 @@ h2{text-align:center;color:#c72e1f}
   <label>पासपोर्ट साइज फोटो *</label>
   <input id="photo" type="file" accept="image/*">
 
-  <button onclick="submitForm()">Submit</button>
+  <button id="submitBtn">Submit</button>
 
   <p id="msg" style="color:green;font-weight:bold"></p>
 </div>
 
+
 <script type="module">
-import { initializeApp } 
-  from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import { getFirestore, collection, addDoc, Timestamp }
   from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL }
   from "https://www.gstatic.com/firebasejs/10.12.4/firebase-storage.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_APP.firebaseapp.com",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
+ apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain:"jb-rrms-membership-system.firebaseapp.com",
+ projectId:"jb-rrms-membership-system",
+ storageBucket:"jb-rrms-membership-system.appspot.com",
+ messagingSenderId:"493815911364",
+ appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-window.submitForm = async function(){
+document.getElementById("submitBtn").addEventListener("click", submitForm);
 
-  const name=document.getElementById("name").value;
-  const father=document.getElementById("father").value;
-  const phone=document.getElementById("phone").value;
-  const district=document.getElementById("district").value;
-  const state=document.getElementById("state").value;
+async function submitForm(){
+
+  const name=document.getElementById("name").value.trim();
+  const father=document.getElementById("father").value.trim();
+  const phone=document.getElementById("phone").value.trim();
+  const district=document.getElementById("district").value.trim();
+  const state=document.getElementById("state").value.trim();
   const photo=document.getElementById("photo").files[0];
 
   if(!name||!father||!phone||!district||!state||!photo){
@@ -75,15 +74,17 @@ window.submitForm = async function(){
     return;
   }
 
-  // 🔹 Auto Member ID
+  if(phone.length!==10){
+    alert("सही मोबाइल नंबर डालें");
+    return;
+  }
+
   const memberId = "JB"+Date.now();
 
-  // 🔹 Upload Photo
   const storageRef = ref(storage,"members/"+memberId+".jpg");
   await uploadBytes(storageRef,photo);
   const photoURL = await getDownloadURL(storageRef);
 
-  // 🔹 Save to Firestore
   await addDoc(collection(db,"members"),{
     memberId,
     name,
@@ -99,35 +100,29 @@ window.submitForm = async function(){
   document.getElementById("msg").innerText =
    "सफलतापूर्वक पंजीकरण हो गया ✔ — आपका Member ID: "+memberId;
 
-  // 🔹 Generate PDF ID Card
   await generatePDF(memberId,name,father,phone,district,state,photoURL);
 }
 
-
-// ========== PDF GENERATOR ==========
 async function generatePDF(id,name,father,phone,district,state,photo){
 
   const { jsPDF } = window.jspdf;
   const pdf = new jsPDF();
 
-  // Title
   pdf.setFontSize(16);
   pdf.text("जय भवानी राष्ट्रीय राजपूत महासभा",20,15);
 
   pdf.setFontSize(12);
   pdf.text("Member ID Card",70,25);
 
-  // Photo
   const img = await toBase64(photo);
   pdf.addImage(img,"JPEG",140,35,45,45);
 
-  // QR
   const temp=document.createElement("div");
+  document.body.appendChild(temp);
   new QRCode(temp,{text:id,width:120,height:120});
   const qrImg=temp.querySelector("img").src;
   pdf.addImage(qrImg,"PNG",10,80,40,40);
 
-  // Details
   pdf.text("Member ID : "+id,20,40);
   pdf.text("Name : "+name,20,50);
   pdf.text("Father : "+father,20,60);
@@ -138,7 +133,6 @@ async function generatePDF(id,name,father,phone,district,state,photo){
   pdf.save(id+"_JB_RRMS_IDCARD.pdf");
 }
 
-// Convert image url → base64
 function toBase64(url){
   return fetch(url).then(r=>r.blob()).then(blob=>new Promise(res=>{
     const reader=new FileReader();
@@ -148,5 +142,6 @@ function toBase64(url){
 }
 
 </script>
+
 </body>
 </html>
