@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin – Member Transfer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:system-ui;background:#f3f3f3;padding:10px;text-align:center}
+.card{background:#fff;padding:15px;border-radius:12px;max-width:450px;margin:auto;
+box-shadow:0 2px 6px rgba(0,0,0,.2)}
+input,select{width:100%;padding:10px;margin:6px 0;border-radius:8px;border:1px solid #ccc}
+button{padding:12px;border:none;border-radius:8px;background:#d92323;color:#fff;width:100%}
+.info{background:#e8ffe8;padding:10px;border-radius:10px;margin-top:10px}
+</style>
+</head>
+
+<body>
+
+<h2>🔁 Member Status Transfer (Admin)</h2>
+
+<div class="card">
+
+<input id="mobile" placeholder="Enter 10 Digit Mobile">
+
+<button id="search">Search Member</button>
+
+<div id="details" style="display:none" class="info"></div>
+
+<select id="newStatus" style="display:none">
+<option value="approved">✔ Approve</option>
+<option value="pending">🕒 Move to Pending</option>
+<option value="rejected">❌ Reject</option>
+</select>
+
+<button id="transfer" style="display:none">Transfer Now</button>
+
+<p id="msg" style="font-weight:bold"></p>
+
+</div>
+
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { 
+ getFirestore, collection, query, where, getDocs, addDoc, deleteDoc, doc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain:"jb-rrms-membership-system.firebaseapp.com",
+ projectId:"jb-rrms-membership-system"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let foundData = null;
+let foundId = null;
+let foundCollection = null;
+
+document.getElementById("search").onclick = async ()=>{
+
+ msg.innerText="";
+ details.style.display="none";
+ newStatus.style.display="none";
+ transfer.style.display="none";
+
+ let m = mobile.value.trim();
+
+ if(m.length!=10){ alert("सही मोबाइल दर्ज करें"); return;}
+
+ const collections = ["approved_members","pending_members","rejected_members"];
+
+ foundData = null;
+
+ for(let col of collections){
+
+   const q = query(collection(db,col), where("mobile","==",m));
+   const r = await getDocs(q);
+
+   if(!r.empty){
+      r.forEach(d=>{
+        foundData = d.data();
+        foundId = d.id;
+        foundCollection = col;
+      });
+      break;
+   }
+ }
+
+ if(!foundData){
+   alert("Member Not Found");
+   return;
+ }
+
+ details.style.display="block";
+ details.innerHTML = `
+  <b>Name:</b> ${foundData.name} <br>
+  <b>Mobile:</b> ${foundData.mobile} <br>
+  <b>Role:</b> ${foundData.role} <br>
+  <b>Address:</b> ${foundData.address} <br>
+  <b>Current Status:</b> ${foundCollection.replace("_members","")}
+ `;
+
+ newStatus.style.display="block";
+ transfer.style.display="block";
+};
+
+
+document.getElementById("transfer").onclick = async ()=>{
+
+ if(!foundData) return;
+
+ let target = newStatus.value+"_members";
+
+ if(target==foundCollection){
+   alert("Already in same status");
+   return;
+ }
+
+ await addDoc(collection(db,target), foundData);
+
+ await deleteDoc(doc(db,foundCollection,foundId));
+
+ msg.innerText="✔ Member Successfully Transferred!";
+ details.style.display="none";
+ newStatus.style.display="none";
+ transfer.style.display="none";
+};
+
+</script>
+
+</body>
+</html>
