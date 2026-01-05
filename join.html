@@ -1,0 +1,63 @@
+<script type="module">      
+      
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";      
+import { getFirestore, collection, addDoc, query, where, getDocs }       
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";      
+      
+const firebaseConfig = {      
+apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",      
+authDomain: "jb-rrms-membership-system.firebaseapp.com",      
+projectId: "jb-rrms-membership-system",      
+storageBucket: "jb-rrms-membership-system.firebasestorage.app",      
+messagingSenderId: "493815911364",      
+appId: "1:493815911364:web:e8f2270cf73d93dd368a91",      
+measurementId: "G-07R6MZ6SL9"      
+};      
+      
+const app = initializeApp(firebaseConfig);      
+const db = getFirestore(app);      
+      
+document.getElementById("joinBtn").addEventListener("click", async ()=>{      
+      
+ let name = document.getElementById("name").value.trim();      
+ let mobile = document.getElementById("mobile").value.trim();      
+ let address = document.getElementById("address").value.trim();      
+ let role = document.getElementById("role").value;      
+      
+ if(name=="" || mobile=="" || address==""){      
+  alert("कृपया सभी विवरण भरें");      
+  return;      
+ }      
+      
+ if(mobile.length!=10){      
+  alert("सही मोबाइल नंबर दर्ज करें");      
+  return;      
+ }      
+      
+ // ---- Duplicate Check : Approved ----      
+ const q1 = query(collection(db,"approved_members"), where("mobile","==",mobile));      
+ const check1 = await getDocs(q1);      
+      
+ // ---- Duplicate Check : Pending ----      
+ const q2 = query(collection(db,"pending_members"), where("mobile","==",mobile));      
+ const check2 = await getDocs(q2);      
+      
+ if(!check1.empty || !check2.empty){      
+   alert("यह मोबाइल नंबर पहले से Registered है");      
+   return;      
+ }      
+      
+ // -------- Save as Pending --------      
+ await addDoc(collection(db,"pending_members"),{      
+  name,      
+  mobile,      
+  address,      
+  role,      
+  status:"pending",      
+  created:new Date()      
+ });      
+      
+ document.getElementById("msg").innerText="आपका फॉर्म सफलतापूर्वक सबमिट हो गया है 🙏";      
+      
+});      
+</script>
