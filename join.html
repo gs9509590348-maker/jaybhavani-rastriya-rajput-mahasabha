@@ -8,7 +8,7 @@
 <style>
 body{font-family:Arial;background:#f5f5f5}
 .box{max-width:500px;margin:20px auto;background:#fff;padding:20px;border-radius:10px}
-input,button{width:100%;padding:10px;margin:7px 0}
+input,button,select{width:100%;padding:10px;margin:7px 0}
 button{background:#c72e1f;color:#fff;border:0;font-size:16px;border-radius:8px}
 </style>
 </head>
@@ -32,10 +32,26 @@ button{background:#c72e1f;color:#fff;border:0;font-size:16px;border-radius:8px}
 
 <input type="text" id="address" placeholder="पूरा पता*" required>
 
+<input type="text" id="district" placeholder="जिला*" required>
+
+<select id="state" required>
+<option value="">राज्य चुनें *</option>
+<option>Rajasthan</option>
+<option>Uttar Pradesh</option>
+<option>Madhya Pradesh</option>
+<option>Gujarat</option>
+<option>Maharashtra</option>
+<option>Haryana</option>
+<option>Delhi</option>
+<option>Bihar</option>
+<option>Punjab</option>
+<option>Other</option>
+</select>
+
 <label>📸 पासपोर्ट साइज फोटो *</label>
 <input type="file" id="photo" accept="image/*" required>
 
-<button type="submit">Submit</button>
+<button id="submitBtn" type="submit">Submit</button>
 
 </form>
 
@@ -52,7 +68,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
   authDomain: "jb-rrms-membership-system.firebaseapp.com",
   projectId: "jb-rrms-membership-system",
-  storageBucket: "jb-rrms-membership-system.firebasestorage.app",
+  storageBucket: "jb-rrms-membership-system.appspot.com",
   messagingSenderId: "493815911364",
   appId: "1:493815911364:web:e8f2270cf73d93dd368a91",
   measurementId: "G-07R6MZ6SL9"
@@ -62,17 +78,32 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-document.getElementById("joinForm").addEventListener("submit", async (e)=>{
+const form = document.getElementById("joinForm");
+const btn = document.getElementById("submitBtn");
+
+form.addEventListener("submit", async (e)=>{
   e.preventDefault();
 
   const name = document.getElementById("name").value.trim();
   const father = document.getElementById("father").value.trim();
   const mobile = document.getElementById("mobile").value.trim();
   const address = document.getElementById("address").value.trim();
+  const district = document.getElementById("district").value.trim();
+  const state = document.getElementById("state").value;
   const photo = document.getElementById("photo").files[0];
 
   if(mobile.length !== 10){
     alert("कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें");
+    return;
+  }
+
+  if(!district){
+    alert("कृपया जिला दर्ज करें");
+    return;
+  }
+
+  if(!state){
+    alert("कृपया राज्य चुनें");
     return;
   }
 
@@ -81,11 +112,13 @@ document.getElementById("joinForm").addEventListener("submit", async (e)=>{
     return;
   }
 
+  btn.disabled = true;
+  btn.innerText = "Uploading... कृपया प्रतीक्षा करें";
+
   try{
 
     const storageRef = ref(storage, "members/" + Date.now() + "_" + photo.name);
     await uploadBytes(storageRef, photo);
-
     const photoURL = await getDownloadURL(storageRef);
 
     await addDoc(collection(db,"members"),{
@@ -93,17 +126,22 @@ document.getElementById("joinForm").addEventListener("submit", async (e)=>{
       father,
       mobile,
       address,
+      district,
+      state,
       photoURL,
       createdAt: Timestamp.now()
     });
 
     alert("🚩 जय भवानी 🚩\n🚩 जय राजपूताना 🚩\n\nआपका सदस्य फॉर्म सफलतापूर्वक जमा हो गया 🙏");
 
-    document.getElementById("joinForm").reset();
+    form.reset();
 
   }catch(err){
     alert("❌ Error: " + err.message);
   }
+
+  btn.disabled = false;
+  btn.innerText = "Submit";
 
 });
 
