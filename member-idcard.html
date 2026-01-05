@@ -6,8 +6,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-#card{width:300px;padding:15px;border:2px solid #444;border-radius:12px;
-text-align:center;margin-top:15px;background:#fff}
+#card{
+ width:300px;
+ padding:15px;
+ border:2px solid #444;
+ border-radius:12px;
+ text-align:center;
+ margin-top:15px;
+ background:#fff
+}
 body{font-family:system-ui;background:#eaeaea;padding:10px}
 input{padding:8px;width:90%;margin-top:10px}
 button{padding:8px 12px;margin-top:10px}
@@ -38,31 +45,37 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-document.getElementById("find").onclick = async ()=>{
+find.onclick = async ()=>{
 
  let m = mobile.value.trim();
 
- if(m.length!=10){ alert("सही मोबाइल डालें"); return;}
+ if(m.length!=10){
+  alert("सही मोबाइल नंबर डालें");
+  return;
+ }
 
- const q=query(collection(db,"approved_members"), where("mobile","==",m));
- const r=await getDocs(q);
+ card.style.display="none";
+ card.innerHTML="";
 
- if(r.empty){ alert("Member Not Found / Not Approved Yet"); return;}
+ const q = query(collection(db,"approved_members"), where("mobile","==",m));
+ const r = await getDocs(q);
 
- r.forEach(d=>{
-  let x=d.data();
+ if(r.empty){
+  alert("Member Not Found / Not Approved Yet");
+  return;
+ }
 
-  card.style.display="block";
-  card.innerHTML = `
+ const x = r.docs[0].data();
+
+ card.style.display="block";
+ card.innerHTML = `
    <h3>JB RRMS</h3>
    <b>${x.name}</b><br>
    मोबाइल: ${x.mobile}<br>
-   पद: ${x.role}<br>
+   पद: ${x.role || "सदस्य"}<br>
    पता: ${x.address}<br>
-   स्टेटस: Approved
+   स्टेटस: ✅ Approved
   `;
- });
-
 }
 
 </script>
