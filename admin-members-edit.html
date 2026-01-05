@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Admin – Member Edit</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{font-family:system-ui;background:#f2f2f2;padding:12px}
+.box{background:#fff;padding:15px;border-radius:10px;
+box-shadow:0 0 6px #ccc;margin-top:10px}
+input,select{width:100%;padding:8px;margin-top:8px}
+button{padding:10px 14px;margin-top:10px}
+.success{color:green;font-weight:bold}
+</style>
+</head>
+
+<body>
+
+<h2>🛠 Admin – Member Edit</h2>
+
+<div class="box">
+<b>🔎 Mobile Search</b>
+<input id="searchMobile" placeholder="10 Digit Mobile Number">
+<button id="findBtn">Search Member</button>
+</div>
+
+<div id="editBox" class="box" style="display:none">
+
+<b>👤 Name</b>
+<input id="name">
+
+<b>📞 Mobile</b>
+<input id="mobile">
+
+<b>🏠 Address</b>
+<input id="address">
+
+<b>🎖 पद (Role)</b>
+<select id="role">
+ <option value="सदस्य">सदस्य</option>
+ <option value="जिला अध्यक्ष">जिला अध्यक्ष</option>
+ <option value="उपाध्यक्ष">उपाध्यक्ष</option>
+ <option value="महामंत्री">महामंत्री</option>
+ <option value="मंत्री">मंत्री</option>
+ <option value="कार्यकर्ता">कार्यकर्ता</option>
+</select>
+
+<b>📌 Status</b>
+<select id="status">
+ <option value="approved">Approved</option>
+ <option value="pending">Pending</option>
+ <option value="rejected">Rejected</option>
+</select>
+
+<button id="saveBtn">💾 Save Changes</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, doc, updateDoc }
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+ apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain:"jb-rrms-membership-system.firebaseapp.com",
+ projectId:"jb-rrms-membership-system"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let currentDoc = null;
+let currentCollection = null;
+
+// -------------------- SEARCH MEMBER --------------------
+document.getElementById("findBtn").onclick = async ()=>{
+
+ let m = searchMobile.value.trim();
+ if(m.length!=10){ alert("सही मोबाइल डालें"); return;}
+
+ let collections=["approved_members","pending_members","rejected_members"];
+ let found=false;
+
+ for(let c of collections){
+
+   const q=query(collection(db,c), where("mobile","==",m));
+   const r=await getDocs(q);
+
+   if(!r.empty){
+     r.forEach(d=>{
+        currentDoc=d.id;
+        currentCollection=c;
+
+        let x=d.data();
+
+        name.value=x.name;
+        mobile.value=x.mobile;
+        address.value=x.address;
+        role.value=x.role || "सदस्य";
+        status.value=x.status || "approved";
+
+        editBox.style.display="block";
+        msg.innerHTML="";
+        found=true;
+     });
+   }
+ }
+
+ if(!found) alert("Member Not Found");
+};
+
+// -------------------- SAVE CHANGES --------------------
+document.getElementById("saveBtn").onclick = async ()=>{
+
+ if(!currentDoc){ alert("पहले Member खोजें"); return;}
+
+ let ref = doc(db,currentCollection,currentDoc);
+
+ await updateDoc(ref,{
+   name:name.value.trim(),
+   mobile:mobile.value.trim(),
+   address:address.value.trim(),
+   role:role.value,
+   status:status.value
+ });
+
+ msg.innerHTML="✔ Member Details Updated Successfully";
+ msg.className="success";
+};
+
+</script>
+
+</body>
+</html>
