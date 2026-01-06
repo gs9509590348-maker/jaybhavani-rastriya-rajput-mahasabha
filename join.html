@@ -1,148 +1,121 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8">
-<title>JB RRMS - सदस्य पंजीकरण</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JBRRMS Member Registration</title>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
 <style>
-body{font-family: system-ui;background:#f4f4f4;padding:20px}
-.container{max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px #ccc}
-h2{text-align:center}
-input,select{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #ccc}
-button{background:#007bff;color:#fff;border:none;padding:12px;width:100%;border-radius:8px;font-size:16px}
-.success{color:green;font-weight:600}
-.error{color:red;font-weight:600}
-#preview{width:120px;height:140px;object-fit:cover;border:1px solid #ccc;border-radius:8px;margin-top:10px}
+body{font-family:Arial;padding:15px;background:#f5f5f5}
+.card{background:#fff;padding:15px;border-radius:10px;max-width:450px;margin:auto;box-shadow:0 0 10px #ccc}
+input{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #aaa}
+button{padding:10px 14px;background:#007bff;border:0;color:white;border-radius:6px;width:100%}
 </style>
+
 </head>
 
 <body>
-<div class="container">
-<h2>जय भवानी राष्ट्रीय राजपूत महासभा<br>📝 सदस्य पंजीकरण</h2>
 
-<input id="name" placeholder="पूरा नाम लिखें" required>
-<input id="father" placeholder="पिता का नाम" required>
-<input id="mobile" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10" required>
-<input id="address" placeholder="पूरा पता" required>
+<div class="card">
+<h2>JBRRMS Member Registration</h2>
 
-<input id="district" placeholder="जिला" required>
+<label>नाम</label>
+<input id="name">
 
-<select id="state" required>
-<option value="">राज्य चुनें</option>
-<option>Rajasthan</option>
-<option>Uttar Pradesh</option>
-<option>Madhya Pradesh</option>
-<option>Gujarat</option>
-<option>Maharashtra</option>
-<option>Bihar</option>
-<option>Haryana</option>
-<option>Delhi</option>
-<option>Punjab</option>
-<option>Other</option>
-</select>
+<label>पिता का नाम</label>
+<input id="father_name">
 
-<label>📸 पासपोर्ट साइज फोटो चुनें</label>
-<input type="file" id="photo" accept="image/*" required>
+<label>जिला</label>
+<input id="district">
 
-<img id="preview" style="display:none" />
+<label>राज्य</label>
+<input id="state">
 
-<button id="submitBtn">Submit</button>
+<label>मोबाइल नंबर</label>
+<input id="mobile">
+
+<label>Photo Upload</label>
+<input type="file" id="photo">
+
+<button onclick="saveMember()">Save Member</button>
 
 <p id="msg"></p>
 </div>
 
-<script type="module">
+<script>
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getFirestore, collection, addDoc, Timestamp } 
-  from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } 
-  from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+// ===============================
+// केवल Publishable Key ही डालना
+// ===============================
 
-const firebaseConfig = {  
-  apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
-  authDomain: "jb-rrms-membership-system.firebaseapp.com",
-  projectId: "jb-rrms-membership-system",
-  storageBucket: "jb-rrms-membership-system.appspot.com",
-  messagingSenderId: "493815911364",
-  appId: "1:493815911364:web:e8f2270cf73d93dd368a91"
-};
+const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
+const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const storage = getStorage(app);
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// ⭐ फोटो चुनते ही Preview
-photo.addEventListener("change", ()=>{
-  const file = photo.files[0];
-  if(file){
-    document.getElementById("preview").src = URL.createObjectURL(file);
-    document.getElementById("preview").style.display="block";
-  }
-});
+async function saveMember(){
 
-// ⭐ Submit Function
-submitBtn.addEventListener("click", async ()=>{
+ document.getElementById("msg").innerText = "Saving...";
 
-  const name = name.value.trim();
-  const father = father.value.trim();
-  const mobile = mobile.value.trim();
-  const address = address.value.trim();
-  const district = district.value.trim();
-  const state = state.value;
-  const file = photo.files[0];
-  const msg = msg;
-  const btn = submitBtn;
+ let name = document.getElementById("name").value;
+ let father = document.getElementById("father_name").value;
+ let district = document.getElementById("district").value;
+ let state = document.getElementById("state").value;
+ let mobile = document.getElementById("mobile").value;
+ let file = document.getElementById("photo").files[0];
 
-  if(!name || !father || !mobile || !address || !district || !state || !file){
-    msg.innerHTML = "❌ कृपया सभी जानकारी भरें";
-    msg.className="error";
-    return;
-  }
+ if(!file){ alert("Photo चुनें"); return; }
 
-  if(mobile.length !== 10){
-    msg.innerHTML = "📞 सही 10 अंकों का मोबाइल नंबर डालें";
-    msg.className="error";
-    return;
-  }
+ // ========== फोटो upload ==========
+ let filename = Date.now() + "_" + file.name;
 
-  try{
-    btn.disabled = true;
-    btn.innerText = "Uploading...";
+ let { error: uploadError } = await supabaseClient
+ .storage.from("members_photos")
+ .upload(filename, file);
 
-    // Upload Photo
-    const storageRef = ref(storage,"member_photos/"+Date.now()+"_"+file.name);
-    await uploadBytes(storageRef,file);
-    const photoURL = await getDownloadURL(storageRef);
+ if(uploadError){ 
+   document.getElementById("msg").innerText = "Photo upload error";
+   return;
+ }
 
-    // Save Firestore
-    await addDoc(collection(db,"members"),{
-      name,father,mobile,address,district,state,
-      photoURL,
-      status:"pending",
-      createdAt:Timestamp.now()
-    });
+ let photo_url = supabaseUrl + "/storage/v1/object/public/members_photos/" + filename;
 
-    msg.innerHTML = "✔ पंजीकरण सफल 🙏 एडमिन अप्रूवल के बाद ID जारी होगी";
-    msg.className="success";
+ // ========== Auto Member Code ==========
+ let { data: last } = await supabaseClient
+ .from("members")
+ .select("id")
+ .order("id", { ascending:false })
+ .limit(1);
 
-    name.value=father.value=mobile.value=address.value=district.value="";
-    state.value="";
-    photo.value="";
-    preview.style.display="none";
+ let next = 1;
+ if(last && last.length>0) next = last[0].id + 1;
 
-  }catch(e){
-    msg.innerHTML = "❌ Error: "+e.message;
-    msg.className="error";
-  }
+ let member_code = "JBRRMS" + String(next).padStart(4,'0');
 
-  btn.disabled = false;
-  btn.innerText = "Submit";
+ // ========== Save to Database ==========
+ let { error } = await supabaseClient
+ .from("members")
+ .insert({
+   member_code,
+   name,
+   father_name: father,
+   district,
+   state,
+   mobile,
+   post: "",       // Post अभी खाली रहेगा
+   photo_url
+ });
 
-});
+ if(error){
+  document.getElementById("msg").innerText = "Data Save Error";
+ }else{
+  document.getElementById("msg").innerText = "Member Saved ✔\nCode: " + member_code;
+ }
+
+}
 
 </script>
-
 </body>
 </html>
