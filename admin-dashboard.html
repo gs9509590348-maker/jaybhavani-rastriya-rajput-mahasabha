@@ -1,71 +1,234 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
-<meta charset="UTF-8">
-<title>Admin Login</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JBRRMS Admin — Official Panel</title>
+
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
 <style>
-body{font-family:Arial;background:#f5f6fa}
-.box{max-width:400px;margin:60px auto;background:#fff;padding:15px;border-radius:10px}
-input{width:100%;padding:10px;margin-top:5px;border:1px solid #ccc;border-radius:5px}
-button{width:100%;padding:10px;background:#8e0000;color:#fff;border:0;border-radius:5px;margin-top:10px}
-h2{text-align:center}
-#msg{text-align:center;margin-top:10px}
+body{font-family:Arial;background:#f1f1f1;padding:15px}
+.card{background:#fff;padding:15px;border-radius:12px;max-width:1100px;margin:auto;box-shadow:0 4px 20px #ccc}
+table{width:100%;border-collapse:collapse;margin-top:12px}
+td,th{border:1px solid #ddd;padding:8px}
+th{background:#007bff;color:white}
+button{padding:6px 10px;border-radius:8px;border:0;color:white;cursor:pointer}
+.edit{background:#28a745}
+.del{background:#dc3545}
+.doc{background:#6f42c1}
 </style>
 </head>
 
 <body>
 
-<div class="box">
-<h2>Admin Login</h2>
+<div class="card">
+<h2>JB RRMS — Admin Panel</h2>
 
-<input type="password" id="pass" placeholder="Enter Admin Password">
-<button id="loginBtn">Login</button>
+<input id="search" placeholder="Search Member" style="width:100%;padding:10px" onkeyup="loadMembers()"/>
 
-<div id="msg"></div>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Name</th>
+<th>Mobile</th>
+<th>District</th>
+<th>Post</th>
+<th>Photo</th>
+<th>Docs</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+
 </div>
 
+<script>
 
-<script type="module">
+// ========================
+// Supabase Keys
+// ========================
+const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
+const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
+const db = supabase.createClient(supabaseUrl, supabaseKey);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getFirestore, doc, getDoc } 
-from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-const firebaseConfig = {
- apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
- authDomain: "jb-rrms-membership-system.firebaseapp.com",
- projectId: "jb-rrms-membership-system",
- storageBucket: "jb-rrms-membership-system.firebasestorage.app",
- messagingSenderId: "493815911364",
- appId: "1:493815911364:web:e8f2270cf73d93dd368a91"
-};
+// ========================
+// Load Members
+// ========================
+async function loadMembers(){
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+ let s = document.getElementById("search").value;
 
-loginBtn.onclick = async ()=>{
+ let query = db.from("members").select("*").order("id",{ascending:false});
 
- let ref = doc(db,"system","admin");
- let snap = await getDoc(ref);
-
- if(!snap.exists()){
-   msg.innerText = "Admin Password Not Set!";
-   return;
+ if(s){
+ query = query.or(`name.ilike.%${s}%,mobile.ilike.%${s}%,member_code.ilike.%${s}%`);
  }
 
- let realPass = snap.data().password;
- let typed = pass.value.trim();
+ let { data } = await query;
 
- if(realPass === typed){
-   localStorage.setItem("adminLogin","true");
-   window.location.href="admin-dashboard.html";
- }
- else{
-   msg.innerText="Wrong Password ❌";
-   msg.style.color="red";
- }
+ let html="";
+
+ data.forEach(m=>{
+  html += `
+<tr>
+<td>${m.member_code}</td>
+<td>${m.name}</td>
+<td>${m.mobile}</td>
+<td>${m.district}</td>
+<td>${m.post ?? ""}</td>
+<td><img src="${m.photo_url}" height="50"></td>
+
+<td>
+${m.id_card_url?`<a href="${m.id_card_url}" target="_blank">ID Card</a><br>`:""}
+${m.certificate_url?`<a href="${m.certificate_url}" target="_blank">Certificate</a><br>`:""}
+${m.appointment_url?`<a href="${m.appointment_url}" target="_blank">Appointment</a>`:""}
+</td>
+
+<td>
+<button class="edit" onclick="approve('${m.member_code}')">Approve</button>
+<button class="doc" onclick="generate('${m.member_code}')">Generate Docs</button>
+<button class="del" onclick="del('${m.member_code}')">Delete</button>
+</td>
+</tr>`;
+ });
+
+ document.getElementById("list").innerHTML = html;
 }
+
+
+// ========================
+// Approve + Auto Number
+// ========================
+async function approve(code){
+
+ let post = prompt("पद दर्ज करें");
+ if(!post) return;
+
+ let today = new Date().toISOString().split("T")[0];
+
+ await db.from("members").update({
+  post,
+  appointment_date: today,
+  certificate_no:"CERT-"+code,
+  appointment_letter_no:"APP-"+code
+ }).eq("member_code",code);
+
+ alert("Approved ✔");
+ loadMembers();
+}
+
+
+
+// ========================
+// Delete Member
+// ========================
+async function del(code){
+ if(!confirm("Delete करना है?")) return;
+
+ await db.from("members").delete().eq("member_code",code);
+
+ loadMembers();
+ alert("Deleted ✔");
+}
+
+
+
+// ========================
+// Generate + Upload Docs
+// ========================
+async function generate(code){
+
+ let { data:m } = await db.from("members").select("*").eq("member_code",code).single();
+
+ if(!m){ alert("Not found"); return; }
+
+ // QR CODE
+ let qr = new QRious({
+  value:`Member: ${m.name}\nCode:${m.member_code}\nMobile:${m.mobile}`,
+  size:100
+ });
+
+ let qrData = qr.toDataURL();
+
+ // ---------- ID CARD ----------
+ let idHtml = `
+<div style="width:330px;border:2px solid #000;padding:10px;border-radius:10px;text-align:center;font-family:Arial">
+<h3>JB RRMS — ID CARD</h3>
+<img src="${m.photo_url}" height="90"><br><br>
+<b>${m.name}</b><br>
+Code : ${m.member_code}<br>
+Mobile : ${m.mobile}<br>
+District : ${m.district}<br><br>
+<img src="${qrData}">
+</div>`;
+
+ await uploadDoc("idcard",idHtml,m);
+
+
+
+ // ---------- CERTIFICATE ----------
+ let certHtml = `
+<div style="padding:30px;border:4px double #000;text-align:center;font-family:serif">
+<h2>Certificate of Membership</h2>
+<h3>${m.name}</h3>
+<p>Certificate No : ${m.certificate_no}</p>
+<img src="${qrData}">
+</div>`;
+
+ await uploadDoc("certificate",certHtml,m);
+
+
+
+ // ---------- APPOINTMENT ----------
+ let appHtml = `
+<div style="padding:25px;border:2px solid #000;font-family:Arial">
+<h2>Appointment Letter</h2>
+<p>दिनांक : ${m.appointment_date}</p>
+<p><b>${m.name}</b> को <b>${m.post}</b> पद पर नियुक्त किया जाता है।</p>
+<p>Appointment No : ${m.appointment_letter_no}</p>
+<img src="${qrData}">
+</div>`;
+
+ await uploadDoc("appointment",appHtml,m);
+
+
+ alert("✔ Uploaded Successfully");
+ loadMembers();
+}
+
+
+
+// ========================
+// Upload Function
+// ========================
+async function uploadDoc(type,html,m){
+
+ let blob = new Blob([html],{type:"text/html"});
+
+ let filename = `${type}_${m.member_code}.html`;
+
+ await db.storage.from("documents").upload(filename,blob,{upsert:true});
+
+ let url = supabaseUrl+`/storage/v1/object/public/documents/${filename}`;
+
+ let update={};
+ if(type=="idcard") update.id_card_url=url;
+ if(type=="certificate") update.certificate_url=url;
+ if(type=="appointment") update.appointment_url=url;
+
+ await db.from("members").update(update).eq("member_code",m.member_code);
+}
+
+
+
+// ========================
+loadMembers();
+// ========================
 
 </script>
 
