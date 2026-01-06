@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>JB RRMS – Official Member Documents</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getStorage, ref, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
+const firebaseConfig = {
+ apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
+ authDomain: "jb-rrms-membership-system.firebaseapp.com",
+ projectId: "jb-rrms-membership-system",
+ storageBucket: "jb-rrms-membership-system.firebasestorage.app",
+ messagingSenderId: "493815911364",
+ appId: "1:493815911364:web:e8f2270cf73d93dd368a91",
+ measurementId: "G-07R6MZ6SL9"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+window.loadMember = async function(){
+ const mid = document.getElementById("mid").value.trim();
+ if(!mid){ alert("कृपया Member ID दर्ज करें"); return; }
+
+ const refDoc = doc(db,"members",mid);
+ const snap = await getDoc(refDoc);
+
+ if(!snap.exists()){ alert("Member नहीं मिला"); return; }
+
+ const m = snap.data();
+
+ name1.innerText = name2.innerText = name3.innerText = m.name;
+ father1.innerText = father2.innerText = m.father;
+ post.innerText = post2.innerText = m.post;
+ dist.innerText = dist2.innerText = m.district;
+ state.innerText = m.state;
+ memid.innerText = mid;
+ mobile.innerText = m.mobile;
+ address.innerText = m.address;
+
+ const imgRef = ref(storage, `members/${mid}.jpg`);
+ getDownloadURL(imgRef).then(u=> photo.src=u);
+
+ const qrData = JSON.stringify({
+  MemberID: mid,
+  Mobile: m.mobile,
+  Name: m.name,
+  District: m.district
+ });
+
+ new QRious({element:qr1,value:qrData,size:110});
+ new QRious({element:qr2,value:qrData,size:110});
+ new QRious({element:qr3,value:qrData,size:110});
+}
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
+<style>
+body{font-family:system-ui;background:#eee;padding:10px;text-align:center}
+.card{background:#fff;border-radius:12px;padding:15px;margin:10px auto;width:430px;box-shadow:0 0 10px #aaa}
+.top{text-align:center;font-weight:bold}
+.logo{width:90px}
+.row{display:flex;justify-content:space-between;margin-top:10px}
+.photo{width:100px;height:120px;border:2px solid #000;object-fit:cover}
+.footer{background:#ff8800;color:#fff;padding:6px;border-radius:8px}
+.qr{width:110px}
+h2{margin-top:6px;color:#922}
+</style>
+
+</head>
+<body>
+
+<h3>Member ID डालें और Document देखें</h3>
+<input id="mid" placeholder="JB-RRMS-2026-00001">
+<button onclick="loadMember()">लोड करें</button>
+
+<!-- पहचान पत्र -->
+<div class="card">
+<div class="top">
+<img class="logo" src="YOUR_LOGO_URL_HERE">
+<div>जय भवानी राष्ट्रीय राजपूत महासभा</div>
+<div>जयतु हिन्दू राष्ट्रम्</div>
+<h2>पहचान पत्र</h2>
+</div>
+
+<div class="row">
+<div>
+नाम: <span id="name1"></span><br>
+पिता का नाम: <span id="father1"></span><br>
+पद: <span id="post"></span><br>
+जिला: <span id="dist"></span><br>
+राज्य: <span id="state"></span><br>
+मोबाइल: <span id="mobile"></span><br>
+सदस्यता संख्या: <span id="memid"></span>
+</div>
+<img id="photo" class="photo">
+</div>
+
+<div class="row">
+<div>हेल्पलाइन — 9166377972</div>
+<canvas id="qr1" class="qr"></canvas>
+</div>
+
+<div class="footer">यह पहचान पत्र संगठन का आधिकारिक दस्तावेज़ है।</div>
+</div>
+
+<!-- प्रमाण पत्र -->
+<div class="card">
+<div class="top">
+<img class="logo" src="YOUR_LOGO_URL_HERE">
+<div>जय भवानी राष्ट्रीय राजपूत महासभा</div>
+<div>जयतु हिन्दू राष्ट्रम्</div>
+<h2>प्रमाण पत्र</h2>
+</div>
+
+नाम: <span id="name2"></span><br>
+पिता/पति का नाम: <span id="father2"></span><br>
+निवासी: <span id="address"></span><br><br>
+
+यह संगठन का सक्रिय सदस्य है<br><br>
+
+<div class="row">
+<div>हेल्पलाइन — 9166377972</div>
+<canvas id="qr2" class="qr"></canvas>
+</div>
+</div>
+
+<!-- नियुक्ति पत्र -->
+<div class="card">
+<div class="top">
+<img class="logo" src="YOUR_LOGO_URL_HERE">
+<div>जय भवानी राष्ट्रीय राजपूत महासभा</div>
+<div>जयतु हिन्दू राष्ट्रम्</div>
+<h2>नियुक्ति-पत्र</h2>
+</div>
+
+श्री / श्रीमती / कु. <span id="name3"></span><br>
+पिता/पति का नाम: <span id="father1"></span><br>
+निवासी: <span id="address"></span><br><br>
+
+को संगठन की स्वीकृति से<br><br>
+
+पद — <span id="post2"></span><br><br>
+
+जिला — <span id="dist2"></span><br><br>
+
+<div class="row">
+<div>हेल्पलाइन — 9166377972</div>
+<canvas id="qr3" class="qr"></canvas>
+</div>
+</div>
+
+</body>
+</html>
