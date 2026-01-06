@@ -3,21 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>जय भवानी राष्ट्रीय राजपूत महासभा</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@500;700;900&display=swap" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 
 body{
-  font-family:system-ui,Arial;
+  font-family:'Noto Sans Devanagari', system-ui;
   color:#222;
   background:radial-gradient(circle at top,#ffdf9b,#ffb347,#ff9933,#e26a00);
   background-attachment:fixed;
 }
 
+/* HEADER */
 header{
   text-align:center;
-  padding:25px 10px 15px;
+  padding:25px 10px 10px;
 }
 .logo-box{
   width:170px;
@@ -36,20 +40,29 @@ header{
   object-fit:cover;
 }
 
+/* ROYAL TWO LINE TITLE */
 .title{
-  background:#800000;
+  background:#600000;
   color:white;
-  padding:10px;
-  font-weight:bold;
-  font-size:18px;
-  letter-spacing:.5px;
+  padding:14px 8px;
   text-align:center;
-  box-shadow:0 2px 12px rgba(0,0,0,.4);
+  box-shadow:0 2px 12px rgba(0,0,0,.5);
+}
+.title span:first-child{
+  font-size:16px;
+  letter-spacing:1px;
+}
+.title span:last-child{
+  display:block;
+  margin-top:5px;
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:1px;
 }
 
+/* NAV */
 nav{
   background:#ffffffdd;
-  backdrop-filter:blur(6px);
   padding:10px;
   box-shadow:0 2px 12px rgba(0,0,0,.25);
 }
@@ -69,9 +82,8 @@ nav li{
 nav a{
   color:#fff;
   text-decoration:none;
-  font-weight:600;
+  font-weight:700;
 }
-
 nav li ul{
   display:none;
   position:absolute;
@@ -88,16 +100,13 @@ nav li ul li{
   background:none;
   padding:8px 12px;
 }
-nav li ul li a{
-  color:#0055a5;
-}
-nav li:hover ul{
-  display:block;
-}
+nav li ul li a{color:#0055a5;}
+nav li:hover ul{display:block;}
 
+/* MAIN BOX */
 .container{
   max-width:950px;
-  margin:15px auto;
+  margin:15px auto 25px;
   padding:15px;
   background:#ffffffdd;
   border-radius:15px;
@@ -107,11 +116,12 @@ nav li:hover ul{
 .section-title{
   text-align:center;
   padding:10px;
-  font-weight:bold;
-  color:#cc5200;
-  font-size:18px;
+  font-weight:900;
+  color:#a04000;
+  font-size:20px;
 }
 
+/* GALLERY */
 .gallery{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -125,6 +135,7 @@ nav li:hover ul{
   border:3px solid white;
 }
 
+/* SOCIAL */
 .social{
   text-align:center;
   margin-top:15px;
@@ -135,7 +146,7 @@ nav li:hover ul{
   margin:6px;
   border-radius:10px;
   color:white;
-  font-weight:600;
+  font-weight:700;
   text-decoration:none;
   box-shadow:0 4px 12px rgba(0,0,0,.3);
 }
@@ -144,15 +155,16 @@ nav li:hover ul{
 .insta{background:#d62976;}
 .youtube{background:#ff0000;}
 
+/* FOOTER */
 footer{
   background:#111;
   color:#eee;
   text-align:center;
-  padding:15px;
-  margin-top:20px;
+  padding:18px;
   font-size:14px;
 }
 
+/* MOBILE */
 @media(max-width:600px){
   .gallery{grid-template-columns:1fr;}
   .logo-box{width:130px;height:130px;}
@@ -171,7 +183,8 @@ footer{
 </header>
 
 <div class="title">
-  जय भवानी राष्ट्रीय राजपूत महासभा
+  <span>जय भवानी • जय राजपूताना</span>
+  <span>राष्ट्रीय राजपूत महासभा</span>
 </div>
 
 <nav>
@@ -183,33 +196,26 @@ footer{
       </ul>
     </li>
     <li><a href="#">उद्देश्य</a></li>
-    <li><a href="#">कार्यकारणी</a></li>
-    <li><a href="member-login.html">Member Login</a></li>
-    <li><a href="join.html">Join Form</a></li>
+    <li><a href="#">कार्यकारिणी</a></li>
+    <li><a href="member-login.html">सदस्य लॉगिन</a></li>
+    <li><a href="join.html">सदस्यता आवेदन</a></li>
   </ul>
 </nav>
 
 <div class="container">
 
-  <div class="section-title">📸 फोटो / इवेंट</div>
+  <div class="section-title">📸 फोटो / आयोजन</div>
 
   <div class="gallery">
-    <img src="photo1.jpg" alt="">
-    <img src="photo2.jpg" alt="">
-    <img src="photo3.jpg" alt="">
-    <img src="photo4.jpg" alt="">
+    <img src="photo1.jpg">
+    <img src="photo2.jpg">
+    <img src="photo3.jpg">
+    <img src="photo4.jpg">
   </div>
 
   <div class="social">
-
-    <a class="whatsapp" href="https://chat.whatsapp.com/LKEnm3MPwS23hMtsuMVbpO" target="_blank">
-      WhatsApp Group
-    </a>
-
-    <a class="fb" href="https://www.facebook.com/share/1GwSdvax3f/" target="_blank">
-      Facebook Page
-    </a>
-
+    <a class="whatsapp" href="https://chat.whatsapp.com/LKEnm3MPwS23hMtsuMVbpO" target="_blank">WhatsApp Group</a>
+    <a class="fb" href="https://www.facebook.com/share/1GwSdvax3f/" target="_blank">Facebook Page</a>
     <a class="insta" href="#" target="_blank">Instagram</a>
     <a class="youtube" href="#" target="_blank">YouTube</a>
   </div>
@@ -217,9 +223,9 @@ footer{
 </div>
 
 <footer>
-  <p>📞 Helpline : +91 91663 77972</p>
-  <p>📧 Email : <a href="mailto:jbrrms1@gmail.com" style="color:#fff;">jbrrms1@gmail.com</a></p>
-  <p>⚖ Disclaimer : यह वेबसाइट संगठन के उद्देश्य के लिए है।</p>
+  <p>📞 हेल्पलाइन : +91 91663 77972</p>
+  <p>📧 Email : jbrrms1@gmail.com</p>
+  <p>⚖ यह वेबसाइट संगठन के सामाजिक उद्देश्य हेतु है।</p>
 </footer>
 
 </body>
