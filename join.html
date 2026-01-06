@@ -9,47 +9,31 @@
 
 <style>
 body{font-family:Arial;padding:15px;background:#f5f5f5}
-.card{background:#fff;padding:15px;border-radius:10px;max-width:450px;margin:auto;box-shadow:0 0 10px #ccc}
-input{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:1px solid #aaa}
-button{padding:10px 14px;background:#007bff;border:0;color:white;border-radius:6px;width:100%}
+.card{background:#fff;padding:15px;border-radius:10px;max-width:500px;margin:auto}
+input,select{width:100%;padding:10px;margin:8px 0}
+button{padding:10px 15px;background:#0077ff;color:#fff;border:0;border-radius:5px}
+#msg{margin-top:10px;font-weight:bold}
 </style>
-
 </head>
 
 <body>
 
 <div class="card">
-<h2>JBRRMS Member Registration</h2>
+  <h2>JB RRMS — Member Registration</h2>
 
-<label>नाम</label>
-<input id="name">
+  <input id="name" placeholder="नाम" />
+  <input id="father_name" placeholder="पिता का नाम" />
+  <input id="district" placeholder="जिला" />
+  <input id="state" placeholder="राज्य" />
+  <input id="mobile" placeholder="मोबाइल नंबर" />
+  <input id="photo" type="file" accept="image/*" />
 
-<label>पिता का नाम</label>
-<input id="father_name">
+  <button onclick="saveMember()">Save Member</button>
 
-<label>जिला</label>
-<input id="district">
-
-<label>राज्य</label>
-<input id="state">
-
-<label>मोबाइल नंबर</label>
-<input id="mobile">
-
-<label>Photo Upload</label>
-<input type="file" id="photo">
-
-<button onclick="saveMember()">Save Member</button>
-
-<p id="msg"></p>
+  <div id="msg"></div>
 </div>
 
 <script>
-
-// ===============================
-// केवल Publishable Key ही डालना
-// ===============================
-
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 
@@ -66,13 +50,21 @@ async function saveMember(){
  let mobile = document.getElementById("mobile").value;
  let file = document.getElementById("photo").files[0];
 
- if(!file){ alert("Photo चुनें"); return; }
+ if(!name || !mobile){
+   alert("नाम और मोबाइल जरूरी है");
+   return;
+ }
 
- // ========== फोटो upload ==========
- let filename = Date.now() + "_" + file.name;
+ if(!file){
+   alert("Photo चुनें");
+   return;
+ }
+
+ // ---------- PHOTO UPLOAD ----------
+ let filename = "photos/" + Date.now() + "_" + file.name;
 
  let { error: uploadError } = await supabaseClient
- .storage.from("members_photos")
+ .storage.from("members")
  .upload(filename, file);
 
  if(uploadError){ 
@@ -80,21 +72,18 @@ async function saveMember(){
    return;
  }
 
- let photo_url = supabaseUrl + "/storage/v1/object/public/members_photos/" + filename;
+ let photo_url = supabaseUrl + "/storage/v1/object/public/members/" + filename;
 
- // ========== Auto Member Code ==========
- let { data: last } = await supabaseClient
+ // ---------- COUNT for NEXT MEMBER CODE ----------
+ let { count } = await supabaseClient
  .from("members")
- .select("id")
- .order("id", { ascending:false })
- .limit(1);
+ .select("*", { count: "exact", head: true });
 
- let next = 1;
- if(last && last.length>0) next = last[0].id + 1;
+ let next = (count || 0) + 1;
 
  let member_code = "JBRRMS" + String(next).padStart(4,'0');
 
- // ========== Save to Database ==========
+ // ---------- SAVE DATA ----------
  let { error } = await supabaseClient
  .from("members")
  .insert({
@@ -104,18 +93,18 @@ async function saveMember(){
    district,
    state,
    mobile,
-   post: "",       // Post अभी खाली रहेगा
+   post: "",
    photo_url
  });
 
  if(error){
-  document.getElementById("msg").innerText = "Data Save Error";
+  document.getElementById("msg").innerText = "Data Save Error ❌";
  }else{
-  document.getElementById("msg").innerText = "Member Saved ✔\nCode: " + member_code;
+  document.getElementById("msg").innerText = "Member Saved ✔\nMember Code: " + member_code;
  }
 
 }
-
 </script>
+
 </body>
 </html>
