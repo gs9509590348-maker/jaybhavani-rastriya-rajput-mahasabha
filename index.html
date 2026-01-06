@@ -1,50 +1,225 @@
 <!DOCTYPE html>
-<html>
+<html lang="hi">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>जय भवानी राष्ट्रीय राजपूत महासभा</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="style.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  font-family:system-ui,Arial;
+  color:#222;
+  background:radial-gradient(circle at top,#ffdf9b,#ffb347,#ff9933,#e26a00);
+  background-attachment:fixed;
+}
+
+header{
+  text-align:center;
+  padding:25px 10px 15px;
+}
+.logo-box{
+  width:170px;
+  height:170px;
+  margin:auto;
+  border-radius:50%;
+  padding:6px;
+  background:linear-gradient(130deg,#ffd700,#ffcc33,#d4af37);
+  box-shadow:0 10px 35px rgba(0,0,0,.6);
+}
+.logo{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  border:3px solid white;
+  object-fit:cover;
+}
+
+.title{
+  background:#800000;
+  color:white;
+  padding:10px;
+  font-weight:bold;
+  font-size:18px;
+  letter-spacing:.5px;
+  text-align:center;
+  box-shadow:0 2px 12px rgba(0,0,0,.4);
+}
+
+nav{
+  background:#ffffffdd;
+  backdrop-filter:blur(6px);
+  padding:10px;
+  box-shadow:0 2px 12px rgba(0,0,0,.25);
+}
+nav ul{
+  list-style:none;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:10px;
+}
+nav li{
+  position:relative;
+  background:#0055a5;
+  padding:9px 14px;
+  border-radius:10px;
+}
+nav a{
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+nav li ul{
+  display:none;
+  position:absolute;
+  top:42px;
+  left:0;
+  background:#ffffff;
+  padding:8px 0;
+  border-radius:10px;
+  box-shadow:0 6px 20px rgba(0,0,0,.25);
+  min-width:150px;
+  z-index:99;
+}
+nav li ul li{
+  background:none;
+  padding:8px 12px;
+}
+nav li ul li a{
+  color:#0055a5;
+}
+nav li:hover ul{
+  display:block;
+}
+
+.container{
+  max-width:950px;
+  margin:15px auto;
+  padding:15px;
+  background:#ffffffdd;
+  border-radius:15px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+}
+
+.section-title{
+  text-align:center;
+  padding:10px;
+  font-weight:bold;
+  color:#cc5200;
+  font-size:18px;
+}
+
+.gallery{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:10px;
+}
+.gallery img{
+  width:100%;
+  border-radius:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,.35);
+  border:3px solid white;
+}
+
+.social{
+  text-align:center;
+  margin-top:15px;
+}
+.social a{
+  display:inline-block;
+  padding:10px 14px;
+  margin:6px;
+  border-radius:10px;
+  color:white;
+  font-weight:600;
+  text-decoration:none;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.whatsapp{background:#25d366;}
+.fb{background:#1877f2;}
+.insta{background:#d62976;}
+.youtube{background:#ff0000;}
+
+footer{
+  background:#111;
+  color:#eee;
+  text-align:center;
+  padding:15px;
+  margin-top:20px;
+  font-size:14px;
+}
+
+@media(max-width:600px){
+  .gallery{grid-template-columns:1fr;}
+  .logo-box{width:130px;height:130px;}
+  nav ul{gap:6px;}
+  nav li{padding:7px 10px;}
+}
+</style>
 </head>
 
 <body>
 
 <header>
-  <img src="logo.png" class="logo">
-  <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+  <div class="logo-box">
+    <img src="logo.png" class="logo" alt="संगठन लोगो">
+  </div>
 </header>
 
-<div class="banner">
-  <h3>समाज सेवा • एकता • सम्मान</h3>
+<div class="title">
+  जय भवानी राष्ट्रीय राजपूत महासभा
 </div>
+
+<nav>
+  <ul>
+    <li>
+      <a href="#">होम</a>
+      <ul>
+        <li><a href="admin-login.html">Admin Login</a></li>
+      </ul>
+    </li>
+    <li><a href="#">उद्देश्य</a></li>
+    <li><a href="#">कार्यकारणी</a></li>
+    <li><a href="member-login.html">Member Login</a></li>
+    <li><a href="join.html">Join Form</a></li>
+  </ul>
+</nav>
 
 <div class="container">
 
-  <button onclick="location.href='index.html'">🏠 Home</button>
-  <button onclick="location.href='karyakarini.html'">🏛 कार्यकारिणी</button>
-  <button onclick="location.href='join.html'">➕ Join Membership</button>
-  <button onclick="location.href='member-login.html'">👤 Member Login</button>
-  <button onclick="location.href='member-profile.html'">🆔 Member Profile</button>
-  <button onclick="location.href='member-idcard.html'">🪪 Download ID Card</button>
-  <button onclick="location.href='admin-login.html'">🛡 Admin Login</button>
-  <button onclick="location.href='sangathan-niyamavali-jbrrms.html'">📜 संगठन नियमावली</button>
+  <div class="section-title">📸 फोटो / इवेंट</div>
 
-  <div class="card">
-    <h3>हमसे जुड़ें</h3>
-    <div class="social">
-      <a class="whatsapp" href="https://chat.whatsapp.com/LKEnm3MPwS23hMtsuMVbpO" target="_blank">WhatsApp</a>
-      <a class="fb" href="https://www.facebook.com/share/1ByyJHiSwW/" target="_blank">Facebook</a>
-      <a href="#" target="_blank">Instagram</a>
-      <a href="#" target="_blank">YouTube</a>
-    </div>
+  <div class="gallery">
+    <img src="photo1.jpg" alt="">
+    <img src="photo2.jpg" alt="">
+    <img src="photo3.jpg" alt="">
+    <img src="photo4.jpg" alt="">
+  </div>
+
+  <div class="social">
+
+    <a class="whatsapp" href="https://chat.whatsapp.com/LKEnm3MPwS23hMtsuMVbpO" target="_blank">
+      WhatsApp Group
+    </a>
+
+    <a class="fb" href="https://www.facebook.com/share/1GwSdvax3f/" target="_blank">
+      Facebook Page
+    </a>
+
+    <a class="insta" href="#" target="_blank">Instagram</a>
+    <a class="youtube" href="#" target="_blank">YouTube</a>
   </div>
 
 </div>
 
 <footer>
-  <p>📞 हेल्पलाइन : 9166377972</p>
-  <p>✉ Email : jbrrms1@gmail.com</p>
-  <p>© जय भवानी राष्ट्रीय राजपूत महासभा</p>
+  <p>📞 Helpline : +91 91663 77972</p>
+  <p>📧 Email : <a href="mailto:jbrrms1@gmail.com" style="color:#fff;">jbrrms1@gmail.com</a></p>
+  <p>⚖ Disclaimer : यह वेबसाइट संगठन के उद्देश्य के लिए है।</p>
 </footer>
 
 </body>
