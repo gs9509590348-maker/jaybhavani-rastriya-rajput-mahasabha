@@ -2,142 +2,139 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
+<title>JB RRMS - सदस्य पंजीकरण</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>सदस्य पंजीकरण फॉर्म</title>
 
 <style>
-body{font-family:Arial;background:#f5f5f5}
-.box{max-width:500px;margin:20px auto;background:#fff;padding:20px;border-radius:10px}
-input,button,select{width:100%;padding:10px;margin:7px 0}
-button{background:#c72e1f;color:#fff;border:0;font-size:16px;border-radius:8px}
+body{font-family: system-ui;background:#f4f4f4;padding:20px}
+.container{max-width:600px;margin:auto;background:#fff;padding:20px;border-radius:10px;box-shadow:0 0 10px #ccc}
+h2{text-align:center}
+input,select{width:100%;padding:10px;margin:6px 0;border-radius:6px;border:1px solid #ccc}
+button{background:#007bff;color:#fff;border:none;padding:12px;width:100%;border-radius:8px;font-size:16px}
+.success{color:green;font-weight:600}
+.error{color:red;font-weight:600}
+#preview{width:120px;height:140px;object-fit:cover;border:1px solid #ccc;border-radius:8px;margin-top:10px}
 </style>
 </head>
 
 <body>
+<div class="container">
+<h2>जय भवानी राष्ट्रीय राजपूत महासभा<br>📝 सदस्य पंजीकरण</h2>
 
-<div class="box">
+<input id="name" placeholder="पूरा नाम लिखें" required>
+<input id="father" placeholder="पिता का नाम" required>
+<input id="mobile" placeholder="मोबाइल नंबर (10 अंक)" maxlength="10" required>
+<input id="address" placeholder="पूरा पता" required>
 
-<h3 style="text-align:center;color:#c72e1f;">
-🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩<br>
-📝 सदस्य पंजीकरण फॉर्म
-</h3>
-
-<form id="joinForm">
-
-<input type="text" id="name" placeholder="पूरा नाम*" required>
-
-<input type="text" id="father" placeholder="पिता का नाम*" required>
-
-<input type="tel" id="mobile" placeholder="मोबाइल नंबर*" maxlength="10" pattern="[0-9]{10}" required>
-
-<input type="text" id="address" placeholder="पूरा पता*" required>
-
-<input type="text" id="district" placeholder="जिला*" required>
+<input id="district" placeholder="जिला" required>
 
 <select id="state" required>
-<option value="">राज्य चुनें *</option>
+<option value="">राज्य चुनें</option>
 <option>Rajasthan</option>
 <option>Uttar Pradesh</option>
 <option>Madhya Pradesh</option>
 <option>Gujarat</option>
 <option>Maharashtra</option>
+<option>Bihar</option>
 <option>Haryana</option>
 <option>Delhi</option>
-<option>Bihar</option>
 <option>Punjab</option>
 <option>Other</option>
 </select>
 
-<label>📸 पासपोर्ट साइज फोटो *</label>
+<label>📸 पासपोर्ट साइज फोटो चुनें</label>
 <input type="file" id="photo" accept="image/*" required>
 
-<button id="submitBtn" type="submit">Submit</button>
+<img id="preview" style="display:none" />
 
-</form>
+<button id="submitBtn">Submit</button>
 
+<p id="msg"></p>
 </div>
-
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getFirestore, collection, addDoc, Timestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+import { getFirestore, collection, addDoc, Timestamp } 
+  from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } 
+  from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
-const firebaseConfig = {
+const firebaseConfig = {  
   apiKey: "AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
   authDomain: "jb-rrms-membership-system.firebaseapp.com",
   projectId: "jb-rrms-membership-system",
   storageBucket: "jb-rrms-membership-system.appspot.com",
   messagingSenderId: "493815911364",
-  appId: "1:493815911364:web:e8f2270cf73d93dd368a91",
-  measurementId: "G-07R6MZ6SL9"
+  appId: "1:493815911364:web:e8f2270cf73d93dd368a91"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-const form = document.getElementById("joinForm");
-const btn = document.getElementById("submitBtn");
+// ⭐ फोटो चुनते ही Preview
+photo.addEventListener("change", ()=>{
+  const file = photo.files[0];
+  if(file){
+    document.getElementById("preview").src = URL.createObjectURL(file);
+    document.getElementById("preview").style.display="block";
+  }
+});
 
-form.addEventListener("submit", async (e)=>{
-  e.preventDefault();
+// ⭐ Submit Function
+submitBtn.addEventListener("click", async ()=>{
 
-  const name = document.getElementById("name").value.trim();
-  const father = document.getElementById("father").value.trim();
-  const mobile = document.getElementById("mobile").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const district = document.getElementById("district").value.trim();
-  const state = document.getElementById("state").value;
-  const photo = document.getElementById("photo").files[0];
+  const name = name.value.trim();
+  const father = father.value.trim();
+  const mobile = mobile.value.trim();
+  const address = address.value.trim();
+  const district = district.value.trim();
+  const state = state.value;
+  const file = photo.files[0];
+  const msg = msg;
+  const btn = submitBtn;
+
+  if(!name || !father || !mobile || !address || !district || !state || !file){
+    msg.innerHTML = "❌ कृपया सभी जानकारी भरें";
+    msg.className="error";
+    return;
+  }
 
   if(mobile.length !== 10){
-    alert("कृपया 10 अंकों का सही मोबाइल नंबर दर्ज करें");
+    msg.innerHTML = "📞 सही 10 अंकों का मोबाइल नंबर डालें";
+    msg.className="error";
     return;
   }
-
-  if(!district){
-    alert("कृपया जिला दर्ज करें");
-    return;
-  }
-
-  if(!state){
-    alert("कृपया राज्य चुनें");
-    return;
-  }
-
-  if(!photo){
-    alert("कृपया पासपोर्ट साइज फोटो अपलोड करें");
-    return;
-  }
-
-  btn.disabled = true;
-  btn.innerText = "Uploading... कृपया प्रतीक्षा करें";
 
   try{
+    btn.disabled = true;
+    btn.innerText = "Uploading...";
 
-    const storageRef = ref(storage, "members/" + Date.now() + "_" + photo.name);
-    await uploadBytes(storageRef, photo);
+    // Upload Photo
+    const storageRef = ref(storage,"member_photos/"+Date.now()+"_"+file.name);
+    await uploadBytes(storageRef,file);
     const photoURL = await getDownloadURL(storageRef);
 
+    // Save Firestore
     await addDoc(collection(db,"members"),{
-      name,
-      father,
-      mobile,
-      address,
-      district,
-      state,
+      name,father,mobile,address,district,state,
       photoURL,
-      createdAt: Timestamp.now()
+      status:"pending",
+      createdAt:Timestamp.now()
     });
 
-    alert("🚩 जय भवानी 🚩\n🚩 जय राजपूताना 🚩\n\nआपका सदस्य फॉर्म सफलतापूर्वक जमा हो गया 🙏");
+    msg.innerHTML = "✔ पंजीकरण सफल 🙏 एडमिन अप्रूवल के बाद ID जारी होगी";
+    msg.className="success";
 
-    form.reset();
+    name.value=father.value=mobile.value=address.value=district.value="";
+    state.value="";
+    photo.value="";
+    preview.style.display="none";
 
-  }catch(err){
-    alert("❌ Error: " + err.message);
+  }catch(e){
+    msg.innerHTML = "❌ Error: "+e.message;
+    msg.className="error";
   }
 
   btn.disabled = false;
