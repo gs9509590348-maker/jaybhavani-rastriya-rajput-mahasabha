@@ -2,71 +2,96 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JB RRMS Admin Panel</title>
+<title>JB RRMS Strong Admin Panel</title>
+
 <style>
 body{font-family:Arial;background:#f5f5f5;padding:20px}
 .card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 10px #ccc;margin:10px}
 .grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 input,select,button{padding:8px;margin:5px;width:95%}
 h3{margin:5px 0}
+.badge{background:green;color:#fff;padding:6px;border-radius:8px}
 </style>
 </head>
 
 <body>
 
 <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-<h3>🔐 Admin Login</h3>
+<h3>🛡 Strong Admin Panel</h3>
 
+<!-- LOGIN -->
 <div id="loginBox" class="card">
-  <input id="email" placeholder="Admin Email">
-  <input id="password" type="password" placeholder="Password">
-  <button id="loginBtn">Login</button>
+
+<h3>✉ Admin Email Login</h3>
+<input id="email" placeholder="Admin Email">
+<input id="password" type="password" placeholder="Password">
+<button id="loginBtn">Login</button>
+<p id="loginMsg"></p>
+
+<hr>
+
+<h3>📱 Phone OTP Login</h3>
+<input id="phone" placeholder="+91XXXXXXXXXX">
+<div id="recaptcha-container"></div>
+<button id="sendOtp">Send OTP</button>
+
+<input id="otpCode" placeholder="Enter OTP">
+<button id="verifyOtp">Verify OTP</button>
+<p id="otpMsg"></p>
+
 </div>
 
+<!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none">
 
 <div class="card">
-<h3>🛡 Welcome Admin</h3>
-<p>यहां से आप वेबसाइट को मैनेज कर सकते हैं</p>
+<h3>🛡 Welcome Super Admin</h3>
+<p>आप Website System को Manage कर रहे हैं</p>
 <button id="logoutBtn">Logout</button>
 </div>
 
 <div class="grid">
 
+<!-- ADD MEMBER -->
 <div class="card">
 <h3>👥 नया मेंबर जोड़ें</h3>
 <input id="addName" placeholder="नाम">
+<input id="addFather" placeholder="पिता का नाम">
 <input id="addMobile" placeholder="मोबाइल">
+<input id="addDistrict" placeholder="जिला">
 <input id="addAddress" placeholder="पता">
-<select id="addRole">
-<option>सदस्य</option>
-<option>जिला अध्यक्ष</option>
-<option>जिला उपाध्यक्ष</option>
-<option>महामंत्री</option>
-</select>
+<input id="addRole" placeholder="पद लिखें (जैसे – जिला अध्यक्ष)">
 <button id="addBtn">Save</button>
 <p id="addMsg"></p>
 </div>
 
+<!-- EDIT MEMBER -->
 <div class="card">
-<h3>✏ मेंबर एडिट / पद असाइन</h3>
+<h3>✏ Member Edit / Role Assign</h3>
 <input id="searchMobile" placeholder="मोबाइल से सर्च">
 <button id="searchBtn">Search</button>
 <hr>
 <input id="editName" placeholder="नाम">
+<input id="editFather" placeholder="पिता का नाम">
 <input id="editMobile" placeholder="मोबाइल">
+<input id="editDistrict" placeholder="जिला">
 <input id="editAddress" placeholder="पता">
-<select id="editRole">
-<option>सदस्य</option>
-<option>जिला अध्यक्ष</option>
-<option>जिला उपाध्यक्ष</option>
-<option>महामंत्री</option>
-</select>
+<input id="editRole" placeholder="पद लिखें">
+
 <input id="docId" type="hidden">
+
 <button id="updateBtn">Update</button>
+
+<hr>
+
+<button id="idCardBtn">Member ID Card</button>
+<button id="certificateBtn">प्रमाण पत्र</button>
+<button id="appointmentBtn">नियुक्ति पत्र</button>
+
 <p id="editMsg"></p>
 </div>
 
+<!-- PENDING MEMBERS -->
 <div class="card">
 <h3>🛂 Pending Member Approval</h3>
 <div id="pendingList"></div>
@@ -81,10 +106,13 @@ h3{margin:5px 0}
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } 
-from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc } 
-from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { 
+getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut,
+RecaptchaVerifier, signInWithPhoneNumber 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { 
+getFirestore, collection, addDoc, query, where, getDocs, updateDoc, doc 
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
@@ -92,82 +120,162 @@ authDomain:"jb-rrms-membership-system.firebaseapp.com",
 projectId:"jb-rrms-membership-system",
 storageBucket:"jb-rrms-membership-system.firebasestorage.app",
 messagingSenderId:"493815911364",
-appId:"1:493815911364:web:e8f2270cf73d93dd368a91",
-measurementId:"G-07R6MZ6SL9"
+appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ---------- LOGIN ----------
-loginBtn.onclick = () => {
+const ADMIN_EMAIL = "jbrrms1@gmail.com";
+
+/******** GET ELEMENTS ********/
+const loginBox = document.getElementById("loginBox");
+const adminPanel = document.getElementById("adminPanel");
+
+const email = document.getElementById("email");
+const password = document.getElementById("password");
+const loginBtn = document.getElementById("loginBtn");
+const loginMsg = document.getElementById("loginMsg");
+
+const phone = document.getElementById("phone");
+const sendOtp = document.getElementById("sendOtp");
+const otpCode = document.getElementById("otpCode");
+const verifyOtp = document.getElementById("verifyOtp");
+const otpMsg = document.getElementById("otpMsg");
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+const addName = document.getElementById("addName");
+const addFather = document.getElementById("addFather");
+const addMobile = document.getElementById("addMobile");
+const addDistrict = document.getElementById("addDistrict");
+const addAddress = document.getElementById("addAddress");
+const addRole = document.getElementById("addRole");
+const addBtn = document.getElementById("addBtn");
+const addMsg = document.getElementById("addMsg");
+
+const searchMobile = document.getElementById("searchMobile");
+const searchBtn = document.getElementById("searchBtn");
+
+const editName = document.getElementById("editName");
+const editFather = document.getElementById("editFather");
+const editMobile = document.getElementById("editMobile");
+const editDistrict = document.getElementById("editDistrict");
+const editAddress = document.getElementById("editAddress");
+const editRole = document.getElementById("editRole");
+const updateBtn = document.getElementById("updateBtn");
+const docId = document.getElementById("docId");
+const editMsg = document.getElementById("editMsg");
+
+const pendingList = document.getElementById("pendingList");
+
+/******** EMAIL LOGIN ********/
+
+loginBtn.onclick = ()=>{
 signInWithEmailAndPassword(auth,email.value,password.value)
-.then(()=>alert("Login Success"))
-.catch(()=>alert("Login Failed"));
+.then(()=>loginMsg.innerText="✔ Login Success")
+.catch(()=>loginMsg.innerText="❌ Login Failed"));
 };
 
-// ---------- AUTH STATE ----------
+/******** OTP LOGIN ********/
+
+window.recaptchaVerifier = new RecaptchaVerifier(auth,'recaptcha-container',{size:"normal"});
+
+sendOtp.onclick = ()=>{
+
+let num = phone.value;
+if(!num.startsWith("+91")) num = "+91"+num;
+
+signInWithPhoneNumber(auth,num,window.recaptchaVerifier)
+.then(r=>{window.confirmationResult=r;otpMsg.innerText="📩 OTP Sent";})
+.catch(e=>otpMsg.innerText=e.message);
+};
+
+verifyOtp.onclick = ()=>{
+window.confirmationResult.confirm(otpCode.value)
+.then(()=>otpMsg.innerText="✔ OTP Verified")
+.catch(e=>otpMsg.innerText=e.message);
+};
+
+/******** AUTH STATE ********/
+
 onAuthStateChanged(auth,user=>{
+
 if(user){
+
+if(user.email && user.email!==ADMIN_EMAIL){
+alert("Access Denied — Only Admin Allowed");
+signOut(auth);
+return;
+}
+
 loginBox.style.display="none";
 adminPanel.style.display="block";
 loadPending();
+
 }else{
 loginBox.style.display="block";
 adminPanel.style.display="none";
 }
 });
 
-// ---------- LOGOUT ----------
 logoutBtn.onclick = ()=>signOut(auth);
 
-// ---------- ADD MEMBER ----------
+/******** ADD MEMBER ********/
+
 addBtn.onclick = async ()=>{
 
-// check duplicate mobile
-const q = query(collection(db,"members"),where("mobile","==",addMobile.value));
-const snap = await getDocs(q);
-if(!snap.empty){
-addMsg.innerText = "❌ यह मोबाइल पहले से रजिस्टर है";
-return;
-}
+const q=query(collection(db,"members"),where("mobile","==",addMobile.value));
+const s=await getDocs(q);
+if(!s.empty){addMsg.innerText="❌ मोबाइल पहले से मौजूद है";return;}
 
 await addDoc(collection(db,"members"),{
 name:addName.value,
+father:addFather.value,
 mobile:addMobile.value,
+district:addDistrict.value,
 address:addAddress.value,
 role:addRole.value,
-status:"pending"
+status:"pending",
+memberId:"JBRRMS-"+Date.now()
 });
 
-addMsg.innerText="✔ Member Added (Pending Approval)";
+addMsg.innerText="✔ Member Added (Pending)";
 };
 
-// ---------- SEARCH ----------
+/******** SEARCH ********/
+
 searchBtn.onclick = async ()=>{
 
-const q = query(collection(db,"members"),where("mobile","==",searchMobile.value));
-const snap = await getDocs(q);
+const q=query(collection(db,"members"),where("mobile","==",searchMobile.value));
+const s=await getDocs(q);
+if(s.empty){editMsg.innerText="❌ Member नहीं मिला";return;}
 
-if(snap.empty){ editMsg.innerText="❌ Member नहीं मिला"; return; }
+s.forEach(d=>{
+docId.value=d.id;
+let m=d.data();
 
-snap.forEach(d=>{
-docId.value = d.id;
-editName.value = d.data().name;
-editMobile.value = d.data().mobile;
-editAddress.value = d.data().address;
-editRole.value = d.data().role;
+editName.value=m.name;
+editFather.value=m.father;
+editMobile.value=m.mobile;
+editDistrict.value=m.district;
+editAddress.value=m.address;
+editRole.value=m.role;
 });
+
 editMsg.innerText="✔ Member Loaded";
 };
 
-// ---------- UPDATE ----------
+/******** UPDATE ********/
+
 updateBtn.onclick = async ()=>{
 
 await updateDoc(doc(db,"members",docId.value),{
 name:editName.value,
+father:editFather.value,
 mobile:editMobile.value,
+district:editDistrict.value,
 address:editAddress.value,
 role:editRole.value
 });
@@ -175,20 +283,20 @@ role:editRole.value
 editMsg.innerText="✔ Update Done";
 };
 
-// ---------- LOAD PENDING ----------
+/******** PENDING MEMBERS ********/
+
 async function loadPending(){
 pendingList.innerHTML="";
+const q=query(collection(db,"members"),where("status","==","pending"));
+const s=await getDocs(q);
 
-const q = query(collection(db,"members"),where("status","==","pending"));
-const snap = await getDocs(q);
+s.forEach(d=>{
+let m=d.data();
 
-snap.forEach(d=>{
-let div = document.createElement("div");
-div.innerHTML = `
-<b>${d.data().name}</b> (${d.data().mobile})
+let div=document.createElement("div");
+div.innerHTML=`<b>${m.name}</b> (${m.mobile})
 <button onclick="approve('${d.id}')">Approve</button>
-<hr>
-`;
+<hr>`;
 pendingList.appendChild(div);
 });
 }
@@ -199,6 +307,12 @@ alert("Approved");
 loadPending();
 };
 
+/******** OPEN DOCUMENTS ********/
+
+idCardBtn.onclick = ()=>window.open("idcard.html?id="+docId.value);
+certificateBtn.onclick = ()=>window.open("certificate.html?id="+docId.value);
+appointmentBtn.onclick = ()=>window.open("appointment.html?id="+docId.value);
+
 </script>
 </body>
-</html>
+  </html>
