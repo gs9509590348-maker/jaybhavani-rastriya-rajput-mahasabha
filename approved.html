@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>Approved Members - JB RRMS</title>
+
+<style>
+body{font-family:Arial;background:#f2f2f2;padding:15px}
+h2{text-align:center;color:#7a0a0a}
+.card{background:#fff;padding:12px;margin:8px;border-radius:12px;
+box-shadow:0 2px 10px rgba(0,0,0,.1);display:flex;align-items:center}
+img{width:70px;height:70px;border-radius:50%;margin-right:10px;object-fit:cover}
+.name{font-size:18px;font-weight:bold}
+.role{color:#7a0a0a;font-weight:bold}
+.search{padding:8px;width:95%;margin:10px auto;display:block}
+</style>
+</head>
+
+<body>
+
+<h2>✔ Approved Members</h2>
+
+<input id="search" class="search" placeholder="नाम या मोबाइल खोजें">
+
+<div id="list"></div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs } 
+from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey:"YOUR_KEY",
+  authDomain:"jb-rrms-membership-system.firebaseapp.com",
+  projectId:"jb-rrms-membership-system",
+  storageBucket:"jb-rrms-membership-system.appspot.com"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let members=[];
+
+async function loadMembers(){
+
+  const q=query(collection(db,"members"),where("status","==","approved"));
+  const s=await getDocs(q);
+
+  members=[];
+  s.forEach(d=>{
+    members.push({id:d.id,...d.data()});
+  });
+
+  showMembers(members);
+}
+
+function showMembers(data){
+  list.innerHTML="";
+  data.forEach(m=>{
+    let div=document.createElement("div");
+    div.className="card";
+    div.innerHTML=`
+      <img src="${m.photo || 'https://via.placeholder.com/80'}">
+      <div>
+        <div class="name">${m.name}</div>
+        <div>📞 ${m.mobile}</div>
+        <div class="role">${m.role}</div>
+        <div>${m.address || ''}</div>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+search.onkeyup = ()=>{
+  let v=search.value.toLowerCase();
+  let f = members.filter(m => 
+     (m.name||'').toLowerCase().includes(v) ||
+     (m.mobile||'').includes(v)
+  );
+  showMembers(f);
+};
+
+loadMembers();
+
+</script>
+</body>
+</html>
