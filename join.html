@@ -10,16 +10,16 @@
 <style>
 body{font-family:Arial;padding:15px;background:#f5f5f5}
 .card{background:#fff;padding:15px;border-radius:10px;max-width:500px;margin:auto}
-input,select{width:100%;padding:10px;margin:8px 0}
-button{padding:10px 15px;background:#0077ff;color:#fff;border:0;border-radius:5px}
-#msg{margin-top:10px;font-weight:bold}
+input{width:100%;padding:10px;margin:8px 0}
+button{padding:10px 15px;background:#0077ff;color:#fff;border:0;border-radius:5px;width:100%}
+#msg{margin-top:10px;font-weight:bold;white-space:pre-line}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h2>JB RRMS — Member Registration</h2>
+  <h2>JBRRMS Member Registration</h2>
 
   <input id="name" placeholder="नाम" />
   <input id="father_name" placeholder="पिता का नाम" />
@@ -37,7 +37,7 @@ button{padding:10px 15px;background:#0077ff;color:#fff;border:0;border-radius:5p
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 async function saveMember(){
 
@@ -60,49 +60,57 @@ async function saveMember(){
    return;
  }
 
- // ---------- PHOTO UPLOAD ----------
- let filename = "photos/" + Date.now() + "_" + file.name;
+ // FILE NAME
+ const filename = `photos/${Date.now()}_${file.name}`;
 
- let { error: uploadError } = await supabaseClient
- .storage.from("members")
- .upload(filename, file);
+ // UPLOAD IMAGE
+ const { error: uploadError } = await supabase
+   .storage
+   .from("members")
+   .upload(filename, file, {
+     cacheControl: "3600",
+     upsert: false,
+     contentType: file.type
+   });
 
- if(uploadError){ 
-   document.getElementById("msg").innerText = "Photo upload error";
+ if(uploadError){
+   console.log(uploadError);
+   document.getElementById("msg").innerText = "Photo upload error ❌";
    return;
  }
 
- let photo_url = supabaseUrl + "/storage/v1/object/public/members/" + filename;
+ // PUBLIC URL
+ const photo_url =
+  `${supabaseUrl}/storage/v1/object/public/members/${filename}`;
 
- // ---------- COUNT for NEXT MEMBER CODE ----------
- let { count } = await supabaseClient
- .from("members")
- .select("*", { count: "exact", head: true });
+ // GET COUNT FOR MEMBER CODE
+ const { count } = await supabase
+   .from("members")
+   .select("*", { count:"exact", head:true });
 
- let next = (count || 0) + 1;
+ const next = (count || 0) + 1;
+ const member_code = "JBRRMS" + String(next).padStart(4,'0');
 
- let member_code = "JBRRMS" + String(next).padStart(4,'0');
-
- // ---------- SAVE DATA ----------
- let { error } = await supabaseClient
- .from("members")
- .insert({
-   member_code,
-   name,
-   father_name: father,
-   district,
-   state,
-   mobile,
-   post: "",
-   photo_url
- });
+ // SAVE DATA
+ const { error } = await supabase
+   .from("members")
+   .insert({
+     member_code,
+     name,
+     father_name: father,
+     district,
+     state,
+     mobile,
+     photo_url
+   });
 
  if(error){
-  document.getElementById("msg").innerText = "Data Save Error ❌";
- }else{
-  document.getElementById("msg").innerText = "Member Saved ✔\nMember Code: " + member_code;
+   console.log(error);
+   document.getElementById("msg").innerText = "Data Save Error ❌";
+ } else {
+   document.getElementById("msg").innerText =
+     `Member Saved ✔\nMember Code: ${member_code}`;
  }
-
 }
 </script>
 
