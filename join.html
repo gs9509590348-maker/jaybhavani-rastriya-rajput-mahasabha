@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>JBRRMS Member Registration</title>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script defer src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 
 <style>
 body{font-family:Arial;padding:15px;background:#f5f5f5}
@@ -43,75 +43,10 @@ async function saveMember(){
 
  document.getElementById("msg").innerText = "Saving...";
 
- let name = document.getElementById("name").value;
- let father = document.getElementById("father_name").value;
- let district = document.getElementById("district").value;
- let state = document.getElementById("state").value;
- let mobile = document.getElementById("mobile").value;
- let file = document.getElementById("photo").files[0];
+ alert("Button Click हो गया ✔ (Function चल रहा है)");
 
- if(!name || !mobile){
-   alert("नाम और मोबाइल जरूरी है");
-   return;
- }
-
- if(!file){
-   alert("Photo चुनें");
-   return;
- }
-
- // FILE NAME
- const filename = `photos/${Date.now()}_${file.name}`;
-
- // UPLOAD IMAGE
- const { error: uploadError } = await supabase
-   .storage
-   .from("members")
-   .upload(filename, file, {
-     cacheControl: "3600",
-     upsert: false,
-     contentType: file.type
-   });
-
- if(uploadError){
-   console.log(uploadError);
-   document.getElementById("msg").innerText = "Photo upload error ❌";
-   return;
- }
-
- // PUBLIC URL
- const photo_url =
-  `${supabaseUrl}/storage/v1/object/public/members/${filename}`;
-
- // GET COUNT FOR MEMBER CODE
- const { count } = await supabase
-   .from("members")
-   .select("*", { count:"exact", head:true });
-
- const next = (count || 0) + 1;
- const member_code = "JBRRMS" + String(next).padStart(4,'0');
-
- // SAVE DATA
- const { error } = await supabase
-   .from("members")
-   .insert({
-     member_code,
-     name,
-     father_name: father,
-     district,
-     state,
-     mobile,
-     photo_url
-   });
-
- if(error){
-   console.log(error);
-   document.getElementById("msg").innerText = "Data Save Error ❌";
- } else {
-   document.getElementById("msg").innerText =
-     `Member Saved ✔\nMember Code: ${member_code}`;
- }
 }
+window.saveMember = saveMember;
 </script>
 
 </body>
