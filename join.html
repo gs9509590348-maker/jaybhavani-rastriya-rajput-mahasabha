@@ -4,13 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>JB RRMS - Member Join + ID Card</title>
+<title>JB RRMS — Member Registration & ID Card</title>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body{font-family:Arial;background:#f5f5f5;padding:10px}
@@ -19,148 +18,110 @@ input{width:100%;padding:10px;margin-top:8px}
 button{padding:10px;background:#b30000;color:#fff;border:none;border-radius:10px;width:100%;margin-top:10px}
 h2{text-align:center}
 
-.idcard{margin-top:25px;text-align:center}
-.card{width:300px;height:480px;position:relative;margin:auto;border-radius:15px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.3)}
-.card img.bg{width:100%;height:100%;object-fit:cover;position:absolute}
-
-/* PHOTO BOX FIXED */
-.photo{
- width:115px;
- height:140px;
- border-radius:15px;
- overflow:hidden;
- position:absolute;
- top:145px;
- left:50%;
- transform:translateX(-50%);
- background:#fff;
- box-shadow:0 0 6px rgba(0,0,0,.4);
-}
-.photo img{
- width:100%;
- height:100%;
- object-fit:cover;
-}
-
-.name,.code,.details{position:absolute;width:100%;text-align:center}
-.name{top:305px;font-size:18px;font-weight:bold}
-.code{top:335px;font-size:14px;color:#b30000}
-.details{top:370px;font-size:13px;line-height:18px}
-
-/* BACK TITLE */
-.backTitle{
- position:absolute;
- top:12px;
- width:100%;
- text-align:center;
- font-size:18px;
- font-weight:bold;
- color:#800000;
-}
-
-/* QR IN CENTER */
-#qr{
- position:absolute;
- top:180px;
- left:50%;
- transform:translateX(-50%);
-}
+/* CARD DESIGN */
+.card{width:1080px;height:1678px;position:relative;margin:30px auto;background-size:cover;display:none}
+.pic{position:absolute;left:80px;top:360px;width:320px;height:380px;border-radius:25px;overflow:hidden}
+.pic img{width:100%;height:100%;object-fit:cover}
+.txt{position:absolute;left:450px;color:#000;font-size:34px;font-weight:bold}
+.qr{position:absolute;right:120px;bottom:160px}
 </style>
 </head>
 
 <body>
 
+<!-- ================= FORM ================= -->
 <div class="box">
 <h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-<h3>Member Registration</h3>
+<h3>Member Registration Form</h3>
 
 <input id="name" placeholder="नाम">
 <input id="father" placeholder="पिता का नाम">
-<input id="mobile" placeholder="मोबाइल">
+<input id="mobile" placeholder="मोबाइल नंबर">
 <input id="district" placeholder="जिला">
 <input id="state" placeholder="राज्य">
 
-<label>फोटो अपलोड</label>
+<label>फोटो अपलोड करें</label>
 <input type="file" id="photo">
 
-<button onclick="register()">Submit & Generate ID</button>
+<button onclick="register()">Submit</button>
+
+<p id="done" style="color:green;font-weight:bold"></p>
+</div>
 
 <hr>
 
-<h3>Already Member? Get ID Card</h3>
-<input id="searchCode" placeholder="Member Code डालें (जैसे JBRRMS0001)">
-<button onclick="loadCard()">Load ID Card</button>
+<!-- ================= CARD FRONT ================= -->
+<div id="front" class="card" style="background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png')">
+
+<div class="pic"><img id="photo_img"></div>
+
+<div class="txt" style="top:820px">नाम: <span id="name_t"></span></div>
+<div class="txt" style="top:890px">पिता का नाम: <span id="father_t"></span></div>
+<div class="txt" style="top:960px">जिला: <span id="district_t"></span></div>
+<div class="txt" style="top:1030px">राज्य: <span id="state_t"></span></div>
+<div class="txt" style="top:1100px">Member Code: <span id="mcode_t"></span></div>
+
+<canvas id="qr1" class="qr" width="220" height="220"></canvas>
 
 </div>
 
-<div class="idcard" id="cardArea" style="display:none">
-
-<h3>Member ID Card</h3>
-
-<!-- FRONT -->
-<div class="card" id="front">
-<img class="bg" crossorigin="anonymous" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png">
-
-<div class="photo"><img id="mphoto"></div>
-<div class="name" id="mname"></div>
-<div class="code" id="mcode"></div>
-<div class="details" id="mdetails"></div>
-
+<!-- ================= CARD BACK ================= -->
+<div id="back" class="card" style="background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png')">
+<canvas id="qr2" class="qr" width="220" height="220"></canvas>
 </div>
 
-<br>
-
-<!-- BACK -->
-<div class="card" id="back">
-<img class="bg" crossorigin="anonymous" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png">
-
-<div class="backTitle">जय भवानी राष्ट्रीय राजपूत महासभा</div>
-
-<canvas id="qr" width="110" height="110"></canvas>
-
-<div style="position:absolute;bottom:20px;left:15px;font-size:12px;text-align:left;color:#000;">
-📧 Email: jbrrms1@gmail.com<br>
-📞 Helpline: 9166377972<br>
-🌐 Website: www.jbrrms.in<br><br>
-⚠ यह केवल संगठन की पहचान पत्र है,<br>
-कानूनी मान्यता प्रमाण पत्र नहीं।
+<div style="text-align:center">
+<button onclick="downloadBoth()">Download Front & Back</button>
 </div>
 
-</div>
-
-<button onclick="downloadPDF()">Download ID Card PDF</button>
-
-</div>
 
 <script>
-
-// =================== Supabase ===================
+// ================= Supabase =================
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// =================== Cloudinary =================
+// ================= Cloudinary =================
 const cloudName = "dlqr73p7j";
 const preset = "jbrms_unsigned";
 
-// ================= Load Face Models =============
+// FACE API
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/weights")
-]).then(()=>console.log("FaceAPI Loaded"));
+ faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/weights")
+]);
 
 
-// ====== FACE AUTO CROP ==========================
+// ===== GET NEXT MEMBER CODE =====
+async function getNextCode(){
+
+ let {data}=await supabaseClient
+  .from("JBRRMS")
+  .select("member_code")
+  .order("member_code",{ascending:false})
+  .limit(1);
+
+ if(!data || data.length===0) return "JBRRMS0001";
+
+ let last=data[0].member_code.replace("JBRRMS","");
+ let next=(parseInt(last)+1).toString().padStart(4,"0");
+
+ return "JBRRMS"+next;
+}
+
+
+// ===== FACE AUTO CROP =====
 async function cropPhoto(file){
 
  const img = new Image();
  img.src = URL.createObjectURL(file);
  await img.decode();
 
- const detection = await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions());
+ const det = await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions());
 
- const canvas=document.createElement("canvas");
- canvas.width=600;canvas.height=600;
- const ctx=canvas.getContext("2d");
+ const c=document.createElement("canvas");
+ c.width=600;c.height=600;
+ const ctx=c.getContext("2d");
+
  ctx.fillStyle="#eef3ff";
  ctx.fillRect(0,0,600,600);
 
@@ -171,8 +132,8 @@ async function cropPhoto(file){
 
  let sx=0,sy=0,sw=img.width,sh=img.height;
 
- if(detection){
-   let b=detection.box;
+ if(det){
+   let b=det.box;
    sx=Math.max(0,b.x-b.width*0.5);
    sy=Math.max(0,b.y-b.height*0.5);
    sw=Math.min(img.width-sx,b.width*2);
@@ -182,11 +143,11 @@ async function cropPhoto(file){
  ctx.drawImage(img,sx,sy,sw,sh,0,0,600,600);
  ctx.restore();
 
- return await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.9));
+ return await new Promise(r=>c.toBlob(r,"image/jpeg",0.9));
 }
 
 
-// ========== UPLOAD CLOUDINARY ==================
+// ===== CLOUDINARY UPLOAD =====
 async function upload(file,name){
  const fd=new FormData();
  fd.append("file",file);
@@ -194,8 +155,7 @@ async function upload(file,name){
  fd.append("public_id",name);
 
  let r=await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,{
-   method:"POST",
-   body:fd
+   method:"POST",body:fd
  });
 
  let j=await r.json();
@@ -203,7 +163,7 @@ async function upload(file,name){
 }
 
 
-// ========== REGISTER ===========================
+// ===== REGISTER MEMBER =====
 async function register(){
 
  let n=name.value,f=father.value,m=mobile.value,d=district.value,s=state.value;
@@ -213,74 +173,58 @@ async function register(){
  let file=photo.files[0];
  if(!file){alert("फोटो अपलोड करें");return;}
 
- let member_code="JBRRMS"+Date.now();
+ let member_code = await getNextCode();
 
  let blob=await cropPhoto(file);
  let url=await upload(blob,member_code);
 
  let {error}=await supabaseClient.from("JBRRMS").insert([
-  {member_code,name:n,father_name:f,mobile:m,district:d,state:s,photo_url:url}
+   {member_code,name:n,father_name:f,mobile:m,district:d,state:s,photo_url:url}
  ]);
 
  if(error){alert("Database Error");return;}
 
- showCard({member_code,name:n,father_name:f,mobile:m,district:d,state:s,photo_url:url});
+ done.innerText="✔ Registration Successful — Member Code: "+member_code;
+
+ showCard({name:n,father_name:f,district:d,state:s,member_code,photo_url:url});
 }
 
 
-// ========== LOAD CARD ==========================
-async function loadCard(){
- let code=searchCode.value.trim();
-
- let {data,error}=await supabaseClient
-   .from("JBRRMS")
-   .select("*")
-   .eq("member_code",code)
-   .single();
-
- if(error){alert("Member नहीं मिला");return;}
-
- showCard(data);
-}
-
-
-// ========== SHOW CARD ==========================
+// ===== SHOW CARD =====
 function showCard(d){
 
- mname.innerText=d.name;
- mcode.innerText="Member Code: "+d.member_code;
- mdetails.innerHTML=`Father: ${d.father_name}<br>Mobile: ${d.mobile}<br>District: ${d.district}<br>State: ${d.state}`;
- mphoto.src=d.photo_url;
+ document.getElementById("front").style.display="block";
+ document.getElementById("back").style.display="block";
 
- new QRious({
-   element:document.getElementById("qr"),
-   value:`${d.member_code} | ${d.name} | ${d.mobile} | ${d.district} | ${d.state}`,
-   size:110
- });
+ name_t.innerText=d.name;
+ father_t.innerText=d.father_name;
+ district_t.innerText=d.district;
+ state_t.innerText=d.state;
+ mcode_t.innerText=d.member_code;
+ photo_img.src=d.photo_url;
 
- cardArea.style.display="block";
- window.scrollTo(0,document.body.scrollHeight);
+ QRCode.toCanvas(document.getElementById("qr1"), d.member_code,{width:220});
+ QRCode.toCanvas(document.getElementById("qr2"), d.member_code,{width:220});
 }
 
 
-// ========== PDF DOWNLOAD ========================
-async function downloadPDF(){
+// ===== DOWNLOAD BOTH =====
+async function downloadBoth(){
 
- const front = await html2canvas(document.getElementById("front"),{useCORS:true});
- const back = await html2canvas(document.getElementById("back"),{useCORS:true});
+ const f = await html2canvas(front);
+ const b = await html2canvas(back);
 
- const { jsPDF } = window.jspdf;
- const pdf = new jsPDF("p","mm","a4");
+ let link1=document.createElement("a");
+ link1.download="Front_ID.png";
+ link1.href=f.toDataURL();
+ link1.click();
 
- let fw = 80;
- let fh = fw * 1.6;
-
- pdf.addImage(front.toDataURL(),"PNG",20,20,fw,fh);
- pdf.addImage(back.toDataURL(),"PNG",110,20,fw,fh);
-
- pdf.save("JB_RRMS_ID_Card.pdf");
+ let link2=document.createElement("a");
+ link2.download="Back_ID.png";
+ link2.href=b.toDataURL();
+ link2.click();
 }
-
 </script>
+
 </body>
 </html>
