@@ -46,7 +46,7 @@ async function generateMemberCode(){
     .select("*", { count: "exact", head: true });
 
   if(error){
-    console.log(error);
+    console.log("COUNT ERROR:", error);
     return "JBRRMS0001";
   }
 
@@ -82,14 +82,14 @@ async function saveMember(){
 
  if(uploadError){
    alert("Photo upload failed");
-   console.log(uploadError);
+   console.log("UPLOAD ERROR:", uploadError);
    return;
  }
 
  const photo_url = `${supabaseUrl}/storage/v1/object/public/members/${fileName}`;
 
  // Database Insert
- const { error } = await supabaseClient
+ const { data, error } = await supabaseClient
    .from("JBRRMS")
    .insert({
      member_code,
@@ -99,13 +99,16 @@ async function saveMember(){
      state,
      mobile,
      photo_url
-   });
+   })
+   .select();
 
  if(error){
-   alert("Error saving data");
-   console.log(error);
+   console.log("DB ERROR:", error);
+   alert("DB ERROR: " + error.message);
    return;
  }
+
+ console.log("DATA SAVED:", data);
 
  document.getElementById("msg").innerText =
    "Member Registered Successfully ✔ Member Code: " + member_code;
