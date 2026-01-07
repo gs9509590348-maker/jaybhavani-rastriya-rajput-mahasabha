@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>JBRRMS — Admin Login</title>
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script defer src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
 
 <style>
 body{
@@ -17,7 +17,6 @@ body{
   height:100vh;
   margin:0;
 }
-
 .box{
   background:#fff;
   padding:25px;
@@ -25,13 +24,11 @@ body{
   border-radius:14px;
   box-shadow:0 5px 18px rgba(0,0,0,.2);
 }
-
 h2{
   text-align:center;
   margin-bottom:15px;
   color:#800000;
 }
-
 input{
   width:100%;
   padding:10px;
@@ -40,7 +37,6 @@ input{
   border-radius:8px;
   font-size:15px;
 }
-
 button{
   width:100%;
   padding:10px;
@@ -51,17 +47,11 @@ button{
   font-size:16px;
   cursor:pointer;
 }
-
-button:hover{
-  opacity:.9;
-}
-
 .msg{
   margin-top:10px;
   text-align:center;
   font-size:14px;
 }
-
 .error{ color:#b00000 }
 .success{ color:green }
 </style>
@@ -82,8 +72,10 @@ button:hover{
 
 <script>
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
-const supabaseKey = "YOUR_PUBLISHABLE_KEY_HERE"; 
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
+
+//  ✔ सही client बनाना
+const db = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 async function adminLogin(){
 
@@ -91,9 +83,15 @@ async function adminLogin(){
   const password = document.getElementById("adminPass").value.trim();
   const message = document.getElementById("message");
 
-  message.innerHTML = "कृपया प्रतीक्षा करें…";
+  if(!email || !password){
+    message.innerHTML = "⚠ Email और Password भरें";
+    message.className = "msg error";
+    return;
+  }
 
-  const { data, error } = await supabase.auth.signInWithPassword({
+  message.innerHTML = "⏳ कृपया प्रतीक्षा करें…";
+
+  const { data, error } = await db.auth.signInWithPassword({
     email,
     password
   });
@@ -104,8 +102,6 @@ async function adminLogin(){
     return;
   }
 
-  // Optional: सिर्फ Verified Admin को जाने देना
-  // Example: अगर email whitelist करनी हो
   const allowedAdmins = [
     "admin@jbrrms.in",
     "president@jbrrms.in"
@@ -114,7 +110,7 @@ async function adminLogin(){
   if(!allowedAdmins.includes(email)){
     message.innerHTML = "⛔ Access Denied — Admin अनुमति आवश्यक";
     message.className = "msg error";
-    await supabase.auth.signOut();
+    await db.auth.signOut();
     return;
   }
 
@@ -125,6 +121,9 @@ async function adminLogin(){
     window.location.href = "admin-panel.html";
   }, 800);
 }
+
+//  ✔ function को global बनाना जरूरी
+window.adminLogin = adminLogin;
 </script>
 
 </body>
