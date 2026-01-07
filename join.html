@@ -1,164 +1,249 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>जय भवानी राष्ट्रीय राजपूत महासभा — सदस्य पंजीकरण</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>JB RRMS - Member Join + ID Card</title>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script defer src="https://unpkg.com/face-api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{font-family:Arial;background:#f5f5f5;padding:15px;}
-.card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 10px #ccc;max-width:650px;margin:auto;}
-input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:5px;}
-button{background:#007bff;color:#fff;border:0;padding:12px;border-radius:5px;width:100%;font-size:17px;}
-#preview{width:140px;height:170px;border-radius:10px;object-fit:cover;border:2px solid #ccc;margin-top:5px;}
+body{font-family:Arial;background:#f5f5f5;padding:10px}
+.box{background:#fff;padding:15px;border-radius:12px;max-width:500px;margin:auto;box-shadow:0 0 10px rgba(0,0,0,.2)}
+input{width:100%;padding:10px;margin-top:8px}
+button{padding:10px;background:#b30000;color:#fff;border:none;border-radius:10px;width:100%;margin-top:10px}
+h2{text-align:center}
+
+.idcard{margin-top:25px;text-align:center}
+.card{width:300px;height:480px;position:relative;margin:auto;border-radius:15px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.3)}
+.card img.bg{width:100%;height:100%;object-fit:cover;position:absolute}
+
+.photo{width:110px;height:130px;border-radius:15px;overflow:hidden;position:absolute;top:120px;left:50%;transform:translateX(-50%);background:#fff}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+.name,.code,.details{position:absolute;width:100%;text-align:center}
+.name{top:270px;font-size:18px;font-weight:bold}
+.code{top:300px;font-size:14px}
+.details{top:340px;font-size:13px;line-height:18px}
 </style>
 </head>
 
 <body>
 
-<div class="card">
-<h2 style="text-align:center;">जय भवानी राष्ट्रीय राजपूत महासभा — सदस्य पंजीकरण</h2>
+<div class="box">
+<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+<h3>Member Registration</h3>
 
-<input id="name" placeholder="नाम लिखें" />
-<input id="father_name" placeholder="पिता का नाम लिखें" />
-<input id="district" placeholder="जिला लिखें" />
-<input id="state" placeholder="राज्य लिखें" />
-<input id="mobile" placeholder="मोबाइल नंबर" />
+<input id="name" placeholder="नाम">
+<input id="father" placeholder="पिता का नाम">
+<input id="mobile" placeholder="मोबाइल">
+<input id="district" placeholder="जिला">
+<input id="state" placeholder="राज्य">
 
-<label>फोटो अपलोड करें</label>
-<input type="file" id="photo" accept="image/*" />
-<img id="preview"/>
+<label>फोटो अपलोड</label>
+<input type="file" id="photo">
 
-<button onclick="saveMember()">सदस्य रजिस्टर करें</button>
+<button onclick="register()">Submit & Generate ID</button>
 
-<p id="msg" style="font-weight:bold"></p>
+<hr>
+
+<h3>Already Member? Get ID Card</h3>
+<input id="searchCode" placeholder="Member Code डालें (जैसे JBRRMS0001)">
+<button onclick="loadCard()">Load ID Card</button>
+
+</div>
+
+<div class="idcard" id="cardArea" style="display:none">
+
+<h3>Member ID Card</h3>
+
+<!-- FRONT -->
+<div class="card" id="front">
+<img class="bg" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png">
+
+<div class="photo"><img id="mphoto"></div>
+<div class="name" id="mname"></div>
+<div class="code" id="mcode"></div>
+<div class="details" id="mdetails"></div>
+
+</div>
+
+<br>
+
+<!-- BACK -->
+<div class="card" id="back">
+<img class="bg" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png">
+
+<canvas id="qr" width="90" height="90" style="position:absolute;bottom:25px;right:25px;"></canvas>
+
+<div style="position:absolute;bottom:25px;left:15px;font-size:12px;text-align:left;color:#000;">
+📧 Email: jbrrms1@gmail.com<br>
+📞 Helpline: 9166377972<br>
+🌐 Website: www.jbrrms.in<br><br>
+⚠ यह केवल संगठन की पहचान पत्र है,<br>
+कानूनी मान्यता प्रमाण पत्र नहीं।
+</div>
+
+</div>
+
+<button onclick="downloadPDF()">Download ID Card PDF</button>
+
 </div>
 
 <script>
-// Supabase Setup
+
+// =================== Supabase ===================
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Face API Load
+// =================== Cloudinary =================
+const cloudName = "dlqr73p7j";
+const preset = "jbrms_unsigned";
+
+// ================= Load Face Models =============
 Promise.all([
- faceapi.nets.tinyFaceDetector.loadFromUri("https://justadudewhohacks.github.io/face-api.js/models")
-]).then(()=>console.log("Face API Ready"));
+  faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/dist/weights")
+]).then(()=>console.log("FaceAPI Loaded"));
 
-// Photo Processing
-async function processImage(file){
- return new Promise(async(resolve)=>{
-  const img=document.createElement("img");
-  img.src=URL.createObjectURL(file);
-  await img.decode();
 
-  const detect=await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions());
+// ====== FACE AUTO CROP ==========================
+async function cropPhoto(file){
 
-  const canvas=document.createElement("canvas");
-  const ctx=canvas.getContext("2d");
-  const size=700;
-  canvas.width=size;
-  canvas.height=size;
+ const img = new Image();
+ img.src = URL.createObjectURL(file);
+ await img.decode();
 
-  ctx.fillStyle="#ffffff";
-  ctx.fillRect(0,0,size,size);
+ const detection = await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions());
 
-  let sx=0,sy=0,sw=img.width,sh=img.height;
+ const canvas=document.createElement("canvas");
+ canvas.width=600;canvas.height=600;
+ const ctx=canvas.getContext("2d");
+ ctx.fillStyle="#eef3ff";
+ ctx.fillRect(0,0,600,600);
 
-  if(detect){
-   const box=detect.box;
-   const cx=box.x+box.width/2;
-   const cy=box.y+box.height/2;
-   const f=Math.max(box.width,box.height)*2;
-   sx=Math.max(0,cx-f/2);
-   sy=Math.max(0,cy-f/2);
-   sw=f;sh=f;
-  }
+ ctx.save();
+ ctx.beginPath();
+ ctx.roundRect(20,20,560,560,30);
+ ctx.clip();
 
-  ctx.drawImage(img,sx,sy,sw,sh,0,0,size,size);
+ let sx=0,sy=0,sw=img.width,sh=img.height;
 
-  canvas.toBlob(b=>resolve(b),"image/webp",0.9);
+ if(detection){
+   let b=detection.box;
+   sx=Math.max(0,b.x-b.width*0.5);
+   sy=Math.max(0,b.y-b.height*0.5);
+   sw=Math.min(img.width-sx,b.width*2);
+   sh=Math.min(img.height-sy,b.height*2);
+ }
+
+ ctx.drawImage(img,sx,sy,sw,sh,0,0,600,600);
+ ctx.restore();
+
+ return await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.8));
+}
+
+
+// ========== UPLOAD CLOUDINARY ==================
+async function upload(file,name){
+ const fd=new FormData();
+ fd.append("file",file);
+ fd.append("upload_preset",preset);
+ fd.append("public_id",name);
+
+ let r=await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,{
+   method:"POST",
+   body:fd
  });
+
+ let j=await r.json();
+ return j.secure_url;
 }
 
-// Preview
-photo.addEventListener("change",e=>{
- const f=e.target.files[0];
- if(f) preview.src=URL.createObjectURL(f);
-});
 
-// Save Member
-async function saveMember(){
+// ========== REGISTER ===========================
+async function register(){
 
- msg.innerText="Saving...";
+ let n=name.value,f=father.value,m=mobile.value,d=district.value,s=state.value;
 
- const name=document.getElementById("name").value.trim();
- const father=document.getElementById("father_name").value.trim();
- const district=document.getElementById("district").value.trim();
- const state=document.getElementById("state").value.trim();
- const mobile=document.getElementById("mobile").value.trim();
- const photoFile=document.getElementById("photo").files[0];
+ if(!n||!f||!m||!d||!s){alert("सब फील्ड भरें");return;}
 
- if(!name || !mobile || !photoFile){
-  alert("नाम, मोबाइल और फोटो जरूरी है");
-  return;
- }
+ let file=photo.files[0];
+ if(!file){alert("फोटो अपलोड करें");return;}
 
- // Insert row
- const {data:row,error:insertErr}=await supabaseClient
-  .from("JBRRMS")
-  .insert({name,father_name:father,district,state,mobile})
-  .select()
-  .single();
+ let member_code="JBRRMS"+Date.now();
 
- if(insertErr){alert(insertErr.message);return;}
+ let blob=await cropPhoto(file);
+ let url=await upload(blob,member_code);
 
- const auto=row.id;
- const member_code="JBRRMS"+String(auto).padStart(4,"0");
+ let {error}=await supabaseClient.from("JBRRMS").insert([
+  {member_code,name:n,father_name:f,mobile:m,district:d,state:s,photo_url:url}
+ ]);
 
- // Process photo
- const blob=await processImage(photoFile);
+ if(error){alert("Database Error");return;}
 
- // FILE PATH (VERY IMPORTANT)
- const fileName=`members/photo/${member_code}.webp`;
-
- // Upload to bucket JBRRMS
- const {error:uploadErr}=await supabaseClient
-  .storage.from("JBRRMS")
-  .upload(fileName,blob,{
-    upsert:true,
-    cacheControl:"3600",
-    contentType:"image/webp"
-  });
-
- if(uploadErr){
-  alert("Upload Failed: "+uploadErr.message);
-  return;
- }
-
- // Public URL
- const {data:urlData,error:urlErr}=supabaseClient
-  .storage.from("JBRRMS")
-  .getPublicUrl(fileName);
-
- if(urlErr){alert(urlErr.message);return;}
-
- const photo_url=urlData.publicUrl;
-
- // Update DB
- await supabaseClient
-  .from("JBRRMS")
-  .update({member_code,photo_url})
-  .eq("id",auto);
-
- msg.innerText="✔ सदस्य रजिस्टर हुआ — Code: "+member_code;
-
- alert("✔ सदस्य सफलतापूर्वक रजिस्टर हुआ — "+member_code);
+ showCard({member_code,name:n,father_name:f,mobile:m,district:d,state:s,photo_url:url});
 }
+
+
+// ========== LOAD CARD ==========================
+async function loadCard(){
+ let code=searchCode.value.trim();
+
+ let {data,error}=await supabaseClient
+   .from("JBRRMS")
+   .select("*")
+   .eq("member_code",code)
+   .single();
+
+ if(error){alert("Member नहीं मिला");return;}
+
+ showCard(data);
+}
+
+
+// ========== SHOW CARD ==========================
+function showCard(d){
+
+ mname.innerText=d.name;
+ mcode.innerText="Member Code: "+d.member_code;
+ mdetails.innerHTML=`Father: ${d.father_name}<br>Mobile: ${d.mobile}<br>District: ${d.district}<br>State: ${d.state}`;
+ mphoto.src=d.photo_url;
+
+ new QRious({
+   element:document.getElementById("qr"),
+   value:`${d.member_code} | ${d.name} | ${d.mobile} | ${d.district} | ${d.state}`,
+   size:90
+ });
+
+ cardArea.style.display="block";
+ window.scrollTo(0,document.body.scrollHeight);
+}
+
+
+// ========== PDF DOWNLOAD ========================
+async function downloadPDF(){
+
+ const front = await html2canvas(document.getElementById("front"));
+ const back = await html2canvas(document.getElementById("back"));
+
+ const { jsPDF } = window.jspdf;
+ const pdf = new jsPDF("p","mm","a4");
+
+ let fw = 80;
+ let fh = fw * 1.6;
+
+ pdf.addImage(front.toDataURL(),"PNG",20,20,fw,fh);
+ pdf.addImage(back.toDataURL(),"PNG",110,20,fw,fh);
+
+ pdf.save("JB_RRMS_ID_Card.pdf");
+}
+
 </script>
-
 </body>
 </html>
