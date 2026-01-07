@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
 <title>JB RRMS Member Registration</title>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -18,12 +19,12 @@ button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;wid
 <body>
 
 <div class="card">
-<h2>JB RRMS — Member Registration</h2>
+<h2>JB RRMS — सदस्य पंजीकरण</h2>
 
-<input id="name" placeholder="नाम" />
-<input id="father_name" placeholder="पिता का नाम" />
-<input id="district" placeholder="जिला" />
-<input id="state" placeholder="राज्य" />
+<input id="name" placeholder="नाम लिखें" />
+<input id="father_name" placeholder="पिता का नाम लिखें" />
+<input id="district" placeholder="जिला लिखें" />
+<input id="state" placeholder="राज्य लिखें" />
 <input id="mobile" placeholder="मोबाइल नंबर" />
 
 <label>फोटो अपलोड करें</label>
@@ -31,7 +32,7 @@ button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;wid
 
 <button onclick="saveMember()">Register Member</button>
 
-<p id="msg"></p>
+<p id="msg" style="font-weight:bold"></p>
 </div>
 
 <script>
@@ -39,7 +40,7 @@ const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Member Code Generate
+// Member Code Generate Function
 async function generateMemberCode(){
   const { count, error } = await supabaseClient
     .from("JBRRMS")
@@ -73,12 +74,17 @@ async function saveMember(){
  const member_code = await generateMemberCode();
 
  // फोटो Upload
- const fileName = member_code + "_" + Date.now();
+ const ext = photoFile.name.split(".").pop();
+ const fileName = `${member_code}_${Date.now()}.${ext}`;
 
- const { error: uploadError } = await supabaseClient
+ const { data: uploadData, error: uploadError } = await supabaseClient
    .storage
    .from("members")
-   .upload(fileName, photoFile);
+   .upload(fileName, photoFile, {
+     contentType: photoFile.type,
+     cacheControl: "3600",
+     upsert: true
+   });
 
  if(uploadError){
    alert("Photo upload failed");
@@ -86,7 +92,13 @@ async function saveMember(){
    return;
  }
 
- const photo_url = `${supabaseUrl}/storage/v1/object/public/members/${fileName}`;
+ // Public URL
+ const { data: publicUrlData } = supabaseClient
+   .storage
+   .from("members")
+   .getPublicUrl(fileName);
+
+ const photo_url = publicUrlData.publicUrl;
 
  // Database Insert
  const { data, error } = await supabaseClient
@@ -108,12 +120,10 @@ async function saveMember(){
    return;
  }
 
- console.log("DATA SAVED:", data);
-
  document.getElementById("msg").innerText =
-   "Member Registered Successfully ✔ Member Code: " + member_code;
+   "सदस्य सफलतापूर्वक रजिस्टर हुआ ✔ कोड: " + member_code;
 
- alert("Member Registered Successfully ✔ Member Code: " + member_code);
+ alert("सदस्य सफलतापूर्वक रजिस्टर हुआ ✔ Member Code: " + member_code);
 }
 </script>
 
