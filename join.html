@@ -5,50 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>जय भवानी राष्ट्रीय राजपूत महासभा — सदस्य पंजीकरण</title>
 
-<!-- Supabase -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-
-<!-- Face API -->
 <script defer src="https://unpkg.com/face-api.js"></script>
 
 <style>
-body {
-  font-family: Arial;
-  background: #f5f5f5;
-  padding: 15px;
-}
-.card {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 0 10px #ccc;
-  max-width: 650px;
-  margin: auto;
-}
-input {
-  width: 100%;
-  padding: 10px;
-  margin: 6px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-button {
-  background: #007bff;
-  color: #fff;
-  border: 0;
-  padding: 10px;
-  border-radius: 5px;
-  width: 100%;
-  font-size: 16px;
-}
-#preview {
-  width: 120px;
-  height: 150px;
-  border-radius: 10px;
-  object-fit: cover;
-  border: 2px solid #ccc;
-  margin-top: 5px;
-}
+body{font-family:Arial;background:#f5f5f5;padding:15px;}
+.card{background:#fff;padding:15px;border-radius:10px;box-shadow:0 0 10px #ccc;max-width:650px;margin:auto;}
+input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:5px;}
+button{background:#007bff;color:#fff;border:0;padding:12px;border-radius:5px;width:100%;font-size:17px;}
+#preview{width:140px;height:170px;border-radius:10px;object-fit:cover;border:2px solid #ccc;margin-top:5px;}
 </style>
 </head>
 
@@ -67,145 +32,131 @@ button {
 <input type="file" id="photo" accept="image/*" />
 <img id="preview"/>
 
-<button onclick="saveMember()">Register Member</button>
+<button onclick="saveMember()">सदस्य रजिस्टर करें</button>
 
 <p id="msg" style="font-weight:bold"></p>
 </div>
 
 <script>
-// ✅ Supabase Setup
+// Supabase Setup
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// ✅ Load Face API models
+// Face API Load
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("https://justadudewhohacks.github.io/face-api.js/models")
+ faceapi.nets.tinyFaceDetector.loadFromUri("https://justadudewhohacks.github.io/face-api.js/models")
 ]).then(()=>console.log("Face API Ready"));
 
-// ✅ Process & Compress Image with Face Detection
+// Photo Processing
 async function processImage(file){
-  return new Promise(async(resolve)=>{
-    const img = document.createElement("img");
-    img.src = URL.createObjectURL(file);
-    await img.decode();
+ return new Promise(async(resolve)=>{
+  const img=document.createElement("img");
+  img.src=URL.createObjectURL(file);
+  await img.decode();
 
-    const detection = await faceapi.detectSingleFace(
-      img,
-      new faceapi.TinyFaceDetectorOptions()
-    );
+  const detect=await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions());
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    const size = 600;
-    canvas.width = size;
-    canvas.height = size;
+  const canvas=document.createElement("canvas");
+  const ctx=canvas.getContext("2d");
+  const size=700;
+  canvas.width=size;
+  canvas.height=size;
 
-    // White background
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0,0,size,size);
+  ctx.fillStyle="#ffffff";
+  ctx.fillRect(0,0,size,size);
 
-    let sx=0, sy=0, sw=img.width, sh=img.height;
+  let sx=0,sy=0,sw=img.width,sh=img.height;
 
-    if(detection){
-      const box = detection.box;
-      const cx = box.x + box.width/2;
-      const cy = box.y + box.height/2;
-      const faceSize = Math.max(box.width, box.height) * 2;
-      sx = Math.max(0, cx-faceSize/2);
-      sy = Math.max(0, cy-faceSize/2);
-      sw = faceSize;
-      sh = faceSize;
-    }
+  if(detect){
+   const box=detect.box;
+   const cx=box.x+box.width/2;
+   const cy=box.y+box.height/2;
+   const f=Math.max(box.width,box.height)*2;
+   sx=Math.max(0,cx-f/2);
+   sy=Math.max(0,cy-f/2);
+   sw=f;sh=f;
+  }
 
-    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+  ctx.drawImage(img,sx,sy,sw,sh,0,0,size,size);
 
-    canvas.toBlob(blob=>{
-      resolve(blob);
-    },"image/webp",0.9);
-  });
+  canvas.toBlob(b=>resolve(b),"image/webp",0.9);
+ });
 }
 
-// ✅ Preview photo
-document.getElementById("photo").addEventListener("change", e=>{
-  const f = e.target.files[0];
-  if(f){
-    document.getElementById("preview").src = URL.createObjectURL(f);
-  }
+// Preview
+photo.addEventListener("change",e=>{
+ const f=e.target.files[0];
+ if(f) preview.src=URL.createObjectURL(f);
 });
 
-// ✅ Final Save Function (Unique member code)
+// Save Member
 async function saveMember(){
-  document.getElementById("msg").innerText = "Saving, please wait...";
 
-  const name = document.getElementById("name").value.trim();
-  const father = document.getElementById("father_name").value.trim();
-  const district = document.getElementById("district").value.trim();
-  const state = document.getElementById("state").value.trim();
-  const mobile = document.getElementById("mobile").value.trim();
-  const photoFile = document.getElementById("photo").files[0];
+ msg.innerText="Saving...";
 
-  if(!name || !mobile || !photoFile){
-    alert("नाम, मोबाइल और फोटो जरूरी है");
-    return;
-  }
+ const name=document.getElementById("name").value.trim();
+ const father=document.getElementById("father_name").value.trim();
+ const district=document.getElementById("district").value.trim();
+ const state=document.getElementById("state").value.trim();
+ const mobile=document.getElementById("mobile").value.trim();
+ const photoFile=document.getElementById("photo").files[0];
 
-  // STEP 1: Insert record (temporary)
-  const { data: inserted, error: insertError } = await supabaseClient
-    .from("JBRRMS")
-    .insert({
-      name,
-      father_name: father,
-      district,
-      state,
-      mobile
-    })
-    .select()
-    .single();
+ if(!name || !mobile || !photoFile){
+  alert("नाम, मोबाइल और फोटो जरूरी है");
+  return;
+ }
 
-  if(insertError){
-    alert("Insert error: "+insertError.message);
-    return;
-  }
+ // Insert row
+ const {data:row,error:insertErr}=await supabaseClient
+  .from("JBRRMS")
+  .insert({name,father_name:father,district,state,mobile})
+  .select()
+  .single();
 
-  const auto_id = inserted.id;
-  const member_code = "JBRRMS" + String(auto_id).padStart(4,"0");
+ if(insertErr){alert(insertErr.message);return;}
 
-  // STEP 2: Face detect + compress + white background
-  const blob = await processImage(photoFile);
-  const fileName = `photo/${member_code}.webp`;
+ const auto=row.id;
+ const member_code="JBRRMS"+String(auto).padStart(4,"0");
 
-  const { error: uploadError } = await supabaseClient
-    .storage.from("members")
-    .upload(fileName, blob, {
-      contentType: "image/webp",
-      upsert: true
-    });
+ // Process photo
+ const blob=await processImage(photoFile);
 
-  if(uploadError){
-    alert("Photo upload failed: "+uploadError.message);
-    return;
-  }
+ // FILE PATH (VERY IMPORTANT)
+ const fileName=`members/photo/${member_code}.webp`;
 
-  const { data: publicUrlData } = supabaseClient
-    .storage.from("members")
-    .getPublicUrl(fileName);
+ // Upload to bucket JBRRMS
+ const {error:uploadErr}=await supabaseClient
+  .storage.from("JBRRMS")
+  .upload(fileName,blob,{
+    upsert:true,
+    cacheControl:"3600",
+    contentType:"image/webp"
+  });
 
-  const photo_url = publicUrlData.publicUrl;
+ if(uploadErr){
+  alert("Upload Failed: "+uploadErr.message);
+  return;
+ }
 
-  // STEP 3: Update record with code + photo_url
-  await supabaseClient
-    .from("JBRRMS")
-    .update({
-      member_code,
-      photo_url
-    })
-    .eq("id", auto_id);
+ // Public URL
+ const {data:urlData,error:urlErr}=supabaseClient
+  .storage.from("JBRRMS")
+  .getPublicUrl(fileName);
 
-  document.getElementById("msg").innerText =
-    "✔ सदस्य सफलतापूर्वक रजिस्टर हुआ — Member Code: "+member_code;
+ if(urlErr){alert(urlErr.message);return;}
 
-  alert("✔ सदस्य सफलतापूर्वक रजिस्टर हुआ — Code: "+member_code);
+ const photo_url=urlData.publicUrl;
+
+ // Update DB
+ await supabaseClient
+  .from("JBRRMS")
+  .update({member_code,photo_url})
+  .eq("id",auto);
+
+ msg.innerText="✔ सदस्य रजिस्टर हुआ — Code: "+member_code;
+
+ alert("✔ सदस्य सफलतापूर्वक रजिस्टर हुआ — "+member_code);
 }
 </script>
 
