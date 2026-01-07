@@ -8,7 +8,7 @@
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -23,13 +23,48 @@ h2{text-align:center}
 .card{width:300px;height:480px;position:relative;margin:auto;border-radius:15px;overflow:hidden;box-shadow:0 0 10px rgba(0,0,0,.3)}
 .card img.bg{width:100%;height:100%;object-fit:cover;position:absolute}
 
-.photo{width:110px;height:130px;border-radius:15px;overflow:hidden;position:absolute;top:120px;left:50%;transform:translateX(-50%);background:#fff}
-.photo img{width:100%;height:100%;object-fit:cover}
+/* PHOTO BOX FIXED */
+.photo{
+ width:115px;
+ height:140px;
+ border-radius:15px;
+ overflow:hidden;
+ position:absolute;
+ top:145px;
+ left:50%;
+ transform:translateX(-50%);
+ background:#fff;
+ box-shadow:0 0 6px rgba(0,0,0,.4);
+}
+.photo img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
 
 .name,.code,.details{position:absolute;width:100%;text-align:center}
-.name{top:270px;font-size:18px;font-weight:bold}
-.code{top:300px;font-size:14px}
-.details{top:340px;font-size:13px;line-height:18px}
+.name{top:305px;font-size:18px;font-weight:bold}
+.code{top:335px;font-size:14px;color:#b30000}
+.details{top:370px;font-size:13px;line-height:18px}
+
+/* BACK TITLE */
+.backTitle{
+ position:absolute;
+ top:12px;
+ width:100%;
+ text-align:center;
+ font-size:18px;
+ font-weight:bold;
+ color:#800000;
+}
+
+/* QR IN CENTER */
+#qr{
+ position:absolute;
+ top:180px;
+ left:50%;
+ transform:translateX(-50%);
+}
 </style>
 </head>
 
@@ -64,7 +99,7 @@ h2{text-align:center}
 
 <!-- FRONT -->
 <div class="card" id="front">
-<img class="bg" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png">
+<img class="bg" crossorigin="anonymous" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png">
 
 <div class="photo"><img id="mphoto"></div>
 <div class="name" id="mname"></div>
@@ -77,11 +112,13 @@ h2{text-align:center}
 
 <!-- BACK -->
 <div class="card" id="back">
-<img class="bg" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png">
+<img class="bg" crossorigin="anonymous" src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png">
 
-<canvas id="qr" width="90" height="90" style="position:absolute;bottom:25px;right:25px;"></canvas>
+<div class="backTitle">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 
-<div style="position:absolute;bottom:25px;left:15px;font-size:12px;text-align:left;color:#000;">
+<canvas id="qr" width="110" height="110"></canvas>
+
+<div style="position:absolute;bottom:20px;left:15px;font-size:12px;text-align:left;color:#000;">
 📧 Email: jbrrms1@gmail.com<br>
 📞 Helpline: 9166377972<br>
 🌐 Website: www.jbrrms.in<br><br>
@@ -108,7 +145,7 @@ const preset = "jbrms_unsigned";
 
 // ================= Load Face Models =============
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/dist/weights")
+  faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/weights")
 ]).then(()=>console.log("FaceAPI Loaded"));
 
 
@@ -145,7 +182,7 @@ async function cropPhoto(file){
  ctx.drawImage(img,sx,sy,sw,sh,0,0,600,600);
  ctx.restore();
 
- return await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.8));
+ return await new Promise(r=>canvas.toBlob(r,"image/jpeg",0.9));
 }
 
 
@@ -218,7 +255,7 @@ function showCard(d){
  new QRious({
    element:document.getElementById("qr"),
    value:`${d.member_code} | ${d.name} | ${d.mobile} | ${d.district} | ${d.state}`,
-   size:90
+   size:110
  });
 
  cardArea.style.display="block";
@@ -229,8 +266,8 @@ function showCard(d){
 // ========== PDF DOWNLOAD ========================
 async function downloadPDF(){
 
- const front = await html2canvas(document.getElementById("front"));
- const back = await html2canvas(document.getElementById("back"));
+ const front = await html2canvas(document.getElementById("front"),{useCORS:true});
+ const back = await html2canvas(document.getElementById("back"),{useCORS:true});
 
  const { jsPDF } = window.jspdf;
  const pdf = new jsPDF("p","mm","a4");
