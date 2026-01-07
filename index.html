@@ -55,7 +55,7 @@ header{
 .title span:last-child{
   display:block;
   margin-top:5px;
-  font-size:40px;   /* 🔥 यहाँ नाम बड़ा कर दिया */
+  font-size:40px;
   font-weight:900;
   letter-spacing:1px;
 }
@@ -63,7 +63,7 @@ header{
 /* NAV */
 nav{
   background:#ffffffdd;
-  padding:10px;
+  padding:12px;
   box-shadow:0 2px 12px rgba(0,0,0,.25);
 }
 nav ul{
@@ -71,36 +71,40 @@ nav ul{
   display:flex;
   flex-wrap:wrap;
   justify-content:center;
-  gap:10px;
+  gap:12px;
 }
 nav li{
   position:relative;
   background:#0055a5;
-  padding:9px 14px;
-  border-radius:10px;
+  padding:12px 20px;   /* ⭐ बटन बड़ा */
+  border-radius:14px;  /* ⭐ स्मूद */
 }
 nav a{
   color:#fff;
   text-decoration:none;
-  font-weight:700;
+  font-weight:900;     /* ⭐ Bold */
+  font-size:18px;      /* ⭐ टेक्स्ट बड़ा */
 }
 nav li ul{
   display:none;
   position:absolute;
-  top:42px;
+  top:52px;
   left:0;
   background:#ffffff;
   padding:8px 0;
   border-radius:10px;
   box-shadow:0 6px 20px rgba(0,0,0,.25);
-  min-width:150px;
+  min-width:160px;
   z-index:99;
 }
 nav li ul li{
   background:none;
   padding:8px 12px;
 }
-nav li ul li a{color:#0055a5;}
+nav li ul li a{
+  color:#0055a5;
+  font-size:16px;
+}
 nav li:hover ul{display:block;}
 
 /* MAIN BOX */
@@ -135,7 +139,7 @@ nav li:hover ul{display:block;}
   border:3px solid white;
 }
 
-/* SOCIAL */
+/* SOCIAL  (जैसा था वैसा ही रखा है) */
 .social{
   text-align:center;
   margin-top:15px;
@@ -168,8 +172,9 @@ footer{
 @media(max-width:600px){
   .gallery{grid-template-columns:1fr;}
   .logo-box{width:130px;height:130px;}
-  nav ul{gap:6px;}
-  nav li{padding:7px 10px;}
+  nav ul{gap:8px;}
+  nav li{padding:10px 14px;}
+  nav a{font-size:17px;}
 }
 </style>
 </head>
