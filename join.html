@@ -10,7 +10,7 @@
 <style>
 body{font-family:Arial;background:#f5f5f5;padding:15px}
 .card{background:#fff;padding:15px;border-radius:8px;box-shadow:0 0 10px #ccc;max-width:600px;margin:auto}
-input,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:5px}
+input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:5px}
 button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;width:100%;font-size:16px}
 </style>
 </head>
@@ -25,7 +25,6 @@ button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;wid
 <input id="district" placeholder="जिला" />
 <input id="state" placeholder="राज्य" />
 <input id="mobile" placeholder="मोबाइल नंबर" />
-<input id="post" placeholder="पद" />
 
 <label>फोटो अपलोड करें</label>
 <input type="file" id="photo" accept="image/*" />
@@ -40,14 +39,18 @@ const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// ✅ Table name = JBRRMS
+// Member Code Generate
 async function generateMemberCode(){
   const { count, error } = await supabaseClient
     .from("JBRRMS")
     .select("*", { count: "exact", head: true });
 
-  let num = (count || 0) + 1;
+  if(error){
+    console.log(error);
+    return "JBRRMS0001";
+  }
 
+  let num = (count || 0) + 1;
   return "JBRRMS" + String(num).padStart(4, "0");
 }
 
@@ -55,12 +58,11 @@ async function saveMember(){
 
  document.getElementById("msg").innerText = "Saving, please wait...";
 
- const name = document.getElementById("name").value;
- const father = document.getElementById("father_name").value;
- const district = document.getElementById("district").value;
- const state = document.getElementById("state").value;
- const mobile = document.getElementById("mobile").value;
- const post = document.getElementById("post").value;
+ const name = document.getElementById("name").value.trim();
+ const father = document.getElementById("father_name").value.trim();
+ const district = document.getElementById("district").value.trim();
+ const state = document.getElementById("state").value.trim();
+ const mobile = document.getElementById("mobile").value.trim();
  const photoFile = document.getElementById("photo").files[0];
 
  if(!name || !mobile || !photoFile){
@@ -70,16 +72,13 @@ async function saveMember(){
 
  const member_code = await generateMemberCode();
 
- // 📸 फोटो upload bucket name = members
- const fileName = member_code + "_" + Date.now() + ".jpg";
+ // फोटो Upload
+ const fileName = member_code + "_" + Date.now();
 
  const { error: uploadError } = await supabaseClient
    .storage
    .from("members")
-   .upload(fileName, photoFile, {
-      cacheControl: "3600",
-      upsert: false
-   });
+   .upload(fileName, photoFile);
 
  if(uploadError){
    alert("Photo upload failed");
@@ -89,7 +88,7 @@ async function saveMember(){
 
  const photo_url = `${supabaseUrl}/storage/v1/object/public/members/${fileName}`;
 
- // 🧾 Insert into JBRRMS table
+ // Database Insert
  const { error } = await supabaseClient
    .from("JBRRMS")
    .insert({
@@ -99,7 +98,6 @@ async function saveMember(){
      district,
      state,
      mobile,
-     post,
      photo_url
    });
 
@@ -109,7 +107,7 @@ async function saveMember(){
    return;
  }
 
- document.getElementById("msg").innerText = 
+ document.getElementById("msg").innerText =
    "Member Registered Successfully ✔ Member Code: " + member_code;
 
  alert("Member Registered Successfully ✔ Member Code: " + member_code);
