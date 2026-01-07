@@ -3,23 +3,59 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>जय भवानी राष्ट्रीय राजपूत महासभा — सदस्य पंजीकरण</title>
 
-<title>JB RRMS Member Registration</title>
-
+<!-- Supabase -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 
+<!-- Face API -->
+<script defer src="https://unpkg.com/face-api.js"></script>
+
 <style>
-body{font-family:Arial;background:#f5f5f5;padding:15px}
-.card{background:#fff;padding:15px;border-radius:8px;box-shadow:0 0 10px #ccc;max-width:600px;margin:auto}
-input{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:5px}
-button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;width:100%;font-size:16px}
+body {
+  font-family: Arial;
+  background: #f5f5f5;
+  padding: 15px;
+}
+.card {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #ccc;
+  max-width: 650px;
+  margin: auto;
+}
+input {
+  width: 100%;
+  padding: 10px;
+  margin: 6px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+button {
+  background: #007bff;
+  color: #fff;
+  border: 0;
+  padding: 10px;
+  border-radius: 5px;
+  width: 100%;
+  font-size: 16px;
+}
+#preview {
+  width: 120px;
+  height: 150px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  margin-top: 5px;
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-<h2>JB RRMS — सदस्य पंजीकरण</h2>
+<h2 style="text-align:center;">जय भवानी राष्ट्रीय राजपूत महासभा — सदस्य पंजीकरण</h2>
 
 <input id="name" placeholder="नाम लिखें" />
 <input id="father_name" placeholder="पिता का नाम लिखें" />
@@ -29,6 +65,7 @@ button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;wid
 
 <label>फोटो अपलोड करें</label>
 <input type="file" id="photo" accept="image/*" />
+<img id="preview"/>
 
 <button onclick="saveMember()">Register Member</button>
 
@@ -36,94 +73,139 @@ button{background:#007bff;color:#fff;border:0;padding:10px;border-radius:5px;wid
 </div>
 
 <script>
+// ✅ Supabase Setup
 const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
 const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-// Member Code Generate Function
-async function generateMemberCode(){
-  const { count, error } = await supabaseClient
-    .from("JBRRMS")
-    .select("*", { count: "exact", head: true });
+// ✅ Load Face API models
+Promise.all([
+  faceapi.nets.tinyFaceDetector.loadFromUri("https://justadudewhohacks.github.io/face-api.js/models")
+]).then(()=>console.log("Face API Ready"));
 
-  if(error){
-    console.log("COUNT ERROR:", error);
-    return "JBRRMS0001";
-  }
+// ✅ Process & Compress Image with Face Detection
+async function processImage(file){
+  return new Promise(async(resolve)=>{
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+    await img.decode();
 
-  let num = (count || 0) + 1;
-  return "JBRRMS" + String(num).padStart(4, "0");
+    const detection = await faceapi.detectSingleFace(
+      img,
+      new faceapi.TinyFaceDetectorOptions()
+    );
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const size = 600;
+    canvas.width = size;
+    canvas.height = size;
+
+    // White background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0,0,size,size);
+
+    let sx=0, sy=0, sw=img.width, sh=img.height;
+
+    if(detection){
+      const box = detection.box;
+      const cx = box.x + box.width/2;
+      const cy = box.y + box.height/2;
+      const faceSize = Math.max(box.width, box.height) * 2;
+      sx = Math.max(0, cx-faceSize/2);
+      sy = Math.max(0, cy-faceSize/2);
+      sw = faceSize;
+      sh = faceSize;
+    }
+
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+
+    canvas.toBlob(blob=>{
+      resolve(blob);
+    },"image/webp",0.9);
+  });
 }
 
+// ✅ Preview photo
+document.getElementById("photo").addEventListener("change", e=>{
+  const f = e.target.files[0];
+  if(f){
+    document.getElementById("preview").src = URL.createObjectURL(f);
+  }
+});
+
+// ✅ Final Save Function (Unique member code)
 async function saveMember(){
+  document.getElementById("msg").innerText = "Saving, please wait...";
 
- document.getElementById("msg").innerText = "Saving, please wait...";
+  const name = document.getElementById("name").value.trim();
+  const father = document.getElementById("father_name").value.trim();
+  const district = document.getElementById("district").value.trim();
+  const state = document.getElementById("state").value.trim();
+  const mobile = document.getElementById("mobile").value.trim();
+  const photoFile = document.getElementById("photo").files[0];
 
- const name = document.getElementById("name").value.trim();
- const father = document.getElementById("father_name").value.trim();
- const district = document.getElementById("district").value.trim();
- const state = document.getElementById("state").value.trim();
- const mobile = document.getElementById("mobile").value.trim();
- const photoFile = document.getElementById("photo").files[0];
+  if(!name || !mobile || !photoFile){
+    alert("नाम, मोबाइल और फोटो जरूरी है");
+    return;
+  }
 
- if(!name || !mobile || !photoFile){
-   alert("नाम, मोबाइल और फोटो जरूरी है");
-   return;
- }
+  // STEP 1: Insert record (temporary)
+  const { data: inserted, error: insertError } = await supabaseClient
+    .from("JBRRMS")
+    .insert({
+      name,
+      father_name: father,
+      district,
+      state,
+      mobile
+    })
+    .select()
+    .single();
 
- const member_code = await generateMemberCode();
+  if(insertError){
+    alert("Insert error: "+insertError.message);
+    return;
+  }
 
- // फोटो Upload
- const ext = photoFile.name.split(".").pop();
- const fileName = `${member_code}_${Date.now()}.${ext}`;
+  const auto_id = inserted.id;
+  const member_code = "JBRRMS" + String(auto_id).padStart(4,"0");
 
- const { data: uploadData, error: uploadError } = await supabaseClient
-   .storage
-   .from("members")
-   .upload(fileName, photoFile, {
-     contentType: photoFile.type,
-     cacheControl: "3600",
-     upsert: true
-   });
+  // STEP 2: Face detect + compress + white background
+  const blob = await processImage(photoFile);
+  const fileName = `photo/${member_code}.webp`;
 
- if(uploadError){
-   alert("Photo upload failed");
-   console.log("UPLOAD ERROR:", uploadError);
-   return;
- }
+  const { error: uploadError } = await supabaseClient
+    .storage.from("members")
+    .upload(fileName, blob, {
+      contentType: "image/webp",
+      upsert: true
+    });
 
- // Public URL
- const { data: publicUrlData } = supabaseClient
-   .storage
-   .from("members")
-   .getPublicUrl(fileName);
+  if(uploadError){
+    alert("Photo upload failed: "+uploadError.message);
+    return;
+  }
 
- const photo_url = publicUrlData.publicUrl;
+  const { data: publicUrlData } = supabaseClient
+    .storage.from("members")
+    .getPublicUrl(fileName);
 
- // Database Insert
- const { data, error } = await supabaseClient
-   .from("JBRRMS")
-   .insert({
-     member_code,
-     name,
-     father_name: father,
-     district,
-     state,
-     mobile,
-     photo_url
-   })
-   .select();
+  const photo_url = publicUrlData.publicUrl;
 
- if(error){
-   console.log("DB ERROR:", error);
-   alert("DB ERROR: " + error.message);
-   return;
- }
+  // STEP 3: Update record with code + photo_url
+  await supabaseClient
+    .from("JBRRMS")
+    .update({
+      member_code,
+      photo_url
+    })
+    .eq("id", auto_id);
 
- document.getElementById("msg").innerText =
-   "सदस्य सफलतापूर्वक रजिस्टर हुआ ✔ कोड: " + member_code;
+  document.getElementById("msg").innerText =
+    "✔ सदस्य सफलतापूर्वक रजिस्टर हुआ — Member Code: "+member_code;
 
- alert("सदस्य सफलतापूर्वक रजिस्टर हुआ ✔ Member Code: " + member_code);
+  alert("✔ सदस्य सफलतापूर्वक रजिस्टर हुआ — Code: "+member_code);
 }
 </script>
 
