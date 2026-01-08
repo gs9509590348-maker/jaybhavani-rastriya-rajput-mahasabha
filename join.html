@@ -10,18 +10,19 @@
 
 <style>
 body{font-family:Mangal,Arial;background:#f2f2f2;margin:0;padding:10px}
+h2,h3{text-align:center}
+.section{background:#fff;padding:10px;border-radius:8px;margin-bottom:10px}
 input,button{width:100%;padding:10px;margin:6px 0;font-size:16px}
 button{background:#8b0000;color:#fff;border:none;border-radius:6px}
 canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;background:#fff}
-.section{background:#fff;padding:10px;border-radius:8px;margin-bottom:10px}
 </style>
 </head>
 
 <body>
 
-<h2 align="center">जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
 
-<!-- JOIN -->
+<!-- JOIN FORM -->
 <div class="section">
 <h3>📝 सदस्य ज्वाइन फॉर्म</h3>
 <input id="name" placeholder="नाम">
@@ -36,7 +37,7 @@ canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;backgro
 <!-- SEARCH -->
 <div class="section">
 <h3>🔍 Member Code से सर्च</h3>
-<input id="searchCode" placeholder="Member Code (JBRRMS0001)">
+<input id="searchCode" placeholder="JBRRMS00001">
 <button onclick="searchMember()">Search & Generate</button>
 </div>
 
@@ -54,95 +55,123 @@ canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;backgro
 <script>
 let memberCode="";
 
-const certBG=new Image(); certBG.src="certificate.png";
-const idFront=new Image(); idFront.src="idcard_front.png";
-const idBack=new Image(); idBack.src="idcard_back.png";
-const logo=new Image(); logo.src="logo.png";
+/* TEMPLATE IMAGES (आपके लिंक) */
+const certBG=new Image();
+certBG.src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/certificate.png";
 
-CanvasRenderingContext2D.prototype.roundRect=
-CanvasRenderingContext2D.prototype.roundRect||
-function(x,y,w,h,r){
+const idFront=new Image();
+idFront.src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png";
+
+const idBack=new Image();
+idBack.src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png";
+
+/* ROUND RECT */
+CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+ this.beginPath();
  this.moveTo(x+r,y);
  this.arcTo(x+w,y,x+w,y+h,r);
  this.arcTo(x+w,y+h,x,y+h,r);
  this.arcTo(x,y+h,x,y,r);
  this.arcTo(x,y,x+w,y,r);
+ this.closePath();
 };
 
-/* ===== JOIN ===== */
+/* JOIN */
 function joinMember(){
  if(!name.value.trim()){alert("नाम अनिवार्य है");return;}
- memberCode="JBRRMS"+String(Date.now()).slice(-4);
+
+ memberCode="JBRRMS"+Date.now().toString().slice(-5);
+
+ const data={
+  memberCode,
+  name:name.value,
+  fname:fname.value,
+  mobile:mobile.value,
+  district:district.value,
+  state:state.value
+ };
+ localStorage.setItem(memberCode,JSON.stringify(data));
+
  generateAll();
 }
 
-/* ===== SEARCH (ONLY MEMBER CODE) ===== */
+/* SEARCH */
 function searchMember(){
  if(!searchCode.value.trim()){alert("Member Code डालें");return;}
- memberCode=searchCode.value.trim();
+ const data=localStorage.getItem(searchCode.value.trim());
+ if(!data){alert("Member नहीं मिला");return;}
+
+ const m=JSON.parse(data);
+ memberCode=m.memberCode;
+ name.value=m.name;
+ fname.value=m.fname;
+ mobile.value=m.mobile;
+ district.value=m.district;
+ state.value=m.state;
+
  generateAll();
 }
 
+/* GENERATE */
 function generateAll(){
  generateCertificate();
  generateID();
 }
 
-/* ===== CERTIFICATE ===== */
+/* CERTIFICATE (NO PHOTO) */
 function generateCertificate(){
  const c=certificate.getContext("2d");
  c.clearRect(0,0,1080,1678);
  c.drawImage(certBG,0,0,1080,1678);
- c.drawImage(logo,390,40,300,300);
 
- c.font="bold 60px serif";
- c.fillStyle="#7a0000";
  c.textAlign="center";
- c.fillText("प्रमाण पत्र",540,430);
+ c.fillStyle="#7a0000";
+ c.font="bold 60px serif";
+ c.fillText("प्रमाण पत्र",540,360);
 
- c.font="30px serif";
+ c.font="32px serif";
  c.fillStyle="#000";
  c.textAlign="left";
 
- let y=560,g=55;
- line("नाम",name.value||"—");
- line("पिता का नाम",fname.value||"—");
- line("मोबाइल",mobile.value||"—");
- line("जिला",district.value||"—");
- line("राज्य",state.value||"—");
+ let y=520,g=60;
+ line("नाम",name.value);
+ line("पिता का नाम",fname.value);
+ line("मोबाइल",mobile.value);
+ line("जिला",district.value);
+ line("राज्य",state.value);
  line("सदस्य कोड",memberCode);
 
  function line(l,v){
-  c.fillText(l+" :",200,y);
+  c.fillText(l+" :",220,y);
   c.textAlign="right";
-  c.fillText(v,880,y);
+  c.fillText(v,860,y);
   c.textAlign="left";
   y+=g;
  }
 
- /* LEFT INFO */
+ /* LEFT SIDE INFO */
  c.save();
- c.translate(70,1200);
+ c.translate(80,1150);
  c.rotate(-Math.PI/2);
  c.font="22px serif";
  c.fillText("हेल्पलाइन : 9166377972",0,0);
- c.fillText("ईमेल : jbrrms1@gmail.com",0,35);
- c.fillText("वेबसाइट : www.jbrrms.in",0,70);
+ c.fillText("ईमेल : jbrrms1@gmail.com",0,32);
+ c.fillText("वेबसाइट : www.jbrrms.in",0,64);
  c.restore();
 
  /* QR RIGHT */
- drawQR(c,760,980,qrURL());
+ drawQR(c,760,950,qrURL());
 
  /* DISCLAIMER */
  c.font="18px serif";
  c.textAlign="center";
  c.fillText(
- "यह प्रमाण पत्र केवल संगठनात्मक पहचान हेतु है। इसका किसी भी सरकारी अधिकार से संबंध नहीं है।",
+  "यह प्रमाण पत्र केवल संगठनात्मक पहचान हेतु है। इसका किसी भी सरकारी अधिकार से संबंध नहीं है।",
  540,1600
  );
 }
 
-/* ===== ID CARD ===== */
+/* ID CARD */
 function generateID(){
  /* FRONT */
  const f=idfront.getContext("2d");
@@ -152,18 +181,18 @@ function generateID(){
 
  f.font="20px serif";
  f.fillStyle="#000";
- f.fillText(name.value||"सदस्य",140,610);
+ f.fillText(name.value,140,610);
  f.fillText(memberCode,140,645);
- f.fillText(district.value||"",140,680);
+ f.fillText(district.value,140,680);
 
  /* BACK */
  const b=idback.getContext("2d");
  b.clearRect(0,0,540,856);
  b.drawImage(idBack,0,0,540,856);
 
- b.font="bold 22px serif";
  b.textAlign="center";
- b.fillText(name.value||"सदस्य",270,90);
+ b.font="bold 22px serif";
+ b.fillText(name.value,270,90);
 
  drawQR(b,150,200,qrURL());
 
@@ -173,11 +202,10 @@ function generateID(){
  b.fillText("वेबसाइट : www.jbrrms.in",270,600);
 
  b.font="14px serif";
- b.fillStyle="#333";
  b.fillText("यह कार्ड केवल संगठनात्मक पहचान हेतु है।",270,640);
 }
 
-/* ===== PHOTO FIT ===== */
+/* PHOTO AUTO FIT */
 function drawPhotoCover(ctx,x,y,w,h){
  if(!photo.files[0])return;
  const img=new Image();
@@ -187,7 +215,6 @@ function drawPhotoCover(ctx,x,y,w,h){
   if(ir>cr){sh=img.height;sw=sh*cr;sx=(img.width-sw)/2;sy=0;}
   else{sw=img.width;sh=sw/cr;sx=0;sy=(img.height-sh)/2;}
   ctx.save();
-  ctx.beginPath();
   ctx.roundRect(x,y,w,h,20);
   ctx.clip();
   ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
@@ -196,18 +223,17 @@ function drawPhotoCover(ctx,x,y,w,h){
  img.src=URL.createObjectURL(photo.files[0]);
 }
 
-/* ===== QR ===== */
+/* QR */
 function qrURL(){
  return "https://www.jbrrms.in/?member="+memberCode;
 }
-
 function drawQR(ctx,x,y,text){
  QRCode.toCanvas(document.createElement("canvas"),text,{width:240},(e,qr)=>{
   ctx.drawImage(qr,x,y);
  });
 }
 
-/* ===== DOWNLOAD ===== */
+/* DOWNLOAD ONLY */
 function downloadPNG(id){
  const a=document.createElement("a");
  a.href=document.getElementById(id).toDataURL("image/png");
