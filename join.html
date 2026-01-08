@@ -3,226 +3,225 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>जय भवानी राष्ट्रीय राजपूत महासभा – Digital System</title>
 
-<title>JB RRMS — Member Registration & ID Card</title>
-
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{font-family:Arial;background:#f5f5f5;padding:10px}
-.box{background:#fff;padding:15px;border-radius:12px;max-width:500px;margin:auto;box-shadow:0 0 10px rgba(0,0,0,.2)}
-input{width:100%;padding:10px;margin-top:8px}
-button{padding:10px;background:#b30000;color:#fff;border:none;border-radius:10px;width:100%;margin-top:10px}
-h2{text-align:center}
-
-/* CARD DESIGN */
-.card{width:1080px;height:1678px;position:relative;margin:30px auto;background-size:cover;display:none}
-.pic{position:absolute;left:80px;top:360px;width:320px;height:380px;border-radius:25px;overflow:hidden}
-.pic img{width:100%;height:100%;object-fit:cover}
-.txt{position:absolute;left:450px;color:#000;font-size:34px;font-weight:bold}
-.qr{position:absolute;right:120px;bottom:160px}
+body{
+  font-family:Mangal,Arial;
+  background:#f2f2f2;
+  margin:0;
+  padding:10px
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  font-size:16px
+}
+button{
+  background:#8b0000;
+  color:#fff;
+  border:none;
+  border-radius:6px
+}
+canvas{
+  width:100%;
+  max-width:1080px;
+  border:2px solid #aaa;
+  margin-top:10px;
+  background:#fff
+}
+.section{
+  background:#fff;
+  padding:10px;
+  border-radius:8px;
+  margin-bottom:10px
+}
 </style>
 </head>
 
 <body>
 
-<!-- ================= FORM ================= -->
-<div class="box">
-<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
-<h3>Member Registration Form</h3>
+<h2 align="center">जय भवानी राष्ट्रीय राजपूत महासभा</h2>
 
+<div class="section">
+<h3>📝 सदस्य ज्वाइन फॉर्म</h3>
 <input id="name" placeholder="नाम">
-<input id="father" placeholder="पिता का नाम">
+<input id="fname" placeholder="पिता का नाम">
 <input id="mobile" placeholder="मोबाइल नंबर">
 <input id="district" placeholder="जिला">
 <input id="state" placeholder="राज्य">
-
-<label>फोटो अपलोड करें</label>
-<input type="file" id="photo">
-
-<button onclick="register()">Submit</button>
-
-<p id="done" style="color:green;font-weight:bold"></p>
+<input id="member" placeholder="Member Code (JBRRMS0001)">
+<input type="file" id="photo" accept="image/*">
+<button onclick="generateAll()">Certificate + ID Card Generate</button>
 </div>
 
-<hr>
+<canvas id="certificate" width="1080" height="1678"></canvas>
+<canvas id="idfront" width="540" height="856"></canvas>
+<canvas id="idback" width="540" height="856"></canvas>
 
-<!-- ================= CARD FRONT ================= -->
-<div id="front" class="card" style="background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png')">
-
-<div class="pic"><img id="photo_img"></div>
-
-<div class="txt" style="top:820px">नाम: <span id="name_t"></span></div>
-<div class="txt" style="top:890px">पिता का नाम: <span id="father_t"></span></div>
-<div class="txt" style="top:960px">जिला: <span id="district_t"></span></div>
-<div class="txt" style="top:1030px">राज्य: <span id="state_t"></span></div>
-<div class="txt" style="top:1100px">Member Code: <span id="mcode_t"></span></div>
-
-<canvas id="qr1" class="qr" width="220" height="220"></canvas>
-
+<div class="section">
+<button onclick="downloadPNG('certificate')">📥 Certificate PNG</button>
+<button onclick="downloadPNG('idfront')">📥 ID Card Front</button>
+<button onclick="downloadPNG('idback')">📥 ID Card Back</button>
+<button onclick="downloadPDF()">📄 Complete PDF</button>
 </div>
-
-<!-- ================= CARD BACK ================= -->
-<div id="back" class="card" style="background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png')">
-<canvas id="qr2" class="qr" width="220" height="220"></canvas>
-</div>
-
-<div style="text-align:center">
-<button onclick="downloadBoth()">Download Front & Back</button>
-</div>
-
 
 <script>
-// ================= Supabase =================
-const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
-const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const certBG = new Image(); certBG.src="certificate.png";
+const idFront = new Image(); idFront.src="idcard_front.png";
+const idBack  = new Image(); idBack.src="idcard_back.png";
+const logo    = new Image(); logo.src="logo.png";
 
-// ================= Cloudinary =================
-const cloudName = "dlqr73p7j";
-const preset = "jbrms_unsigned";
+CanvasRenderingContext2D.prototype.roundRect =
+CanvasRenderingContext2D.prototype.roundRect ||
+function(x,y,w,h,r){
+ this.moveTo(x+r,y);
+ this.arcTo(x+w,y,x+w,y+h,r);
+ this.arcTo(x+w,y+h,x,y+h,r);
+ this.arcTo(x,y+h,x,y,r);
+ this.arcTo(x,y,x+w,y,r);
+};
 
-// FACE API
-Promise.all([
- faceapi.nets.tinyFaceDetector.loadFromUri("https://cdn.jsdelivr.net/npm/face-api.js/weights")
-]);
-
-
-// ===== GET NEXT MEMBER CODE =====
-async function getNextCode(){
-
- let {data}=await supabaseClient
-  .from("JBRRMS")
-  .select("member_code")
-  .order("member_code",{ascending:false})
-  .limit(1);
-
- if(!data || data.length===0) return "JBRRMS0001";
-
- let last=data[0].member_code.replace("JBRRMS","");
- let next=(parseInt(last)+1).toString().padStart(4,"0");
-
- return "JBRRMS"+next;
+function generateAll(){
+ if(!name.value || !member.value){
+  alert("नाम और Member Code अनिवार्य है");
+  return;
+ }
+ generateCertificate();
+ generateID();
 }
 
+/* ================= CERTIFICATE (NO PHOTO) ================= */
+function generateCertificate(){
+ const c = certificate.getContext("2d");
+ c.clearRect(0,0,1080,1678);
 
-// ===== FACE AUTO CROP =====
-async function cropPhoto(file){
+ c.drawImage(certBG,0,0,1080,1678);
+ c.drawImage(logo,390,40,300,300);
 
- const img = new Image();
- img.src = URL.createObjectURL(file);
- await img.decode();
+ c.font="bold 60px serif";
+ c.fillStyle="#7a0000";
+ c.textAlign="center";
+ c.fillText("प्रमाण पत्र",540,430);
 
- const det = await faceapi.detectSingleFace(img,new faceapi.TinyFaceDetectorOptions());
+ c.font="30px serif";
+ c.fillStyle="#000";
+ c.textAlign="left";
 
- const c=document.createElement("canvas");
- c.width=600;c.height=600;
- const ctx=c.getContext("2d");
+ let y=560,g=55;
+ line("नाम",name.value);
+ line("पिता का नाम",fname.value);
+ line("मोबाइल",mobile.value);
+ line("जिला",district.value);
+ line("राज्य",state.value);
+ line("सदस्य कोड",member.value);
 
- ctx.fillStyle="#eef3ff";
- ctx.fillRect(0,0,600,600);
-
- ctx.save();
- ctx.beginPath();
- ctx.roundRect(20,20,560,560,30);
- ctx.clip();
-
- let sx=0,sy=0,sw=img.width,sh=img.height;
-
- if(det){
-   let b=det.box;
-   sx=Math.max(0,b.x-b.width*0.5);
-   sy=Math.max(0,b.y-b.height*0.5);
-   sw=Math.min(img.width-sx,b.width*2);
-   sh=Math.min(img.height-sy,b.height*2);
+ function line(l,v){
+  c.fillText(l+" :",200,y);
+  c.textAlign="right";
+  c.fillText(v,880,y);
+  c.textAlign="left";
+  y+=g;
  }
 
- ctx.drawImage(img,sx,sy,sw,sh,0,0,600,600);
- ctx.restore();
+ /* LEFT INFO */
+ c.save();
+ c.translate(70,1200);
+ c.rotate(-Math.PI/2);
+ c.font="22px serif";
+ c.fillStyle="#333";
+ c.fillText("हेल्पलाइन : 9166377972",0,0);
+ c.fillText("ईमेल : jbrrms1@gmail.com",0,35);
+ c.fillText("वेबसाइट : www.jbrrms.in",0,70);
+ c.restore();
 
- return await new Promise(r=>c.toBlob(r,"image/jpeg",0.9));
+ /* RIGHT QR – DIRECT WEBSITE */
+ drawQR(c,760,980,qrURL());
+
+ /* DISCLAIMER */
+ c.font="18px serif";
+ c.textAlign="center";
+ c.fillStyle="#444";
+ c.fillText(
+  "यह प्रमाण पत्र केवल संगठनात्मक पहचान हेतु है। इसका किसी भी प्रकार के सरकारी अथवा कानूनी अधिकार से कोई संबंध नहीं है।",
+  540,1600
+ );
 }
 
+/* ================= ID CARD ================= */
+function generateID(){
+ const f=idfront.getContext("2d");
+ f.clearRect(0,0,540,856);
+ f.drawImage(idFront,0,0,540,856);
 
-// ===== CLOUDINARY UPLOAD =====
-async function upload(file,name){
- const fd=new FormData();
- fd.append("file",file);
- fd.append("upload_preset",preset);
- fd.append("public_id",name);
+ drawPhotoCover(f,150,260,240,300);
 
- let r=await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,{
-   method:"POST",body:fd
+ f.font="20px serif";
+ f.fillStyle="#000";
+ f.fillText(name.value,140,610);
+ f.fillText(member.value,140,645);
+ f.fillText(district.value,140,680);
+
+ const b=idback.getContext("2d");
+ b.clearRect(0,0,540,856);
+ b.drawImage(idBack,0,0,540,856);
+
+ drawQR(b,150,260,qrURL());
+}
+
+/* ===== PHOTO AUTO FIT ===== */
+function drawPhotoCover(ctx,x,y,w,h){
+ const file=photo.files[0];
+ if(!file) return;
+ const img=new Image();
+ img.onload=()=>{
+  const ir=img.width/img.height, cr=w/h;
+  let sx,sy,sw,sh;
+  if(ir>cr){ sh=img.height; sw=sh*cr; sx=(img.width-sw)/2; sy=0;}
+  else{ sw=img.width; sh=sw/cr; sx=0; sy=(img.height-sh)/2;}
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(x,y,w,h,20);
+  ctx.clip();
+  ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
+  ctx.restore();
+ };
+ img.src=URL.createObjectURL(file);
+}
+
+/* ===== QR DIRECT WEBSITE ===== */
+function qrURL(){
+ return "https://www.jbrrms.in/?member="+encodeURIComponent(member.value);
+}
+
+function drawQR(ctx,x,y,text){
+ QRCode.toCanvas(document.createElement("canvas"),text,{width:240},(e,qr)=>{
+  ctx.drawImage(qr,x,y);
  });
-
- let j=await r.json();
- return j.secure_url;
 }
 
-
-// ===== REGISTER MEMBER =====
-async function register(){
-
- let n=name.value,f=father.value,m=mobile.value,d=district.value,s=state.value;
-
- if(!n||!f||!m||!d||!s){alert("सब फील्ड भरें");return;}
-
- let file=photo.files[0];
- if(!file){alert("फोटो अपलोड करें");return;}
-
- let member_code = await getNextCode();
-
- let blob=await cropPhoto(file);
- let url=await upload(blob,member_code);
-
- let {error}=await supabaseClient.from("JBRRMS").insert([
-   {member_code,name:n,father_name:f,mobile:m,district:d,state:s,photo_url:url}
- ]);
-
- if(error){alert("Database Error");return;}
-
- done.innerText="✔ Registration Successful — Member Code: "+member_code;
-
- showCard({name:n,father_name:f,district:d,state:s,member_code,photo_url:url});
+/* ===== DOWNLOAD ===== */
+function downloadPNG(id){
+ const c=document.getElementById(id);
+ const a=document.createElement("a");
+ a.href=c.toDataURL("image/png");
+ a.download=member.value+"_"+id+".png";
+ a.click();
 }
 
-
-// ===== SHOW CARD =====
-function showCard(d){
-
- document.getElementById("front").style.display="block";
- document.getElementById("back").style.display="block";
-
- name_t.innerText=d.name;
- father_t.innerText=d.father_name;
- district_t.innerText=d.district;
- state_t.innerText=d.state;
- mcode_t.innerText=d.member_code;
- photo_img.src=d.photo_url;
-
- QRCode.toCanvas(document.getElementById("qr1"), d.member_code,{width:220});
- QRCode.toCanvas(document.getElementById("qr2"), d.member_code,{width:220});
-}
-
-
-// ===== DOWNLOAD BOTH =====
-async function downloadBoth(){
-
- const f = await html2canvas(front);
- const b = await html2canvas(back);
-
- let link1=document.createElement("a");
- link1.download="Front_ID.png";
- link1.href=f.toDataURL();
- link1.click();
-
- let link2=document.createElement("a");
- link2.download="Back_ID.png";
- link2.href=b.toDataURL();
- link2.click();
+function downloadPDF(){
+ const {jsPDF}=window.jspdf;
+ const pdf=new jsPDF("p","px",[1080,1678]);
+ pdf.addImage(certificate.toDataURL(),"PNG",0,0,1080,1678);
+ pdf.addPage([540,856],"p");
+ pdf.addImage(idfront.toDataURL(),"PNG",0,0,540,856);
+ pdf.addPage([540,856],"p");
+ pdf.addImage(idback.toDataURL(),"PNG",0,0,540,856);
+ pdf.save(member.value+"_JB_RRMS.pdf");
 }
 </script>
 
