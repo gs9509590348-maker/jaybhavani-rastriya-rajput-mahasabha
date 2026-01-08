@@ -9,37 +9,11 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-body{
-  font-family:Mangal,Arial;
-  background:#f2f2f2;
-  margin:0;
-  padding:10px
-}
-input,button{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  font-size:16px
-}
-button{
-  background:#8b0000;
-  color:#fff;
-  border:none;
-  border-radius:6px
-}
-canvas{
-  width:100%;
-  max-width:1080px;
-  border:2px solid #aaa;
-  margin-top:10px;
-  background:#fff
-}
-.section{
-  background:#fff;
-  padding:10px;
-  border-radius:8px;
-  margin-bottom:10px
-}
+body{font-family:Mangal,Arial;background:#f2f2f2;margin:0;padding:10px}
+input,button{width:100%;padding:10px;margin:6px 0;font-size:16px}
+button{background:#8b0000;color:#fff;border:none;border-radius:6px}
+canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;background:#fff}
+.section{background:#fff;padding:10px;border-radius:8px;margin-bottom:10px}
 </style>
 </head>
 
@@ -54,9 +28,14 @@ canvas{
 <input id="mobile" placeholder="मोबाइल नंबर">
 <input id="district" placeholder="जिला">
 <input id="state" placeholder="राज्य">
-<input id="member" placeholder="Member Code (JBRRMS0001)">
 <input type="file" id="photo" accept="image/*">
-<button onclick="generateAll()">Certificate + ID Card Generate</button>
+<button onclick="joinMember()">Join & Generate</button>
+</div>
+
+<div class="section">
+<h3>🔍 Member 🆔 से सर्च</h3>
+<input id="searchCode" placeholder="Member Code (JBRRMS0001)">
+<button onclick="searchMember()">Search & Generate</button>
 </div>
 
 <canvas id="certificate" width="1080" height="1678"></canvas>
@@ -64,20 +43,22 @@ canvas{
 <canvas id="idback" width="540" height="856"></canvas>
 
 <div class="section">
-<button onclick="downloadPNG('certificate')">📥 Certificate PNG</button>
-<button onclick="downloadPNG('idfront')">📥 ID Card Front</button>
-<button onclick="downloadPNG('idback')">📥 ID Card Back</button>
-<button onclick="downloadPDF()">📄 Complete PDF</button>
+<button onclick="downloadPNG('certificate')">📥 Certificate</button>
+<button onclick="downloadPNG('idfront')">📥 ID Front</button>
+<button onclick="downloadPNG('idback')">📥 ID Back</button>
+<button onclick="downloadPDF()">📄 PDF</button>
 </div>
 
 <script>
-const certBG = new Image(); certBG.src="certificate.png";
-const idFront = new Image(); idFront.src="idcard_front.png";
-const idBack  = new Image(); idBack.src="idcard_back.png";
-const logo    = new Image(); logo.src="logo.png";
+let memberCode="";
 
-CanvasRenderingContext2D.prototype.roundRect =
-CanvasRenderingContext2D.prototype.roundRect ||
+const certBG=new Image(); certBG.src="certificate.png";
+const idFront=new Image(); idFront.src="idcard_front.png";
+const idBack=new Image(); idBack.src="idcard_back.png";
+const logo=new Image(); logo.src="logo.png";
+
+CanvasRenderingContext2D.prototype.roundRect=
+CanvasRenderingContext2D.prototype.roundRect||
 function(x,y,w,h,r){
  this.moveTo(x+r,y);
  this.arcTo(x+w,y,x+w,y+h,r);
@@ -86,20 +67,27 @@ function(x,y,w,h,r){
  this.arcTo(x,y,x+w,y,r);
 };
 
+function joinMember(){
+ if(!name.value){alert("नाम अनिवार्य है");return;}
+ memberCode="JBRRMS"+String(Date.now()).slice(-4);
+ generateAll();
+}
+
+function searchMember(){
+ if(!searchCode.value){alert("Member Code डालें");return;}
+ memberCode=searchCode.value;
+ generateAll();
+}
+
 function generateAll(){
- if(!name.value || !member.value){
-  alert("नाम और Member Code अनिवार्य है");
-  return;
- }
  generateCertificate();
  generateID();
 }
 
-/* ================= CERTIFICATE (NO PHOTO) ================= */
+/* ================= CERTIFICATE ================= */
 function generateCertificate(){
- const c = certificate.getContext("2d");
+ const c=certificate.getContext("2d");
  c.clearRect(0,0,1080,1678);
-
  c.drawImage(certBG,0,0,1080,1678);
  c.drawImage(logo,390,40,300,300);
 
@@ -118,7 +106,7 @@ function generateCertificate(){
  line("मोबाइल",mobile.value);
  line("जिला",district.value);
  line("राज्य",state.value);
- line("सदस्य कोड",member.value);
+ line("सदस्य कोड",memberCode);
 
  function line(l,v){
   c.fillText(l+" :",200,y);
@@ -128,61 +116,77 @@ function generateCertificate(){
   y+=g;
  }
 
- /* LEFT INFO */
  c.save();
  c.translate(70,1200);
  c.rotate(-Math.PI/2);
  c.font="22px serif";
- c.fillStyle="#333";
  c.fillText("हेल्पलाइन : 9166377972",0,0);
  c.fillText("ईमेल : jbrrms1@gmail.com",0,35);
  c.fillText("वेबसाइट : www.jbrrms.in",0,70);
  c.restore();
 
- /* RIGHT QR – DIRECT WEBSITE */
  drawQR(c,760,980,qrURL());
 
- /* DISCLAIMER */
  c.font="18px serif";
  c.textAlign="center";
- c.fillStyle="#444";
  c.fillText(
-  "यह प्रमाण पत्र केवल संगठनात्मक पहचान हेतु है। इसका किसी भी प्रकार के सरकारी अथवा कानूनी अधिकार से कोई संबंध नहीं है।",
-  540,1600
+ "यह प्रमाण पत्र केवल संगठनात्मक पहचान हेतु है। इसका किसी भी सरकारी अधिकार से संबंध नहीं है।",
+ 540,1600
  );
 }
 
 /* ================= ID CARD ================= */
 function generateID(){
+ /* FRONT */
  const f=idfront.getContext("2d");
  f.clearRect(0,0,540,856);
  f.drawImage(idFront,0,0,540,856);
-
  drawPhotoCover(f,150,260,240,300);
 
  f.font="20px serif";
  f.fillStyle="#000";
  f.fillText(name.value,140,610);
- f.fillText(member.value,140,645);
+ f.fillText(memberCode,140,645);
  f.fillText(district.value,140,680);
 
+ /* BACK (✔ FIXED) */
  const b=idback.getContext("2d");
  b.clearRect(0,0,540,856);
  b.drawImage(idBack,0,0,540,856);
 
- drawQR(b,150,260,qrURL());
+ // NAME TOP
+ b.font="bold 22px serif";
+ b.textAlign="center";
+ b.fillStyle="#000";
+ b.fillText(name.value,270,90);
+
+ // QR CENTER
+ drawQR(b,150,200,qrURL());
+
+ // CONTACT INFO BOTTOM
+ b.font="16px serif";
+ b.fillText("हेल्पलाइन : 9166377972",270,540);
+ b.fillText("ईमेल : jbrrms1@gmail.com",270,570);
+ b.fillText("वेबसाइट : www.jbrrms.in",270,600);
+
+ // DISCLAIMER
+ b.font="14px serif";
+ b.fillStyle="#333";
+ b.fillText(
+ "यह कार्ड केवल संगठनात्मक पहचान हेतु है।",
+ 270,640
+ );
 }
 
 /* ===== PHOTO AUTO FIT ===== */
 function drawPhotoCover(ctx,x,y,w,h){
- const file=photo.files[0];
- if(!file) return;
+ if(!photo.files[0])return;
  const img=new Image();
  img.onload=()=>{
-  const ir=img.width/img.height, cr=w/h;
+  const ir=img.width/img.height,cr=w/h;
   let sx,sy,sw,sh;
-  if(ir>cr){ sh=img.height; sw=sh*cr; sx=(img.width-sw)/2; sy=0;}
-  else{ sw=img.width; sh=sw/cr; sx=0; sy=(img.height-sh)/2;}
+  if(ir>cr){sh=img.height;sw=sh*cr;sx=(img.width-sw)/2;sy=0;}
+  else{sw=img.width;sh=sw/cr;sx=0;sy=(img.height-sh)/2;}
   ctx.save();
   ctx.beginPath();
   ctx.roundRect(x,y,w,h,20);
@@ -190,12 +194,12 @@ function drawPhotoCover(ctx,x,y,w,h){
   ctx.drawImage(img,sx,sy,sw,sh,x,y,w,h);
   ctx.restore();
  };
- img.src=URL.createObjectURL(file);
+ img.src=URL.createObjectURL(photo.files[0]);
 }
 
-/* ===== QR DIRECT WEBSITE ===== */
+/* ===== QR WEBSITE ===== */
 function qrURL(){
- return "https://www.jbrrms.in/?member="+encodeURIComponent(member.value);
+ return "https://www.jbrrms.in/?member="+memberCode;
 }
 
 function drawQR(ctx,x,y,text){
@@ -206,10 +210,9 @@ function drawQR(ctx,x,y,text){
 
 /* ===== DOWNLOAD ===== */
 function downloadPNG(id){
- const c=document.getElementById(id);
  const a=document.createElement("a");
- a.href=c.toDataURL("image/png");
- a.download=member.value+"_"+id+".png";
+ a.href=document.getElementById(id).toDataURL("image/png");
+ a.download=memberCode+"_"+id+".png";
  a.click();
 }
 
@@ -221,7 +224,7 @@ function downloadPDF(){
  pdf.addImage(idfront.toDataURL(),"PNG",0,0,540,856);
  pdf.addPage([540,856],"p");
  pdf.addImage(idback.toDataURL(),"PNG",0,0,540,856);
- pdf.save(member.value+"_JB_RRMS.pdf");
+ pdf.save(memberCode+"_JB_RRMS.pdf");
 }
 </script>
 
