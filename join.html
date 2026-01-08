@@ -21,6 +21,7 @@ canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;backgro
 
 <h2 align="center">जय भवानी राष्ट्रीय राजपूत महासभा</h2>
 
+<!-- JOIN -->
 <div class="section">
 <h3>📝 सदस्य ज्वाइन फॉर्म</h3>
 <input id="name" placeholder="नाम">
@@ -32,8 +33,9 @@ canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;backgro
 <button onclick="joinMember()">Join & Generate</button>
 </div>
 
+<!-- SEARCH -->
 <div class="section">
-<h3>🔍 Member 🆔 से सर्च</h3>
+<h3>🔍 Member Code से सर्च</h3>
 <input id="searchCode" placeholder="Member Code (JBRRMS0001)">
 <button onclick="searchMember()">Search & Generate</button>
 </div>
@@ -67,15 +69,17 @@ function(x,y,w,h,r){
  this.arcTo(x,y,x+w,y,r);
 };
 
+/* ===== JOIN ===== */
 function joinMember(){
- if(!name.value){alert("नाम अनिवार्य है");return;}
+ if(!name.value.trim()){alert("नाम अनिवार्य है");return;}
  memberCode="JBRRMS"+String(Date.now()).slice(-4);
  generateAll();
 }
 
+/* ===== SEARCH (ONLY MEMBER CODE) ===== */
 function searchMember(){
- if(!searchCode.value){alert("Member Code डालें");return;}
- memberCode=searchCode.value;
+ if(!searchCode.value.trim()){alert("Member Code डालें");return;}
+ memberCode=searchCode.value.trim();
  generateAll();
 }
 
@@ -84,7 +88,7 @@ function generateAll(){
  generateID();
 }
 
-/* ================= CERTIFICATE ================= */
+/* ===== CERTIFICATE ===== */
 function generateCertificate(){
  const c=certificate.getContext("2d");
  c.clearRect(0,0,1080,1678);
@@ -101,11 +105,11 @@ function generateCertificate(){
  c.textAlign="left";
 
  let y=560,g=55;
- line("नाम",name.value);
- line("पिता का नाम",fname.value);
- line("मोबाइल",mobile.value);
- line("जिला",district.value);
- line("राज्य",state.value);
+ line("नाम",name.value||"—");
+ line("पिता का नाम",fname.value||"—");
+ line("मोबाइल",mobile.value||"—");
+ line("जिला",district.value||"—");
+ line("राज्य",state.value||"—");
  line("सदस्य कोड",memberCode);
 
  function line(l,v){
@@ -116,6 +120,7 @@ function generateCertificate(){
   y+=g;
  }
 
+ /* LEFT INFO */
  c.save();
  c.translate(70,1200);
  c.rotate(-Math.PI/2);
@@ -125,8 +130,10 @@ function generateCertificate(){
  c.fillText("वेबसाइट : www.jbrrms.in",0,70);
  c.restore();
 
+ /* QR RIGHT */
  drawQR(c,760,980,qrURL());
 
+ /* DISCLAIMER */
  c.font="18px serif";
  c.textAlign="center";
  c.fillText(
@@ -135,7 +142,7 @@ function generateCertificate(){
  );
 }
 
-/* ================= ID CARD ================= */
+/* ===== ID CARD ===== */
 function generateID(){
  /* FRONT */
  const f=idfront.getContext("2d");
@@ -145,40 +152,32 @@ function generateID(){
 
  f.font="20px serif";
  f.fillStyle="#000";
- f.fillText(name.value,140,610);
+ f.fillText(name.value||"सदस्य",140,610);
  f.fillText(memberCode,140,645);
- f.fillText(district.value,140,680);
+ f.fillText(district.value||"",140,680);
 
- /* BACK (✔ FIXED) */
+ /* BACK */
  const b=idback.getContext("2d");
  b.clearRect(0,0,540,856);
  b.drawImage(idBack,0,0,540,856);
 
- // NAME TOP
  b.font="bold 22px serif";
  b.textAlign="center";
- b.fillStyle="#000";
- b.fillText(name.value,270,90);
+ b.fillText(name.value||"सदस्य",270,90);
 
- // QR CENTER
  drawQR(b,150,200,qrURL());
 
- // CONTACT INFO BOTTOM
  b.font="16px serif";
  b.fillText("हेल्पलाइन : 9166377972",270,540);
  b.fillText("ईमेल : jbrrms1@gmail.com",270,570);
  b.fillText("वेबसाइट : www.jbrrms.in",270,600);
 
- // DISCLAIMER
  b.font="14px serif";
  b.fillStyle="#333";
- b.fillText(
- "यह कार्ड केवल संगठनात्मक पहचान हेतु है।",
- 270,640
- );
+ b.fillText("यह कार्ड केवल संगठनात्मक पहचान हेतु है।",270,640);
 }
 
-/* ===== PHOTO AUTO FIT ===== */
+/* ===== PHOTO FIT ===== */
 function drawPhotoCover(ctx,x,y,w,h){
  if(!photo.files[0])return;
  const img=new Image();
@@ -197,7 +196,7 @@ function drawPhotoCover(ctx,x,y,w,h){
  img.src=URL.createObjectURL(photo.files[0]);
 }
 
-/* ===== QR WEBSITE ===== */
+/* ===== QR ===== */
 function qrURL(){
  return "https://www.jbrrms.in/?member="+memberCode;
 }
