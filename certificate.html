@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<title>JBRRMS Certificate</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Supabase + libs -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
+<style>
+body{
+  margin:0;
+  background:#111;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  font-family:Arial, sans-serif;
+}
+
+/* Certificate Canvas */
+#certificate{
+  position:relative;
+  width:2783px;
+  height:4311px;
+  background:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/certificate.png')
+  no-repeat center/cover;
+}
+
+/* Common */
+.field{
+  position:absolute;
+  width:100%;
+  text-align:center;
+  letter-spacing:1.5px;
+}
+
+/* NAME – Royal Gold */
+#name{
+  top:1500px;
+  font-size:160px;
+  font-family:'Cinzel', serif;
+  font-weight:800;
+  letter-spacing:4px;
+  background:linear-gradient(180deg,#d6b45a,#8b6a1e);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:2px 2px 6px rgba(0,0,0,0.35);
+}
+
+/* Underline */
+#name-line{
+  position:absolute;
+  top:1640px;
+  left:30%;
+  width:40%;
+  height:4px;
+  background:linear-gradient(to right, transparent, #8b6a1e, transparent);
+}
+
+/* Other Fields */
+#father{
+  top:1700px;
+  font-size:95px;
+  font-family:'Playfair Display', serif;
+  font-weight:600;
+  color:#2b2b2b;
+}
+#district{
+  top:1840px;
+  font-size:90px;
+  font-family:'Playfair Display', serif;
+  color:#2b2b2b;
+}
+#state{
+  top:1960px;
+  font-size:90px;
+  font-family:'Playfair Display', serif;
+  color:#2b2b2b;
+}
+#mobile{
+  top:2080px;
+  font-size:85px;
+  font-family:'Playfair Display', serif;
+  color:#2b2b2b;
+}
+
+/* Certificate No */
+#certno{
+  top:2220px;
+  font-size:85px;
+  font-family:'Cinzel', serif;
+  letter-spacing:3px;
+  color:#4b3a12;
+}
+
+/* Left Vertical Info */
+.left-info{
+  position:absolute;
+  top:820px;
+  left:80px;
+  writing-mode:vertical-rl;
+  transform:rotate(180deg);
+  font-size:62px;
+  font-family:'Cinzel', serif;
+  font-weight:700;
+  letter-spacing:3px;
+  color:#3a2a10;
+}
+
+/* QR Block */
+#qr{
+  position:absolute;
+  right:220px;
+  top:1520px;
+  padding:20px;
+  background:#fff;
+  border:4px solid #8b6a1e;
+  box-shadow:0 0 20px rgba(0,0,0,0.25);
+}
+
+#qr-text{
+  position:absolute;
+  right:200px;
+  top:1880px;
+  font-size:42px;
+  font-family:'Cinzel', serif;
+  color:#3a2a10;
+}
+
+/* Disclaimer */
+#disclaimer{
+  position:absolute;
+  bottom:120px;
+  width:100%;
+  text-align:center;
+  font-size:46px;
+  font-family:'Playfair Display', serif;
+  letter-spacing:1.2px;
+  color:#444;
+}
+
+/* Controls */
+.controls{
+  margin:20px;
+}
+button{
+  padding:14px 26px;
+  font-size:18px;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+  background:#28a745;
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<div id="certificate">
+  <div id="name" class="field"></div>
+  <div id="name-line"></div>
+
+  <div id="father" class="field"></div>
+  <div id="district" class="field"></div>
+  <div id="state" class="field"></div>
+  <div id="mobile" class="field"></div>
+  <div id="certno" class="field"></div>
+
+  <div class="left-info">
+    Helpline: 9166377972 | Email: jbrrms1@gmail.com | Website: www.jbrrms.in
+  </div>
+
+  <div id="qr"></div>
+  <div id="qr-text">Scan to Verify Authenticity</div>
+
+  <div id="disclaimer">
+    यह प्रमाण पत्र संगठन के आंतरिक उपयोग हेतु जारी किया गया है। किसी भी प्रकार के दुरुपयोग के लिए संगठन जिम्मेदार नहीं होगा।
+  </div>
+</div>
+
+<div class="controls">
+  <button onclick="downloadCert()">Download Certificate</button>
+</div>
+
+<script>
+const supabase = supabase.createClient(
+  'https://ejdzdptqxelilkseannw.supabase.co',
+  'sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P'
+);
+
+const params = new URLSearchParams(window.location.search);
+const memberCode = params.get('id');
+
+async function loadData(){
+  const { data, error } = await supabase
+    .from('JBRRMS')
+    .select('*')
+    .eq('member_code', memberCode)
+    .single();
+
+  if(error || !data){
+    alert('Member data not found');
+    return;
+  }
+
+  document.getElementById('name').innerText = data.name;
+  document.getElementById('father').innerText = 'पिता: ' + data.father_name;
+  document.getElementById('district').innerText = 'जिला: ' + data.district;
+  document.getElementById('state').innerText = 'राज्य: ' + data.state;
+  document.getElementById('mobile').innerText = 'मोबाइल: ' + data.mobile;
+  document.getElementById('certno').innerText = 'Certificate No: ' + data.certificate_no;
+
+  new QRCode(document.getElementById("qr"),{
+    text: "https://jbrrms.in/verify.html?id=" + data.member_code,
+    width:320,
+    height:320
+  });
+}
+
+loadData();
+
+function downloadCert(){
+  html2canvas(document.getElementById('certificate'), {scale:2}).then(canvas=>{
+    const link=document.createElement('a');
+    link.download='JBRRMS_CERT_'+memberCode+'.png';
+    link.href=canvas.toDataURL('image/png');
+    link.click();
+  });
+}
+</script>
+
+</body>
+</html>
