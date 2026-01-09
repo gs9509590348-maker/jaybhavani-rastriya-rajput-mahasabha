@@ -62,7 +62,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* ================= FINAL TEMPLATE URLS (LOCKED) ================= */
+/* ================= LOCKED TEMPLATE URLS ================= */
 const TEMPLATE_ID_FRONT = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png";
 const TEMPLATE_ID_BACK  = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png";
 const TEMPLATE_CERT     = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/certificate.png";
@@ -100,7 +100,8 @@ async function loadMembers(){
   const status = document.getElementById("statusFilter").value;
   const search = document.getElementById("search").value.trim();
 
-  let q = sb.from("members").select("*").eq("status",status);
+  let q = sb.from("JBRRMS").select("*").eq("status",status);
+
   if(search){
     q = q.or(`name.ilike.%${search}%,mobile.ilike.%${search}%`);
   }
@@ -144,25 +145,25 @@ async function approveMember(id){
 
   const code = memberCode(id);
 
-  const {error} = await sb.from("members").update({
+  const {error} = await sb.from("JBRRMS").update({
     status:"Approved",
     member_code:code
   }).eq("id",id);
 
   if(error){alert(error.message);return;}
 
-  // AUTO OPEN ID + CERTIFICATE
   openID(code);
   openCert(code);
-
   loadMembers();
 }
 
 async function rejectMember(id){
   if(!confirm("Reject करना है?")) return;
-  const {error} = await sb.from("members")
+
+  const {error} = await sb.from("JBRRMS")
     .update({status:"Rejected"})
     .eq("id",id);
+
   if(error) alert(error.message);
   loadMembers();
 }
