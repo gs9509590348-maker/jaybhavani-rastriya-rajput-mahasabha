@@ -1,177 +1,161 @@
+```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JB RRMS – Final Digital System</title>
+<title>JBRRMS Join Form</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- Supabase v2 -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{font-family:Mangal,Arial;background:#f2f2f2;margin:0;padding:10px}
-.section{background:#fff;padding:12px;border-radius:8px;margin-bottom:10px}
-input,button{width:100%;padding:10px;margin:6px 0;font-size:16px}
-button{background:#8b0000;color:#fff;border:none;border-radius:6px}
-canvas{width:100%;max-width:1080px;border:2px solid #aaa;margin-top:10px;background:#fff}
-h2,h3{text-align:center}
+body{font-family:Arial;background:#f4f4f4}
+form{
+  max-width:360px;
+  background:#fff;
+  margin:30px auto;
+  padding:20px;
+  border-radius:8px;
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+}
+img{
+  max-width:100%;
+  border-radius:8px;
+  margin-top:10px;
+}
+button{
+  background:#e65100;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+button:disabled{background:#999}
 </style>
 </head>
 
 <body>
 
-<h2>जय भवानी राष्ट्रीय राजपूत महासभा</h2>
+<form id="joinForm">
+  <h2>JBRRMS Join Form</h2>
 
-<div class="section">
-<h3>🔍 Member Code से सर्च</h3>
-<input id="searchCode" placeholder="JBRRMS0001">
-<button onclick="searchMember()">Search & Generate</button>
-</div>
+  <input type="text" id="name" placeholder="पूरा नाम" required>
+  <input type="text" id="father_name" placeholder="पिता का नाम" required>
+  <input type="text" id="district" placeholder="जिला" required>
+  <input type="text" id="state" placeholder="राज्य" required>
+  <input type="tel" id="mobile" placeholder="मोबाइल नंबर" pattern="[0-9]{10}" required>
 
-<canvas id="certificate" width="1080" height="1678"></canvas>
-<canvas id="idFront" width="1080" height="1678"></canvas>
-<canvas id="idBack" width="1080" height="1678"></canvas>
+  <input type="file" id="photo" accept="image/*" required>
+  <img id="preview">
+
+  <button type="submit" id="submitBtn">Submit</button>
+</form>
 
 <script>
-/* ===== SUPABASE ===== */
-const SUPABASE_URL="https://ejdzdptqxelilkseannw.supabase.co";
-const SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc";
-const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+/* ---------- CONFIG ---------- */
+const { createClient } = supabase;
+const supabaseClient = createClient(
+  "https://ejdzdptqxelilkseannw.supabase.co",
+  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
+);
 
-let member={};
+const CLOUD_NAME = "dlqr73p7j";
+const UPLOAD_PRESET = "jbrms_unsigned";
 
-/* ===== TEMPLATES ===== */
-const certBG=new Image();
-certBG.src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/certificate.png";
+let finalBlob = null;
 
-const idFrontBG=new Image();
-idFrontBG.src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png";
+/* ---------- PHOTO AUTO RESIZE ---------- */
+document.getElementById("photo").addEventListener("change", async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
 
-const idBackBG=new Image();
-idBackBG.src="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png";
+  if(file.size > 2 * 1024 * 1024){
+    alert("Photo 2MB से कम होनी चाहिए");
+    e.target.value = "";
+    return;
+  }
 
-/* ===== SEARCH ===== */
-async function searchMember(){
- const code=searchCode.value.trim();
- if(!code){alert("Member Code डालें");return;}
+  const img = new Image();
+  img.src = URL.createObjectURL(file);
+  await img.decode();
 
- const {data,error}=await supabase
-  .from("members")
-  .select("*")
-  .eq("member_code",code)
-  .single();
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  canvas.width = 600;
+  canvas.height = 600;
 
- if(error||!data){alert("Member नहीं मिला");return;}
- member=data;
- generateAll();
-}
+  const size = Math.min(img.width, img.height);
+  const sx = (img.width - size) / 2;
+  const sy = (img.height - size) / 2;
 
-/* ===== GENERATE ALL ===== */
-function generateAll(){
- generateCertificate();
- generateID();
-}
+  ctx.drawImage(img, sx, sy, size, size, 0, 0, 600, 600);
 
-/* ===== CERTIFICATE (NO PHOTO) ===== */
-function generateCertificate(){
- const c=certificate.getContext("2d");
- c.clearRect(0,0,1080,1678);
- c.drawImage(certBG,0,0,1080,1678);
+  canvas.toBlob(blob=>{
+    finalBlob = blob;
+    document.getElementById("preview").src = URL.createObjectURL(blob);
+  }, "image/jpeg", 0.8);
+});
 
- c.textAlign="center";
- c.fillStyle="#7a0000";
- c.font="bold 60px serif";
- c.fillText("प्रमाण पत्र",540,360);
+/* ---------- SUBMIT ---------- */
+document.getElementById("joinForm").addEventListener("submit", async (e)=>{
+  e.preventDefault();
 
- c.font="32px serif";
- c.fillStyle="#000";
- c.textAlign="left";
+  if(!finalBlob){
+    alert("Photo process होने दें");
+    return;
+  }
 
- let y=520,g=60;
- drawLine("नाम",member.name);
- drawLine("पिता का नाम",member.father_name);
- drawLine("मोबाइल",member.mobile);
- drawLine("जिला",member.district);
- drawLine("राज्य",member.state);
- drawLine("सदस्य कोड",member.member_code);
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
 
- function drawLine(l,v){
-  c.fillText(l+" :",220,y);
-  c.textAlign="right";
-  c.fillText(v||"",860,y);
-  c.textAlign="left";
-  y+=g;
- }
+  try{
+    /* Cloudinary Upload */
+    const fd = new FormData();
+    fd.append("file", finalBlob);
+    fd.append("upload_preset", UPLOAD_PRESET);
 
- /* LEFT SIDE INFO */
- c.save();
- c.translate(90,1150);
- c.rotate(-Math.PI/2);
- c.font="22px serif";
- c.fillText("हेल्पलाइन : 9166377972",0,0);
- c.fillText("ईमेल : jbrrms1@gmail.com",0,32);
- c.fillText("वेबसाइट : www.jbrrms.in",0,64);
- c.restore();
+    const uploadRes = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+      { method:"POST", body: fd }
+    );
 
- /* QR RIGHT (fine-tuned) */
- drawQR(c,760,980,qrURL());
+    const uploadData = await uploadRes.json();
+    if(!uploadData.secure_url){
+      throw new Error("Photo upload failed");
+    }
 
- /* DISCLAIMER */
- c.font="18px serif";
- c.textAlign="center";
- c.fillText(
-  "यह प्रमाण पत्र केवल संगठनात्मक पहचान हेतु है। इसका किसी भी सरकारी अधिकार से संबंध नहीं है।",
- 540,1600
- );
-}
+    /* Supabase Insert (TABLE: JBRRMS) */
+    const { error } = await supabaseClient
+      .from("JBRRMS")
+      .insert([{
+        name: document.getElementById("name").value,
+        father_name: document.getElementById("father_name").value,
+        district: document.getElementById("district").value,
+        state: document.getElementById("state").value,
+        mobile: document.getElementById("mobile").value,
+        photo_url: uploadData.secure_url,
+        status: "Pending"
+      }]);
 
-/* ===== ID CARD ===== */
-function generateID(){
- /* FRONT */
- const f=idFront.getContext("2d");
- f.clearRect(0,0,1080,1678);
- f.drawImage(idFrontBG,0,0,1080,1678);
+    if(error) throw error;
 
- if(member.photo_url){
-  const img=new Image();
-  img.onload=()=>f.drawImage(img,360,420,360,460);
-  img.src=member.photo_url;
- }
+    alert("✅ आवेदन सफल! Admin Approval के बाद ID बनेगी");
+    document.getElementById("joinForm").reset();
+    document.getElementById("preview").src="";
+    finalBlob = null;
 
- f.font="28px serif";
- f.fillStyle="#000";
- f.fillText(member.name||"",360,950);
- f.fillText(member.member_code||"",360,1000);
- f.fillText(member.district||"",360,1050);
-
- /* BACK */
- const b=idBack.getContext("2d");
- b.clearRect(0,0,1080,1678);
- b.drawImage(idBackBG,0,0,1080,1678);
-
- drawQR(b,420,520,qrURL());
-
- b.font="24px serif";
- b.textAlign="center";
- b.fillText("हेल्पलाइन : 9166377972",540,1200);
- b.fillText("ईमेल : jbrrms1@gmail.com",540,1250);
- b.fillText("वेबसाइट : www.jbrrms.in",540,1300);
-
- b.font="18px serif";
- b.fillText("यह कार्ड केवल संगठनात्मक पहचान हेतु है।",540,1360);
-}
-
-/* ===== QR ===== */
-function qrURL(){
- return "https://www.jbrrms.in/?member="+member.member_code;
-}
-function drawQR(ctx,x,y,text){
- QRCode.toCanvas(document.createElement("canvas"),text,{width:240},(e,qr)=>{
-  ctx.drawImage(qr,x,y);
- });
-}
+  }catch(err){
+    alert("❌ Error: " + err.message);
+  }finally{
+    btn.disabled = false;
+  }
+});
 </script>
 
 </body>
 </html>
+```
