@@ -2,197 +2,91 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS ID Card Generator</title>
+<title>JBRRMS ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-body{
-  margin:0;
-  background:#111;
-  font-family:Arial, sans-serif;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:20px;
-  padding:20px;
-}
+body{margin:0;background:#111;font-family:Arial;display:flex;flex-direction:column;align-items:center;gap:20px;padding:20px}
+.card{width:1080px;height:1676px;position:relative;background-size:cover;background-position:center}
+.front{background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png")}
+.back{background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png")}
 
-/* COMMON CARD */
-.card{
-  width:1080px;
-  height:1676px;
-  position:relative;
-  background-size:cover;
-  background-position:center;
-  box-shadow:0 0 25px rgba(0,0,0,.7);
-}
-
-/* FRONT */
-.front{
-  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png");
-}
-
-/* BACK */
-.back{
-  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png");
-}
-
-/* PHOTO */
-.photo{
-  position:absolute;
-  top:280px;
-  left:390px;
-  width:300px;
-  height:380px;
-  border-radius:20px;
-  overflow:hidden;
-  border:4px solid #9b0000;
-  background:#eee;
-}
+.photo{position:absolute;top:280px;left:390px;width:300px;height:380px;border-radius:20px;overflow:hidden;border:4px solid #9b0000}
 .photo img{width:100%;height:100%;object-fit:cover}
 
-/* FRONT INFO */
-.info{
-  position:absolute;
-  top:700px;
-  left:140px;
-  right:140px;
-  font-size:34px;
-  line-height:1.5;
-  color:#4a1a00;
-}
+.info{position:absolute;top:700px;left:140px;right:140px;font-size:34px;line-height:1.5;color:#4a1a00}
 .info b{display:inline-block;width:260px}
 
-/* BACK CONTENT */
-.back-title{
-  position:absolute;
-  top:160px;
-  width:100%;
-  text-align:center;
-  font-size:48px;
-  font-weight:bold;
-  color:#8b0000;
-}
+.back-title{position:absolute;top:160px;width:100%;text-align:center;font-size:48px;font-weight:bold;color:#8b0000}
+.qr{position:absolute;top:420px;left:390px;width:300px;height:300px}
 
-.qr{
-  position:absolute;
-  top:420px;
-  left:390px;
-  width:300px;
-  height:300px;
-}
-
-.back-footer{
-  position:absolute;
-  bottom:220px;
-  width:100%;
-  text-align:center;
-  font-size:28px;
-  color:#4a1a00;
-  line-height:1.6;
-}
-
-.disclaimer{
-  position:absolute;
-  bottom:80px;
-  left:100px;
-  right:100px;
-  font-size:22px;
-  text-align:center;
-  color:#5b3a00;
-}
-
-/* BUTTONS */
-button{
-  padding:12px 24px;
-  font-size:16px;
-  border:none;
-  border-radius:6px;
-  cursor:pointer;
-}
-.download{background:#0b57d0;color:#fff}
+button{padding:12px 24px;font-size:16px;border:none;border-radius:6px;cursor:pointer;background:#0b57d0;color:#fff}
 </style>
 </head>
 
 <body>
 
-<!-- FRONT -->
 <div id="front" class="card front">
-  <div class="photo">
-    <img id="photo" src="" alt="photo">
-  </div>
-
+  <div class="photo"><img id="photo"></div>
   <div class="info">
     <div><b>नाम:</b> <span id="name"></span></div>
-    <div><b>पिता:</b> <span id="father"></span></div>
+    <div><b>पिता:</b> <span id="father_name"></span></div>
     <div><b>जिला:</b> <span id="district"></span></div>
     <div><b>राज्य:</b> <span id="state"></span></div>
     <div><b>मोबाइल:</b> <span id="mobile"></span></div>
-    <div><b>Member Code:</b> <span id="code"></span></div>
+    <div><b>Member Code:</b> <span id="member_code"></span></div>
   </div>
 </div>
 
-<button class="download" onclick="download('front')">⬇️ Download Front</button>
+<button onclick="download('front')">⬇️ Download Front</button>
 
-<!-- BACK -->
 <div id="back" class="card back">
   <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
-
-  <img id="qr" class="qr" src="">
-
-  <div class="back-footer">
-    📞 Helpline: 9166377972<br>
-    ✉️ jbrrms1@gmail.com<br>
-    🌐 www.jbrrms.in
-  </div>
-
-  <div class="disclaimer">
-    यह पहचान पत्र संगठन की संपत्ति है। किसी भी प्रकार के दुरुपयोग,
-    परिवर्तन या फर्जी उपयोग की स्थिति में यह अमान्य माना जाएगा।
-    मिलने पर निकटतम संगठन कार्यालय में जमा कराना अनिवार्य है।
-  </div>
+  <img id="qr" class="qr">
 </div>
 
-<button class="download" onclick="download('back')">⬇️ Download Back</button>
+<button onclick="download('back')">⬇️ Download Back</button>
 
 <script>
-/* ===== URL PARAMS ===== */
-const p = new URLSearchParams(location.search);
+/* SUPABASE */
+const sb = supabase.createClient(
+  "https://ejdzdptqxelilkseannw.supabase.co",
+  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
+);
 
-const data = {
-  code: p.get("code") || "JBRRMS0001",
-  name: p.get("name") || "नाम",
-  father: p.get("father") || "पिता का नाम",
-  district: p.get("district") || "जिला",
-  state: p.get("state") || "राज्य",
-  mobile: p.get("mobile") || "0000000000",
-  photo: p.get("photo") || ""
-};
+/* GET CODE */
+const code = new URLSearchParams(location.search).get("code");
 
-/* ===== FILL DATA ===== */
-for(let k in data){
-  if(document.getElementById(k))
-    document.getElementById(k).innerText = data[k];
-}
+/* LOAD DATA */
+(async()=>{
+  const {data,error} = await sb
+    .from("JBRRMS")
+    .select("*")
+    .eq("member_code",code)
+    .single();
 
-/* PHOTO */
-document.getElementById("photo").src =
-  data.photo ||
-  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjM4MCIgdmlld0JveD0iMCAwIDMwMCAzODAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzODAiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+UGhvdG88L3RleHQ+PC9zdmc+";
+  if(error || !data){
+    alert("Member data नहीं मिला");
+    return;
+  }
 
-/* QR */
-document.getElementById("qr").src =
-  "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+data.code;
+  ["name","father_name","district","state","mobile","member_code"]
+    .forEach(k=>document.getElementById(k).innerText=data[k]||"-");
+
+  document.getElementById("photo").src = data.photo_url;
+  document.getElementById("qr").src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+data.member_code;
+})();
 
 /* DOWNLOAD */
 function download(id){
-  const el = document.getElementById(id);
-  html2canvas(el,{scale:2}).then(c=>{
-    const a = document.createElement("a");
-    a.download = `JBRRMS_IDCARD_${id.toUpperCase()}_${data.code}.png`;
-    a.href = c.toDataURL("image/png");
+  html2canvas(document.getElementById(id),{scale:2}).then(c=>{
+    const a=document.createElement("a");
+    a.download=`JBRRMS_${id}_${code}.png`;
+    a.href=c.toDataURL();
     a.click();
   });
 }
