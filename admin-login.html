@@ -1,129 +1,182 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>JBRRMS — Admin Login</title>
+<meta charset="UTF-8">
+<title>JBRRMS Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script defer src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{
-  font-family:system-ui;
-  background:#f4f4f4;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
-}
-.box{
-  background:#fff;
-  padding:25px;
-  width:330px;
-  border-radius:14px;
-  box-shadow:0 5px 18px rgba(0,0,0,.2);
-}
-h2{
-  text-align:center;
-  margin-bottom:15px;
-  color:#800000;
-}
-input{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-  border:1px solid #ccc;
-  border-radius:8px;
-  font-size:15px;
-}
-button{
-  width:100%;
-  padding:10px;
-  background:#800000;
-  color:white;
-  border:none;
-  border-radius:8px;
-  font-size:16px;
-  cursor:pointer;
-}
-.msg{
-  margin-top:10px;
-  text-align:center;
-  font-size:14px;
-}
-.error{ color:#b00000 }
-.success{ color:green }
+body{font-family:Arial;background:#f4f4f4;margin:0;padding:15px}
+h2{text-align:center}
+#loginBox,#panel{max-width:1100px;margin:auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,.1)}
+input,select,button{padding:10px;font-size:15px;border-radius:6px;border:1px solid #ccc;width:100%;box-sizing:border-box}
+button{cursor:pointer;border:none;margin-top:6px}
+.logout{background:#333;color:#fff;width:auto;float:right}
+.approve{background:#28a745;color:#fff}
+.reject{background:#dc3545;color:#fff}
+.asset{background:#0b57d0;color:#fff}
+.card{background:#fafafa;padding:15px;margin-bottom:15px;border-radius:10px;border:1px solid #ddd}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.controls>*{flex:1;min-width:180px}
+.info{font-size:14px;color:#555}
+.loading{text-align:center;color:#666;padding:30px}
+@media(max-width:600px){.controls{flex-direction:column}}
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h2>Admin Login</h2>
+<!-- LOGIN -->
+<div id="loginBox">
+  <h2>🛡️ JBRRMS Admin Login</h2>
+  <input type="password" id="adminPass" placeholder="Admin Password">
+  <br><br>
+  <button onclick="login()">Login</button>
+</div>
 
-  <input type="email" id="adminEmail" placeholder="Admin Email" />
-  <input type="password" id="adminPass" placeholder="Password" />
+<!-- PANEL -->
+<div id="panel" style="display:none">
+  <button class="logout" onclick="logout()">Logout</button>
+  <h2>जय भवानी राष्ट्रीय राजपूत महासभा – Admin Panel</h2>
 
-  <button onclick="adminLogin()">Login</button>
+  <div class="controls">
+    <input id="search" placeholder="नाम / मोबाइल से खोजें" onkeyup="loadMembers()">
+    <select id="statusFilter" onchange="loadMembers()">
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Rejected">Rejected</option>
+    </select>
+  </div>
 
-  <div id="message" class="msg"></div>
+  <div id="list" class="loading">लोड हो रहा है...</div>
 </div>
 
 <script>
-const supabaseUrl = "https://ejdzdptqxelilkseannw.supabase.co";
-const supabaseKey = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
+/* ================= CONFIG ================= */
+const ADMIN_PASSWORD = "jbrms@123";
 
-//  ✔ सही client बनाना
-const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+const SUPABASE_URL = "https://ejdzdptqxelilkseannw.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
 
-async function adminLogin(){
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  const email = document.getElementById("adminEmail").value.trim();
-  const password = document.getElementById("adminPass").value.trim();
-  const message = document.getElementById("message");
+/* ================= FINAL TEMPLATE URLS (LOCKED) ================= */
+const TEMPLATE_ID_FRONT = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png";
+const TEMPLATE_ID_BACK  = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png";
+const TEMPLATE_CERT     = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/certificate.png";
+const TEMPLATE_APP      = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/appointment.png";
 
-  if(!email || !password){
-    message.innerHTML = "⚠ Email और Password भरें";
-    message.className = "msg error";
-    return;
+/* ================= AUTH ================= */
+function login(){
+  const pass = document.getElementById("adminPass").value;
+  if(pass === ADMIN_PASSWORD){
+    localStorage.setItem("JBRRMS_ADMIN","1");
+    showPanel();
+  } else {
+    alert("गलत पासवर्ड");
+  }
+}
+function logout(){
+  localStorage.removeItem("JBRRMS_ADMIN");
+  location.reload();
+}
+function showPanel(){
+  document.getElementById("loginBox").style.display="none";
+  document.getElementById("panel").style.display="block";
+  loadMembers();
+}
+if(localStorage.getItem("JBRRMS_ADMIN")) showPanel();
+
+/* ================= HELPERS ================= */
+const memberCode = id => "JBRRMS" + String(id).padStart(4,"0");
+
+/* ================= LOAD MEMBERS ================= */
+async function loadMembers(){
+  const list = document.getElementById("list");
+  list.innerHTML="<div class='loading'>डेटा लोड हो रहा है...</div>";
+
+  const status = document.getElementById("statusFilter").value;
+  const search = document.getElementById("search").value.trim();
+
+  let q = sb.from("members").select("*").eq("status",status);
+  if(search){
+    q = q.or(`name.ilike.%${search}%,mobile.ilike.%${search}%`);
   }
 
-  message.innerHTML = "⏳ कृपया प्रतीक्षा करें…";
+  const {data,error} = await q.order("id",{ascending:true});
+  if(error){list.innerHTML=error.message;return;}
+  if(!data.length){list.innerHTML="<p style='text-align:center'>कोई डेटा नहीं</p>";return;}
 
-  const { data, error } = await db.auth.signInWithPassword({
-    email,
-    password
+  list.innerHTML="";
+  data.forEach(m=>{
+    list.innerHTML += `
+    <div class="card">
+      <b>${m.name}</b> (${m.mobile})<br><br>
+      <div class="info">
+        Member Code: <b>${m.member_code || "-"}</b><br>
+        Status: <b>${m.status}</b>
+      </div><br>
+
+      ${
+        status==="Pending" ?
+        `
+        <button class="approve" onclick="approveMember(${m.id})">
+          Approve (🆔 ID Card + 📜 Certificate)
+        </button>
+        <button class="reject" onclick="rejectMember(${m.id})">Reject</button>
+        `
+        :
+        `
+        <button class="asset" onclick="openID('${m.member_code}')">🆔 ID Card</button>
+        <button class="asset" onclick="openCert('${m.member_code}')">📜 Certificate</button>
+        <button class="asset" onclick="openApp('${m.member_code}')">📄 Appointment</button>
+        `
+      }
+    </div>`;
   });
-
-  if(error){
-    message.innerHTML = "❌ गलत Admin Login Details";
-    message.className = "msg error";
-    return;
-  }
-
-  const allowedAdmins = [
-    "admin@jbrrms.in",
-    "president@jbrrms.in"
-  ];
-
-  if(!allowedAdmins.includes(email)){
-    message.innerHTML = "⛔ Access Denied — Admin अनुमति आवश्यक";
-    message.className = "msg error";
-    await db.auth.signOut();
-    return;
-  }
-
-  message.innerHTML = "✔ Login Successful — Redirect हो रहा है…";
-  message.className = "msg success";
-
-  setTimeout(()=>{
-    window.location.href = "admin-panel.html";
-  }, 800);
 }
 
-//  ✔ function को global बनाना जरूरी
-window.adminLogin = adminLogin;
+/* ================= ACTIONS ================= */
+async function approveMember(id){
+  if(!confirm("Approve करते ही 🆔 ID Card और 📜 Certificate generate होंगे। Continue?")) return;
+
+  const code = memberCode(id);
+
+  const {error} = await sb.from("members").update({
+    status:"Approved",
+    member_code:code
+  }).eq("id",id);
+
+  if(error){alert(error.message);return;}
+
+  // AUTO OPEN ID + CERTIFICATE
+  openID(code);
+  openCert(code);
+
+  loadMembers();
+}
+
+async function rejectMember(id){
+  if(!confirm("Reject करना है?")) return;
+  const {error} = await sb.from("members")
+    .update({status:"Rejected"})
+    .eq("id",id);
+  if(error) alert(error.message);
+  loadMembers();
+}
+
+/* ================= GENERATOR LINKS ================= */
+function openID(code){
+  window.open(`idcard.html?code=${code}`,"_blank");
+}
+function openCert(code){
+  window.open(`certificate.html?code=${code}`,"_blank");
+}
+function openApp(code){
+  window.open(`appointment.html?code=${code}`,"_blank");
+}
 </script>
 
 </body>
