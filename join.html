@@ -5,6 +5,7 @@
 <title>JBRRMS Join + ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -12,15 +13,15 @@
 <style>
 body{margin:0;background:#111;font-family:Arial}
 #joinBox{max-width:380px;background:#fff;margin:30px auto;padding:20px;border-radius:8px}
-input,button{width:100%;padding:10px;margin:7px 0}
-button{background:#e65100;color:#fff;border:none}
+input,button{width:100%;padding:10px;margin:7px 0;font-size:16px}
+button{background:#e65100;color:#fff;border:none;border-radius:4px}
 
 /* CARD */
 .card{
  display:none;
  width:1080px;height:1676px;
  margin:30px auto;position:relative;
- background-size:cover
+ background-size:cover;
 }
 
 /* FRONT */
@@ -31,11 +32,11 @@ button{background:#e65100;color:#fff;border:none}
  position:absolute;top:360px;left:390px;
  width:300px;height:380px;
  border-radius:24px;overflow:hidden;
- border:10px solid #d4af37
+ border:10px solid #d4af37;
 }
 .photo img{width:100%;height:100%;object-fit:cover}
 
-.details{position:absolute;top:780px;width:100%;text-align:center}
+.details{position:absolute;top:780px;width:100%;text-align:center;color:#000}
 #c_name{font-size:42px;font-weight:bold}
 #c_post{font-size:30px}
 #c_dist{font-size:28px}
@@ -47,12 +48,14 @@ button{background:#e65100;color:#fff;border:none}
 }
 #qr{position:absolute;bottom:260px;left:390px}
 .backtext{position:absolute;bottom:120px;width:100%;text-align:center;font-size:26px}
+
 .actions{text-align:center;margin-bottom:40px}
 </style>
 </head>
 
 <body>
 
+<!-- JOIN FORM -->
 <div id="joinBox">
 <h3>JBRRMS Join Form</h3>
 
@@ -65,11 +68,14 @@ button{background:#e65100;color:#fff;border:none}
 <input type="file" id="photoInput" accept="image/*">
 
 <button onclick="join()">Submit</button>
+
 <hr>
+
 <input id="oldCode" placeholder="पुराना Member Code">
 <button onclick="loadOld()">Old Data Load</button>
 </div>
 
+<!-- FRONT CARD -->
 <div id="front" class="card">
  <div class="photo"><img id="photo"></div>
  <div class="details">
@@ -80,6 +86,7 @@ button{background:#e65100;color:#fff;border:none}
  </div>
 </div>
 
+<!-- BACK CARD -->
 <div id="back" class="card">
  <div id="qr"></div>
  <div class="backtext">
@@ -95,115 +102,123 @@ button{background:#e65100;color:#fff;border:none}
 </div>
 
 <script>
-const sb=supabase.createClient(
+/* SUPABASE */
+const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
 );
 
-let photoBlob=null;
-
-/* PHOTO CROP */
-photoInput.onchange=e=>{
- const img=new Image();
- img.onload=()=>{
-  const c=document.createElement("canvas");
-  c.width=300;c.height=380;
-  const ctx=c.getContext("2d");
-  const r=Math.max(300/img.width,380/img.height);
-  ctx.drawImage(img,
-   (300-img.width*r)/2,
-   (380-img.height*r)/2,
-   img.width*r,img.height*r
-  );
-  c.toBlob(b=>photoBlob=b,"image/jpeg",0.9);
- }
- img.src=URL.createObjectURL(e.target.files[0]);
-}
-
-/* MEMBER CODE */
+/* NEXT MEMBER CODE */
 async function nextCode(){
- const {data,error}=await sb
- .from("JBRRMS")
- .select("member_code")
- .order("member_code",{ascending:false})
- .limit(1);
+ const {data,error} = await sb
+  .from("JBRRMS")
+  .select("member_code")
+  .order("member_code",{ascending:false})
+  .limit(1);
 
- if(error||!data.length) return "JBRRMS0001";
- return "JBRRMS"+String(parseInt(data[0].member_code.slice(6))+1).padStart(4,"0");
+ if(error || !data.length) return "JBRRMS0001";
+
+ return "JBRRMS" + String(
+  parseInt(data[0].member_code.slice(6)) + 1
+ ).padStart(4,"0");
 }
 
 /* JOIN */
 async function join(){
- if(!name.value||!father.value||!district.value||!state.value||mobile.value.length!=10||!post.value||!photoBlob){
-  alert("पूरा फॉर्म भरें"); return;
+
+ if(
+  !name.value.trim() ||
+  !father.value.trim() ||
+  !district.value.trim() ||
+  !state.value.trim() ||
+  mobile.value.trim().length !== 10 ||
+  !post.value.trim() ||
+  !photoInput.files.length
+ ){
+  alert("पूरा फॉर्म भरें");
+  return;
  }
 
- const code=await nextCode();
+ const code = await nextCode();
 
- const fd=new FormData();
- fd.append("file",photoBlob);
+ /* UPLOAD PHOTO */
+ const fd = new FormData();
+ fd.append("file", photoInput.files[0]);
  fd.append("upload_preset","jbrms_unsigned");
 
- const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
- const img=await up.json();
+ const up = await fetch(
+  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
+  {method:"POST",body:fd}
+ );
 
+ const img = await up.json();
  if(!img.secure_url){
-  alert("Photo upload failed"); return;
+  alert("Photo upload failed");
+  return;
  }
 
- const {error}=await sb.from("JBRRMS").insert([{
-  member_code:code,
-  name:name.value,
-  father_name:father.value,
-  district:district.value,
-  state:state.value,
-  mobile:mobile.value,
-  post:post.value,
-  photo_url:img.secure_url,
-  status:"Pending"
+ /* SAVE DATA */
+ const {error} = await sb.from("JBRRMS").insert([{
+  member_code: code,
+  name: name.value,
+  father_name: father.value,
+  district: district.value,
+  state: state.value,
+  mobile: mobile.value,
+  post: post.value,
+  photo_url: img.secure_url,
  }]);
 
- if(error){ alert("Data save error"); return; }
+ if(error){
+  alert("Data save error");
+  return;
+ }
 
  show(code);
 }
 
 /* LOAD OLD */
-async function loadOld(){
- if(!oldCode.value) return;
+function loadOld(){
+ if(!oldCode.value.trim()) return;
  show(oldCode.value.trim());
 }
 
 /* SHOW CARD */
 async function show(code){
- const {data,error}=await sb
- .from("JBRRMS")
- .select("*")
- .eq("member_code",code)
- .single();
+ const {data,error} = await sb
+  .from("JBRRMS")
+  .select("*")
+  .eq("member_code",code)
+  .single();
 
- if(error||!data){
-  alert("Member code नहीं मिला"); return;
+ if(error || !data){
+  alert("Member code नहीं मिला");
+  return;
  }
 
  joinBox.style.display="none";
- front.style.display=back.style.display="block";
+ front.style.display = "block";
+ back.style.display  = "block";
 
- c_name.innerText=data.name;
- c_post.innerText=data.post;
- c_dist.innerText=data.district+", "+data.state;
- c_code.innerText=data.member_code;
- photo.src=data.photo_url;
+ c_name.innerText = data.name;
+ c_post.innerText = data.post;
+ c_dist.innerText = data.district + ", " + data.state;
+ c_code.innerText = data.member_code;
+ photo.src = data.photo_url;
 
  qr.innerHTML="";
- new QRCode(qr,{text:data.member_code,width:300,height:300});
+ new QRCode(qr,{
+  text: data.member_code,
+  width:300,
+  height:300
+ });
 }
 
 /* DOWNLOAD */
-function download(el,n){
+function download(el,name){
  html2canvas(el,{scale:2,useCORS:true}).then(c=>{
   const a=document.createElement("a");
-  a.download=`JBRRMS_${n}.png`;
+  a.download=`JBRRMS_${name}.png`;
   a.href=c.toDataURL("image/png");
   a.click();
  });
