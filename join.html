@@ -52,36 +52,57 @@ button{
 
 .org{
  position:absolute;
- top:260px;
+ top:320px;
  width:100%;
  text-align:center;
- font-size:46px;
- font-weight:bold;
+ font-size:64px;
+ font-weight:900;
  color:#ff7a00;
+ letter-spacing:1px;
 }
 
 .photo{
  position:absolute;
- top:460px;
+ top:540px;
  left:390px;
  width:300px;
  height:380px;
- border-radius:26px;
+ border-radius:28px;
  overflow:hidden;
  border:10px solid #d4af37;
+ box-shadow:0 8px 20px rgba(0,0,0,.35);
 }
-.photo img{width:100%;height:100%;object-fit:cover}
+.photo img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
 
 .details{
  position:absolute;
- top:880px;
+ top:1020px;
  width:100%;
  text-align:center;
  color:#000;
 }
-.d-name{font-size:40px;font-weight:bold}
-.d-text{font-size:26px;margin-top:6px}
-.d-code{font-size:30px;margin-top:12px;font-weight:bold}
+
+.d-name{
+ font-size:48px;
+ font-weight:900;
+ margin-bottom:10px;
+}
+
+.d-text{
+ font-size:34px;
+ margin-top:6px;
+}
+
+.d-code{
+ font-size:38px;
+ margin-top:16px;
+ font-weight:900;
+ letter-spacing:1px;
+}
 
 /* ================= BACK ================= */
 #back{
@@ -90,18 +111,21 @@ button{
 
 .back-org{
  position:absolute;
- top:180px;
+ top:260px;
  width:100%;
  text-align:center;
- font-size:44px;
- font-weight:bold;
+ font-size:60px;
+ font-weight:900;
  color:#ff7a00;
+ letter-spacing:1px;
 }
 
 #qr{
  position:absolute;
- top:470px;
+ top:520px;
  left:360px;
+ padding:18px;
+ background:#fff;
 }
 
 .backtext{
@@ -109,11 +133,15 @@ button{
  bottom:120px;
  width:100%;
  text-align:center;
- font-size:26px;
+ font-size:28px;
  line-height:1.6;
 }
 
-.actions{text-align:center;margin-bottom:30px}
+.actions{
+ text-align:center;
+ margin-bottom:40px;
+ display:none;
+}
 </style>
 </head>
 
@@ -142,6 +170,7 @@ button{
 <div id="front" class="card">
  <div class="org">जय भवानी राष्ट्रीय राजपूत महासभा</div>
  <div class="photo"><img id="photo"></div>
+
  <div class="details">
   <div class="d-name" id="c_name"></div>
   <div class="d-text" id="c_father"></div>
@@ -155,6 +184,7 @@ button{
 <div id="back" class="card">
  <div class="back-org">जय भवानी राष्ट्रीय राजपूत महासभा</div>
  <div id="qr"></div>
+
  <div class="backtext">
   हेल्पलाइन: 9166377972<br>
   Email: jbrrms1@gmail.com<br>
@@ -163,9 +193,9 @@ button{
  </div>
 </div>
 
-<div class="actions">
-<button onclick="download(front,'FRONT')">⬇️ Front</button>
-<button onclick="download(back,'BACK')">⬇️ Back</button>
+<div class="actions" id="actions">
+ <button onclick="download(front,'IDCARD_FRONT_'+c_code.innerText)">⬇️ Front</button>
+ <button onclick="download(back,'IDCARD_BACK_'+c_code.innerText)">⬇️ Back</button>
 </div>
 
 <script>
@@ -175,10 +205,11 @@ const sb = supabase.createClient(
  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
 );
 
-/* ================= ELEMENT BINDINGS ================= */
+/* ================= ELEMENTS ================= */
 const joinBox=document.getElementById("joinBox");
 const front=document.getElementById("front");
 const back=document.getElementById("back");
+const actions=document.getElementById("actions");
 
 const name=document.getElementById("name");
 const father=document.getElementById("father");
@@ -198,11 +229,10 @@ const qr=document.getElementById("qr");
 
 /* ================= MEMBER CODE ================= */
 async function nextCode(){
- const {data}=await sb
-  .from("JBRRMS")
-  .select("member_code")
-  .order("member_code",{ascending:false})
-  .limit(1);
+ const {data}=await sb.from("JBRRMS")
+ .select("member_code")
+ .order("member_code",{ascending:false})
+ .limit(1);
 
  if(!data || !data.length) return "JBRRMS0001";
  return "JBRRMS"+String(parseInt(data[0].member_code.slice(6))+1).padStart(4,"0");
@@ -243,7 +273,6 @@ async function join(){
  }]);
 
  if(error){alert("Supabase Error");return;}
-
  show(code);
 }
 
@@ -254,12 +283,17 @@ function loadOld(){
 
 /* ================= SHOW CARD ================= */
 async function show(code){
- const {data}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
+ const {data}=await sb.from("JBRRMS")
+ .select("*")
+ .eq("member_code",code)
+ .single();
+
  if(!data){alert("Member not found");return;}
 
  joinBox.style.display="none";
  front.style.display="block";
  back.style.display="block";
+ actions.style.display="block";
 
  photo.src=data.photo_url;
  c_name.innerText=data.name;
@@ -269,14 +303,18 @@ async function show(code){
  c_code.innerText=data.member_code;
 
  qr.innerHTML="";
- new QRCode(qr,{text:data.member_code,width:360,height:360});
+ new QRCode(qr,{
+  text:`JBRRMS ID CARD\nName:${data.name}\nCode:${data.member_code}\nMobile:${data.mobile}`,
+  width:360,
+  height:360
+ });
 }
 
 /* ================= DOWNLOAD ================= */
 function download(el,name){
- html2canvas(el,{scale:2,useCORS:true}).then(c=>{
+ html2canvas(el,{scale:3,useCORS:true}).then(c=>{
   const a=document.createElement("a");
-  a.download="JBRRMS_"+name+".png";
+  a.download=name+".png";
   a.href=c.toDataURL("image/png");
   a.click();
  });
