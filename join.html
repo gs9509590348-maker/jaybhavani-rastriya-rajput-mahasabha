@@ -12,85 +12,23 @@
 
 <style>
 body{margin:0;background:#111;font-family:Arial}
-
-/* JOIN BOX */
-#joinBox{
- max-width:360px;background:#fff;margin:30px auto;
- padding:20px;border-radius:8px
-}
+#joinBox{max-width:360px;background:#fff;margin:30px auto;padding:20px;border-radius:8px}
 #joinBox h2{text-align:center}
 input,button{width:100%;padding:10px;margin:8px 0}
 button{background:#e65100;color:#fff;border:none;cursor:pointer}
 hr{margin:15px 0}
-
-/* CARD COMMON */
-.card{
- display:none;position:relative;
- width:1080px;height:1676px;
- margin:30px auto;
- background-size:cover;
-}
-
-/* FRONT */
-#front{
- background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover;
-}
-.front-title{
- position:absolute;top:460px;width:100%;
- text-align:center;font-size:52px;
- font-weight:900;color:#ff6a00;
-}
-.photo{
- position:absolute;top:480px;left:390px;
- width:300px;height:380px;
- border-radius:24px;overflow:hidden;
- border:16px solid #d4af37;
- background:#fff;
-}
+.card{display:none;position:relative;width:1080px;height:1676px;margin:30px auto;background-size:cover}
+#front{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover}
+.front-title{position:absolute;top:460px;width:100%;text-align:center;font-size:52px;font-weight:900;color:#ff6a00}
+.photo{position:absolute;top:480px;left:390px;width:300px;height:380px;border-radius:24px;overflow:hidden;border:16px solid #d4af37;background:#fff}
 .photo img{width:100%;height:100%;object-fit:cover}
-.details{
- position:absolute;top:920px;
- width:100%;padding-left:220px;
- font-size:34px;line-height:1.6;color:#000
-}
+.details{position:absolute;top:920px;width:100%;padding-left:220px;font-size:34px;line-height:1.6;color:#000}
 #c_code{margin-top:18px;font-weight:bold;letter-spacing:2px}
-
-/* BACK */
-#back{
- background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover;
-}
-.back-title{
- position:absolute;top:200px;width:100%;
- text-align:center;font-size:54px;
- font-weight:900;color:#ff6a00
-}
-#qr{
- position:absolute;
- top:380px;
- left:50%;
- transform:translateX(-50%);
-}
-
-/* 7 PERMANENT LINES */
-.seven-lines{
- position:absolute;
- top:720px;
- left:50%;
- transform:translateX(-50%);
- width:720px;
- text-align:center;
- font-size:22px;
- line-height:1.5;
- font-weight:600;
- color:#000;
-}
-
-.backtext{
- position:absolute;bottom:120px;
- width:100%;text-align:center;font-size:26px
-}
-
-/* ACTIONS */
+#back{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover}
+.back-title{position:absolute;top:200px;width:100%;text-align:center;font-size:54px;font-weight:900;color:#ff6a00}
+#qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
+.seven-lines{position:absolute;top:720px;left:50%;transform:translateX(-50%);width:720px;text-align:center;font-size:22px;line-height:1.5;font-weight:600;color:#000}
+.backtext{position:absolute;bottom:120px;width:100%;text-align:center;font-size:26px}
 .actions{text-align:center;margin-bottom:40px}
 .actions button{width:180px;margin:6px}
 </style>
@@ -98,7 +36,6 @@ hr{margin:15px 0}
 
 <body>
 
-<!-- JOIN -->
 <div id="joinBox">
  <h2>JBRRMS Join / Search</h2>
  <input id="name" placeholder="पूरा नाम">
@@ -114,7 +51,6 @@ hr{margin:15px 0}
  <button onclick="searchMember()">🆔 Search ID Card</button>
 </div>
 
-<!-- FRONT -->
 <div id="front" class="card">
  <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
  <div class="photo"><img id="photo"></div>
@@ -129,12 +65,9 @@ hr{margin:15px 0}
  </div>
 </div>
 
-<!-- BACK -->
 <div id="back" class="card">
  <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
-
  <div id="qr"></div>
-
  <div class="seven-lines">
   पद से बड़ा स्वाभिमान होता है।<br>
   स्वाभिमान है तो पहचान है।<br>
@@ -144,7 +77,6 @@ hr{margin:15px 0}
   स्वाभिमान समझौता नहीं सिखाता।<br>
   स्वाभिमान हमारी असली विरासत है।
  </div>
-
  <div class="backtext">
   हेल्पलाइन: 9166377972<br>
   Email: jbrrms1@gmail.com<br>
@@ -166,16 +98,16 @@ const sb = supabase.createClient(
 
 let blob=null, side="front";
 
-/* MEMBER CODE */
 async function nextCode(){
  const {data}=await sb.from("JBRRMS")
- .select("member_code").order("member_code",{ascending:false}).limit(1);
+ .select("member_code")
+ .order("member_code",{ascending:false})
+ .limit(1);
  if(!data||!data.length) return "JBRRMS0001";
  let n=parseInt(data[0].member_code.replace("JBRRMS",""))+1;
  return "JBRRMS"+String(n).padStart(4,"0");
 }
 
-/* PHOTO */
 photoInput.onchange=e=>{
  const i=new Image();
  i.src=URL.createObjectURL(e.target.files[0]);
@@ -189,7 +121,6 @@ photoInput.onchange=e=>{
  }
 }
 
-/* JOIN */
 async function joinNow(){
  if(!blob) return alert("Photo required");
  const code=await nextCode();
@@ -208,18 +139,18 @@ async function joinNow(){
   mobile:mobile.value,
   photo_url:img.secure_url
  }]);
+ alert("Join सफल ✔️\nMember Code: "+code);
+}
+
+function searchMember(){
+ const code=searchCode.value.trim();
+ if(!code) return alert("Member Code डालें");
  show(code);
 }
 
-/* SEARCH */
-function searchMember(){
- show(searchCode.value.trim());
-}
-
-/* SHOW */
 async function show(code){
  const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
- if(error) return alert("Member not found");
+ if(error||!data) return alert("Member not found");
 
  joinBox.style.display="none";
  front.style.display="block";
@@ -227,7 +158,7 @@ async function show(code){
  side="front";
 
  c_name.innerText=data.name;
- c_post.innerText=data.post || "";
+ c_post.innerText=data.post||"";
  c_father.innerText=data.father_name;
  c_district.innerText=data.district;
  c_state.innerText=data.state;
@@ -239,27 +170,17 @@ async function show(code){
  new QRCode(qr,{text:data.member_code,width:300,height:300});
 }
 
-/* VIEW */
 function showFront(){front.style.display="block";back.style.display="none";side="front"}
 function showBack(){front.style.display="none";back.style.display="block";side="back"}
 
-/* DOWNLOAD – FIXED */
 function download(){
- const el = side==="front"?front:back;
- html2canvas(el,{
-  width:1080,
-  height:1676,
-  scale:2,
-  useCORS:true,
-  backgroundColor:null,
-  windowWidth:1080,
-  windowHeight:1676
- }).then(c=>{
+ const el=side==="front"?front:back;
+ html2canvas(el,{width:1080,height:1676,scale:2,useCORS:true}).then(c=>{
   const a=document.createElement("a");
   a.download="JBRRMS_"+side+"_ID_CARD.png";
-  a.href=c.toDataURL("image/png",1.0);
+  a.href=c.toDataURL("image/png",1);
   a.click();
- }).catch(()=>alert("Download error"));
+ });
 }
 </script>
 
