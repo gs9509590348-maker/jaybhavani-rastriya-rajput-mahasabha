@@ -1,161 +1,280 @@
-```html
 <!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Join Form</title>
+<title>JBRRMS Join + ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Supabase v2 -->
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- html2canvas -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-body{font-family:Arial;background:#f4f4f4}
+body{font-family:Arial;background:#111;margin:0;padding:20px}
+
+/* ===== JOIN FORM ===== */
 form{
   max-width:360px;
   background:#fff;
-  margin:30px auto;
+  margin:auto;
   padding:20px;
-  border-radius:8px;
+  border-radius:8px
 }
-input,button{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-}
-img{
-  max-width:100%;
-  border-radius:8px;
-  margin-top:10px;
-}
-button{
-  background:#e65100;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
+input,button{width:100%;padding:10px;margin:8px 0}
+button{background:#e65100;color:#fff;border:none;cursor:pointer}
 button:disabled{background:#999}
+img.preview{max-width:100%;border-radius:8px;margin-top:10px}
+
+/* ===== ID CARD ===== */
+.section{margin-top:40px;text-align:center;color:#fff}
+.card{
+  width:1080px;
+  height:1676px;
+  margin:20px auto;
+  position:relative;
+  background-size:cover;
+  background-position:center
+}
+.front{
+  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png")
+}
+.back{
+  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png")
+}
+
+/* FRONT */
+.photo{
+  position:absolute;
+  top:280px;
+  left:390px;
+  width:300px;
+  height:380px;
+  border-radius:20px;
+  overflow:hidden;
+  border:4px solid #9b0000
+}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+.info{
+  position:absolute;
+  top:700px;
+  left:140px;
+  right:140px;
+  font-size:34px;
+  line-height:1.6;
+  color:#4a1a00
+}
+.info b{display:inline-block;width:280px}
+
+/* BACK */
+.back-title{
+  position:absolute;
+  top:140px;
+  width:100%;
+  text-align:center;
+  font-size:52px;
+  font-weight:bold;
+  color:#8b0000
+}
+.qr{
+  position:absolute;
+  top:420px;
+  left:390px;
+  width:300px;
+  height:300px
+}
+.back-text{
+  position:absolute;
+  bottom:220px;
+  width:100%;
+  text-align:center;
+  font-size:32px;
+  line-height:1.6;
+  color:#3b1b00
+}
+.disclaimer{
+  position:absolute;
+  bottom:80px;
+  left:120px;
+  right:120px;
+  font-size:26px;
+  color:#222;
+  text-align:center
+}
 </style>
 </head>
 
 <body>
 
+<!-- ================= JOIN FORM ================= -->
 <form id="joinForm">
-  <h2>JBRRMS Join Form</h2>
+<h2>JBRRMS Join Form</h2>
 
-  <input type="text" id="name" placeholder="पूरा नाम" required>
-  <input type="text" id="father_name" placeholder="पिता का नाम" required>
-  <input type="text" id="district" placeholder="जिला" required>
-  <input type="text" id="state" placeholder="राज्य" required>
-  <input type="tel" id="mobile" placeholder="मोबाइल नंबर" pattern="[0-9]{10}" required>
+<input id="name" placeholder="पूरा नाम" required>
+<input id="father_name" placeholder="पिता का नाम" required>
+<input id="district" placeholder="जिला" required>
+<input id="state" placeholder="राज्य" required>
+<input id="mobile" placeholder="मोबाइल नंबर" pattern="[0-9]{10}" required>
 
-  <input type="file" id="photo" accept="image/*" required>
-  <img id="preview">
+<input type="file" id="photoInput" accept="image/*" required>
+<img id="preview" class="preview">
 
-  <button type="submit" id="submitBtn">Submit</button>
+<button id="submitBtn">Submit</button>
 </form>
 
+<!-- ================= ID CARD ================= -->
+<div class="section">
+<h2>JBRRMS ID Card</h2>
+
+<div id="front" class="card front">
+  <div class="photo"><img id="cardPhoto"></div>
+  <div class="info">
+    <div><b>नाम:</b> <span id="c_name"></span></div>
+    <div><b>पिता:</b> <span id="c_father"></span></div>
+    <div><b>जिला:</b> <span id="c_district"></span></div>
+    <div><b>राज्य:</b> <span id="c_state"></span></div>
+    <div><b>मोबाइल:</b> <span id="c_mobile"></span></div>
+    <div><b>Member Code:</b> <span id="c_code"></span></div>
+  </div>
+</div>
+
+<button onclick="download('front')">⬇️ Download Front</button>
+
+<div id="back" class="card back">
+  <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
+  <img id="qr" class="qr">
+  <div class="back-text">
+    हेल्पलाइन: <b>9166377972</b><br>
+    ईमेल: <b>jbrrms1@gmail.com</b><br>
+    वेबसाइट: <b>www.jbrrms.in</b>
+  </div>
+  <div class="disclaimer">
+    यह पहचान पत्र संगठन की संपत्ति है।<br>
+    इसके दुरुपयोग पर सदस्यता रद्द की जा सकती है।
+  </div>
+</div>
+
+<button onclick="download('back')">⬇️ Download Back</button>
+</div>
+
 <script>
-/* ---------- CONFIG ---------- */
-const { createClient } = supabase;
-const supabaseClient = createClient(
+/* ===== CONFIG ===== */
+const sb = supabase.createClient(
   "https://ejdzdptqxelilkseannw.supabase.co",
   "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
 );
 
-const CLOUD_NAME = "dlqr73p7j";
-const UPLOAD_PRESET = "jbrms_unsigned";
-
+const CLOUD = "dlqr73p7j";
+const PRESET = "jbrms_unsigned";
 let finalBlob = null;
 
-/* ---------- PHOTO AUTO RESIZE ---------- */
-document.getElementById("photo").addEventListener("change", async (e)=>{
-  const file = e.target.files[0];
-  if(!file) return;
+/* ===== AUTO MEMBER CODE ===== */
+async function generateMemberCode(){
+  const { data } = await sb
+    .from("JBRRMS")
+    .select("member_code")
+    .order("id",{ascending:false})
+    .limit(1);
 
-  if(file.size > 2 * 1024 * 1024){
-    alert("Photo 2MB से कम होनी चाहिए");
-    e.target.value = "";
-    return;
+  if(!data || data.length===0){
+    return "JBRRMS0001";
   }
+  const last = data[0].member_code || "JBRRMS0000";
+  const num = parseInt(last.replace("JBRRMS","")) + 1;
+  return "JBRRMS" + String(num).padStart(4,"0");
+}
 
-  const img = new Image();
-  img.src = URL.createObjectURL(file);
-  await img.decode();
+/* ===== PHOTO PROCESS ===== */
+photoInput.onchange = async e=>{
+ const f = e.target.files[0];
+ if(!f) return;
 
-  const canvas = document.createElement("canvas");
-  const ctx = canvas.getContext("2d");
-  canvas.width = 600;
-  canvas.height = 600;
+ const img = new Image();
+ img.src = URL.createObjectURL(f);
+ await img.decode();
 
-  const size = Math.min(img.width, img.height);
-  const sx = (img.width - size) / 2;
-  const sy = (img.height - size) / 2;
+ const c = document.createElement("canvas");
+ const x = c.getContext("2d");
+ c.width = c.height = 600;
 
-  ctx.drawImage(img, sx, sy, size, size, 0, 0, 600, 600);
+ const s = Math.min(img.width,img.height);
+ x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,600,600);
 
-  canvas.toBlob(blob=>{
-    finalBlob = blob;
-    document.getElementById("preview").src = URL.createObjectURL(blob);
-  }, "image/jpeg", 0.8);
-});
+ c.toBlob(b=>{
+  finalBlob=b;
+  preview.src=URL.createObjectURL(b);
+ },"image/jpeg",0.8);
+};
 
-/* ---------- SUBMIT ---------- */
-document.getElementById("joinForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
+/* ===== SUBMIT ===== */
+joinForm.onsubmit = async e=>{
+ e.preventDefault();
+ if(!finalBlob) return alert("Photo wait करें");
 
-  if(!finalBlob){
-    alert("Photo process होने दें");
-    return;
-  }
+ submitBtn.disabled=true;
 
-  const btn = document.getElementById("submitBtn");
-  btn.disabled = true;
+ try{
+  const code = await generateMemberCode();
 
-  try{
-    /* Cloudinary Upload */
-    const fd = new FormData();
-    fd.append("file", finalBlob);
-    fd.append("upload_preset", UPLOAD_PRESET);
+  const fd=new FormData();
+  fd.append("file",finalBlob);
+  fd.append("upload_preset",PRESET);
 
-    const uploadRes = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
-      { method:"POST", body: fd }
-    );
+  const up=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,
+   {method:"POST",body:fd});
+  const u=await up.json();
+  if(!u.secure_url) throw new Error("Photo upload failed");
 
-    const uploadData = await uploadRes.json();
-    if(!uploadData.secure_url){
-      throw new Error("Photo upload failed");
-    }
+  await sb.from("JBRRMS").insert([{
+    member_code:code,
+    name:name.value,
+    father_name:father_name.value,
+    district:district.value,
+    state:state.value,
+    mobile:mobile.value,
+    photo_url:u.secure_url
+  }]);
 
-    /* Supabase Insert (TABLE: JBRRMS) */
-    const { error } = await supabaseClient
-      .from("JBRRMS")
-      .insert([{
-        name: document.getElementById("name").value,
-        father_name: document.getElementById("father_name").value,
-        district: document.getElementById("district").value,
-        state: document.getElementById("state").value,
-        mobile: document.getElementById("mobile").value,
-        photo_url: uploadData.secure_url,
-        status: "Pending"
-      }]);
+  alert("✅ Join Successful\nMember Code: "+code);
+  joinForm.reset();
+  preview.src="";
+  finalBlob=null;
 
-    if(error) throw error;
+ }catch(err){
+  alert("❌ "+err.message);
+ }
+ submitBtn.disabled=false;
+};
 
-    alert("✅ आवेदन सफल! Admin Approval के बाद ID बनेगी");
-    document.getElementById("joinForm").reset();
-    document.getElementById("preview").src="";
-    finalBlob = null;
+/* ===== LOAD CARD ===== */
+const qcode=new URLSearchParams(location.search).get("code");
+if(qcode){
+ (async()=>{
+  const {data}=await sb.from("JBRRMS").select("*").eq("member_code",qcode).single();
+  if(!data) return;
 
-  }catch(err){
-    alert("❌ Error: " + err.message);
-  }finally{
-    btn.disabled = false;
-  }
-});
+  c_name.innerText=data.name;
+  c_father.innerText=data.father_name;
+  c_district.innerText=data.district;
+  c_state.innerText=data.state;
+  c_mobile.innerText=data.mobile;
+  c_code.innerText=data.member_code;
+  cardPhoto.src=data.photo_url;
+  qr.src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+data.member_code;
+ })();
+}
+
+/* ===== DOWNLOAD ===== */
+function download(id){
+ html2canvas(document.getElementById(id),{scale:2}).then(c=>{
+  const a=document.createElement("a");
+  a.download=`JBRRMS_${id}_${qcode||"CARD"}.png`;
+  a.href=c.toDataURL("image/png");
+  a.click();
+ });
+}
 </script>
 
 </body>
 </html>
-```
