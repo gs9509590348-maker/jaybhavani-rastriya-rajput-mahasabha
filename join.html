@@ -39,7 +39,7 @@ hr{margin:15px 0}
  <h2>JBRRMS Join / Search</h2>
  <input id="name" placeholder="पूरा नाम">
  <input id="post" placeholder="पद">
- <input id="father" placeholder="पिता का नाम">
+ <input id="father_name" placeholder="पिता का नाम">
  <input id="district" placeholder="जिला">
  <input id="state" placeholder="राज्य">
  <input id="mobile" placeholder="मोबाइल नंबर">
@@ -56,7 +56,7 @@ hr{margin:15px 0}
  <div class="details">
   <div><b>नाम :</b> <span id="c_name"></span></div>
   <div><b>पद :</b> <span id="c_post"></span></div>
-  <div><b>पिता :</b> <span id="c_father"></span></div>
+  <div><b>पिता :</b> <span id="c_father_name"></span></div>
   <div><b>जिला :</b> <span id="c_district"></span></div>
   <div><b>राज्य :</b> <span id="c_state"></span></div>
   <div><b>मोबाइल :</b> <span id="c_mobile"></span></div>
@@ -117,7 +117,7 @@ async function joinNow(){
  const {data,error}=await sb.from("JBRRMS").insert([{
    name: document.getElementById("name").value,
    post: document.getElementById("post").value,
-   father: document.getElementById("father").value,
+   father: document.getElementById("father_name").value,
    district: document.getElementById("district").value,
    state: document.getElementById("state").value,
    mobile: document.getElementById("mobile").value,
@@ -140,7 +140,7 @@ async function searchMember(){
 
  c_name.innerText=data.name;
  c_post.innerText=data.post;
- c_father.innerText=data.father;
+ c_father.innerText=data.father_name;
  c_district.innerText=data.district;
  c_state.innerText=data.state;
  c_mobile.innerText=data.mobile;
