@@ -2,332 +2,176 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Join + ID Card</title>
+<title>JBRRMS ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- LIBRARIES -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- QR LIB -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body{
- margin:0;
- background:#111;
- font-family:Arial;
- overflow-x:hidden;
+  margin:0;
+  background:#111;
+  font-family:Arial, sans-serif;
+  text-align:center;
 }
 
-/* ================= JOIN FORM ================= */
-#joinBox{
- max-width:380px;
- background:#fff;
- margin:20px auto;
- padding:20px;
- border-radius:10px;
-}
-input,button{
- width:100%;
- padding:12px;
- margin:8px 0;
- font-size:16px;
-}
-button{
- background:#e65100;
- color:#fff;
- border:none;
- border-radius:6px;
- cursor:pointer;
-}
-
-/* ================= CARD COMMON ================= */
+/* COMMON */
 .card{
- display:none;
- width:1080px;
- height:1676px;
- margin:20px auto;
- position:relative;
- background-size:cover;
+  width:360px;
+  height:560px;
+  margin:20px auto;
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  border-radius:12px;
 }
 
-/* ================= FRONT ================= */
+/* FRONT */
 #front{
- background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") center/cover no-repeat;
+  background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png');
 }
 
-.org{
- position:absolute;
- top:320px;
- width:100%;
- text-align:center;
- font-size:64px;
- font-weight:900;
- color:#ff7a00;
+.logo-title{
+  margin-top:55px;
+  font-size:20px;
+  font-weight:bold;
+  color:#ff7a00;
 }
 
 .photo{
- position:absolute;
- top:540px;
- left:390px;
- width:300px;
- height:380px;
- border-radius:28px;
- overflow:hidden;
- border:10px solid #d4af37;
- box-shadow:0 8px 20px rgba(0,0,0,.35);
+  width:120px;
+  height:120px;
+  background:#fff;
+  border-radius:12px;
+  margin:40px auto 0;
+  overflow:hidden;
 }
+
 .photo img{
- width:100%;
- height:100%;
- object-fit:cover;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* NAME ↓ थोड़ा नीचे किया */
+.name{
+  margin-top:35px;
+  font-size:20px;
+  font-weight:bold;
 }
 
 .details{
- position:absolute;
- top:1100px; /* नाम नीचे */
- width:100%;
- text-align:center;
- color:#000;
+  margin-top:8px;
+  font-size:15px;
+  line-height:1.5;
 }
 
-.d-name{
- font-size:48px;
- font-weight:900;
- margin-bottom:10px;
+.code{
+  margin-top:10px;
+  font-weight:bold;
 }
 
-.d-text{
- font-size:34px;
- margin-top:6px;
-}
-
-.d-code{
- font-size:38px;
- margin-top:16px;
- font-weight:900;
-}
-
-/* ================= BACK ================= */
+/* BACK */
 #back{
- background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") center/cover no-repeat;
+  background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png');
 }
 
-.back-org{
- position:absolute;
- top:260px;
- width:100%;
- text-align:center;
- font-size:60px;
- font-weight:900;
- color:#ff7a00;
+.back-title{
+  margin-top:70px;
+  font-size:18px;
+  color:#ff7a00;
+  font-weight:bold;
 }
 
-#qr{
- position:absolute;
- top:520px;
- left:360px;
- width:360px;
- height:360px;
- background:#fff;
- padding:12px;
- border-radius:14px;
- box-shadow:0 6px 18px rgba(0,0,0,.35);
+/* QR FIXED */
+#qrcode{
+  width:120px;
+  height:120px;
+  background:#fff;
+  margin:35px auto 0;
+  padding:6px;
 }
 
-.backtext{
- position:absolute;
- bottom:120px;
- width:100%;
- text-align:center;
- font-size:28px;
- line-height:1.6;
+.footer{
+  position:absolute;
+  bottom:30px;
+  width:100%;
+  font-size:13px;
+  line-height:1.5;
 }
-
-.actions{
- text-align:center;
- margin-bottom:40px;
- display:none;
+.buttons{
+  margin-bottom:30px;
+}
+button{
+  padding:8px 18px;
+  margin:5px;
+  border:none;
+  background:#ff6a00;
+  color:#fff;
+  border-radius:6px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ================= JOIN FORM ================= -->
-<div id="joinBox">
-<h3>JBRRMS Join Form</h3>
+<!-- FRONT -->
+<div class="card" id="front">
+  <div class="logo-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 
-<input id="name" placeholder="पूरा नाम">
-<input id="father" placeholder="पिता का नाम">
-<input id="district" placeholder="जिला">
-<input id="state" placeholder="राज्य">
-<input id="mobile" placeholder="मोबाइल (10 अंक)">
-<input type="file" id="photoInput" accept="image/*">
+  <div class="photo">
+    <img src="https://i.imgur.com/8Km9tLL.jpg">
+  </div>
 
-<button onclick="join()">Submit</button>
+  <div class="name">गोपाल सिंह</div>
 
-<hr>
+  <div class="details">
+    पिता: पुर सिंह<br>
+    झालावाड़, राजस्थान<br>
+    मोबाइल: 9166377972
+  </div>
 
-<input id="oldCode" placeholder="पुराना Member Code">
-<button onclick="loadOld()">Old Card Load</button>
+  <div class="code">JBRRMS0001</div>
 </div>
 
-<!-- ================= FRONT CARD ================= -->
-<div id="front" class="card">
- <div class="org">जय भवानी राष्ट्रीय राजपूत महासभा</div>
- <div class="photo"><img id="photo"></div>
+<!-- BACK -->
+<div class="card" id="back">
+  <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 
- <div class="details">
-  <div class="d-name" id="c_name"></div>
-  <div class="d-text" id="c_father"></div>
-  <div class="d-text" id="c_dist"></div>
-  <div class="d-text" id="c_mobile"></div>
-  <div class="d-code" id="c_code"></div>
- </div>
+  <!-- QR CODE -->
+  <div id="qrcode"></div>
+
+  <div class="footer">
+    हेल्पलाइन: 9166377972<br>
+    Email: jbrrms1@gmail.com<br>
+    Website: www.jbrrms.in<br>
+    यह पहचान पत्र संगठन की संपत्ति है
+  </div>
 </div>
 
-<!-- ================= BACK CARD ================= -->
-<div id="back" class="card">
- <div class="back-org">जय भवानी राष्ट्रीय राजपूत महासभा</div>
- <div id="qr"></div>
-
- <div class="backtext">
-  हेल्पलाइन: 9166377972<br>
-  Email: jbrrms1@gmail.com<br>
-  Website: www.jbrrms.in<br>
-  <small>यह पहचान पत्र संगठन की संपत्ति है</small>
- </div>
-</div>
-
-<div class="actions" id="actions">
- <button onclick="download(front,'JBRRMS_IDCARD_FRONT_'+c_code.innerText)">⬇️ Front</button>
- <button onclick="download(back,'JBRRMS_IDCARD_BACK_'+c_code.innerText)">⬇️ Back</button>
+<div class="buttons">
+  <button onclick="showFront()">Front</button>
+  <button onclick="showBack()">Back</button>
 </div>
 
 <script>
-/* ================= SUPABASE ================= */
-const sb = supabase.createClient(
- "https://ejdzdptqxelilkseannw.supabase.co",
- "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
-);
-
-/* ================= ELEMENTS ================= */
-const joinBox=document.getElementById("joinBox");
-const front=document.getElementById("front");
-const back=document.getElementById("back");
-const actions=document.getElementById("actions");
-
-const name=document.getElementById("name");
-const father=document.getElementById("father");
-const district=document.getElementById("district");
-const state=document.getElementById("state");
-const mobile=document.getElementById("mobile");
-const photoInput=document.getElementById("photoInput");
-const oldCode=document.getElementById("oldCode");
-
-const photo=document.getElementById("photo");
-const c_name=document.getElementById("c_name");
-const c_father=document.getElementById("c_father");
-const c_dist=document.getElementById("c_dist");
-const c_mobile=document.getElementById("c_mobile");
-const c_code=document.getElementById("c_code");
-const qr=document.getElementById("qr");
-
-/* ================= MEMBER CODE ================= */
-async function nextCode(){
- const {data}=await sb.from("JBRRMS")
- .select("member_code")
- .order("member_code",{ascending:false})
- .limit(1);
-
- if(!data || !data.length) return "JBRRMS0001";
- return "JBRRMS"+String(parseInt(data[0].member_code.slice(6))+1).padStart(4,"0");
+function showFront(){
+  document.getElementById('front').style.display='block';
+  document.getElementById('back').style.display='none';
 }
-
-/* ================= JOIN ================= */
-async function join(){
- if(
-  !name.value || !father.value || !district.value ||
-  !state.value || !/^[6-9]\d{9}$/.test(mobile.value) ||
-  !photoInput.files.length
- ){
-  alert("पूरा सही फॉर्म भरें");
-  return;
- }
-
- const code=await nextCode();
-
- const fd=new FormData();
- fd.append("file",photoInput.files[0]);
- fd.append("upload_preset","jbrms_unsigned");
-
- const img=await fetch(
-  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
-  {method:"POST",body:fd}
- ).then(r=>r.json());
-
- if(!img.secure_url){alert("Photo upload failed");return;}
-
- const {error}=await sb.from("JBRRMS").insert([{
-  member_code:code,
-  name:name.value,
-  father_name:father.value,
-  district:district.value,
-  state:state.value,
-  mobile:mobile.value,
-  photo_url:img.secure_url
- }]);
-
- if(error){alert("Supabase Error");return;}
- show(code);
+function showBack(){
+  document.getElementById('front').style.display='none';
+  document.getElementById('back').style.display='block';
 }
+showFront();
 
-/* ================= LOAD OLD ================= */
-function loadOld(){
- if(oldCode.value) show(oldCode.value.trim());
-}
-
-/* ================= SHOW CARD ================= */
-async function show(code){
- const {data}=await sb.from("JBRRMS")
- .select("*")
- .eq("member_code",code)
- .single();
-
- if(!data){alert("Member not found");return;}
-
- joinBox.style.display="none";
- front.style.display="block";
- back.style.display="block";
- actions.style.display="block";
-
- photo.src=data.photo_url;
- c_name.innerText=data.name;
- c_father.innerText="पिता: "+data.father_name;
- c_dist.innerText=data.district+", "+data.state;
- c_mobile.innerText="मोबाइल: "+data.mobile;
- c_code.innerText=data.member_code;
-
- qr.innerHTML="";
- new QRCode(qr,{
-  text:`JBRRMS ID CARD
-Name:${data.name}
-Code:${data.member_code}
-Mobile:${data.mobile}`,
-  width:336,
-  height:336
- });
-}
-
-/* ================= DOWNLOAD ================= */
-function download(el,name){
- html2canvas(el,{scale:3,useCORS:true}).then(c=>{
-  const a=document.createElement("a");
-  a.download=name+".png";
-  a.href=c.toDataURL("image/png");
-  a.click();
- });
-}
+/* QR GENERATE */
+new QRCode(document.getElementById("qrcode"), {
+  text: "Name: गोपाल सिंह | ID: JBRRMS0001 | Mobile: 9166377972",
+  width: 110,
+  height: 110
+});
 </script>
 
 </body>
