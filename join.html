@@ -4,167 +4,91 @@
 <meta charset="UTF-8">
 <title>JBRRMS Join + ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- QR -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <!-- Download -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
 <style>
-body{
-  margin:0;
-  background:#111;
-  font-family:Arial,sans-serif;
-}
-
-/* ===== JOIN FORM ===== */
+body{margin:0;background:#111;font-family:Arial}
+/* ===== JOIN BOX ===== */
 #joinBox{
-  max-width:360px;
-  background:#fff;
-  margin:30px auto;
-  padding:20px;
-  border-radius:8px;
+  max-width:360px;background:#fff;margin:30px auto;
+  padding:20px;border-radius:8px
 }
 #joinBox h2{text-align:center}
-input,button{
-  width:100%;
-  padding:10px;
-  margin:8px 0;
-}
-button{
-  background:#e65100;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
-button:disabled{background:#999}
-
+input,button{width:100%;padding:10px;margin:8px 0}
+button{background:#e65100;color:#fff;border:none;cursor:pointer}
+hr{margin:15px 0}
 /* ===== CARD COMMON ===== */
 .card{
-  display:none;
-  position:relative;
-  width:1080px;
-  height:1676px;
+  display:none;position:relative;
+  width:1080px;height:1676px;
   margin:30px auto;
   background-size:cover;
-  background-position:center;
 }
-
 /* ===== FRONT ===== */
 #front{
   background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover;
 }
-
-/* FRONT HEADER */
 .front-title{
-  position:absolute;
-  top:220px;
-  width:100%;
-  text-align:center;
-  font-size:52px;
-  font-weight:900;
-  color:#ff6a00;
+  position:absolute;top:320px;width:100%;
+  text-align:center;font-size:52px;
+  font-weight:900;color:#ff6a00;
 }
-
-/* PHOTO */
 .photo{
-  position:absolute;
-  top:360px;
-  left:390px;
-  width:300px;
-  height:380px;
-  border-radius:24px;
-  overflow:hidden;
-  border:12px solid #d4af37;
+  position:absolute;top:500px;left:390px;
+  width:300px;height:380px;
+  border-radius:24px;overflow:hidden;
+  border:16px solid #d4af37;
   background:#fff;
 }
 .photo img{width:100%;height:100%;object-fit:cover}
-
-/* DETAILS */
 .details{
-  position:absolute;
-  top:780px;
-  width:100%;
-  padding-left:220px;
-  font-size:34px;
-  line-height:1.6;
-  color:#000;
+  position:absolute;top:920px;
+  width:100%;padding-left:220px;
+  font-size:34px;line-height:1.6;color:#000
 }
-.details b{color:#000}
-#c_code{
-  margin-top:18px;
-  font-size:30px;
-  letter-spacing:2px;
-  font-weight:bold;
-}
-
+#c_code{margin-top:18px;font-weight:bold;letter-spacing:2px}
 /* ===== BACK ===== */
 #back{
   background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover;
 }
-
-/* BACK TITLE */
 .back-title{
-  position:absolute;
-  top:180px;
-  width:100%;
-  text-align:center;
-  font-size:54px;
-  font-weight:900;
-  color:#ff6a00;
+  position:absolute;top:200px;width:100%;
+  text-align:center;font-size:54px;
+  font-weight:900;color:#ff6a00
 }
-
-/* QR */
-#qr{
-  position:absolute;
-  top:340px;
-  left:390px;
-}
-
-/* BACK TEXT */
+#qr{position:absolute;top:380px;left:390px}
 .backtext{
-  position:absolute;
-  bottom:120px;
-  width:100%;
-  text-align:center;
-  font-size:26px;
-  color:#000;
+  position:absolute;bottom:120px;
+  width:100%;text-align:center;font-size:26px
 }
-
-/* ACTIONS */
-.actions{
-  text-align:center;
-  margin-bottom:40px;
-}
-.actions button{
-  width:180px;
-  margin:6px;
-}
+/* ===== ACTIONS ===== */
+.actions{text-align:center;margin-bottom:40px}
+.actions button{width:180px;margin:6px}
 </style>
 </head>
-
 <body>
-
-<!-- ===== JOIN FORM ===== -->
+<!-- ===== JOIN / SEARCH ===== -->
 <div id="joinBox">
-  <h2>JBRRMS Join Form</h2>
-  <input id="name" placeholder="पूरा नाम" required>
-  <input id="father" placeholder="पिता का नाम" required>
-  <input id="district" placeholder="जिला" required>
-  <input id="state" placeholder="राज्य" required>
-  <input id="mobile" placeholder="मोबाइल नंबर" pattern="[0-9]{10}" required>
-  <input type="file" id="photoInput" accept="image/*" required>
-  <button id="joinBtn">Join Now</button>
+  <h2>JBRRMS Join / Search</h2>
+  <input id="name" placeholder="पूरा नाम">
+  <input id="father" placeholder="पिता का नाम">
+  <input id="district" placeholder="जिला">
+  <input id="state" placeholder="राज्य">
+  <input id="mobile" placeholder="मोबाइल नंबर">
+  <input type="file" id="photoInput" accept="image/*">
+  <button onclick="joinNow()">Join Now</button>
+  <hr>
+  <input id="searchCode" placeholder="Member Code (JBRRMS0001)">
+  <button onclick="searchMember()">🆔 Search ID Card</button>
 </div>
-
 <!-- ===== FRONT ===== -->
 <div id="front" class="card">
   <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
-
   <div class="photo"><img id="photo"></div>
-
   <div class="details">
     <div><b>नाम :</b> <span id="c_name"></span></div>
     <div><b>पिता :</b> <span id="c_father"></span></div>
@@ -174,122 +98,101 @@ button:disabled{background:#999}
     <div id="c_code"></div>
   </div>
 </div>
-
 <!-- ===== BACK ===== -->
 <div id="back" class="card">
   <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
-
   <div id="qr"></div>
-
   <div class="backtext">
     हेल्पलाइन: 9166377972<br>
     Email: jbrrms1@gmail.com<br>
     Website: www.jbrrms.in
   </div>
 </div>
-
 <div class="actions">
   <button onclick="showFront()">⬅ Front</button>
-  <button onclick="showBack()">Back ➡</button><br>
-  <button onclick="downloadCurrent()">⬇ Download</button>
+  <button onclick="showBack()">Back ➡</button>
+  <button onclick="download()">⬇ Download</button>
 </div>
-
 <script>
 const sb = supabase.createClient(
-  "https://ejdzdptqxelilkseannw.supabase.co",
-  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
+ "https://ejdzdptqxelilkseannw.supabase.co",
+ "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
 );
-
-let finalPhotoBlob=null;
-let currentSide="front";
-
+let blob=null, side="front";
 /* ===== MEMBER CODE ===== */
-async function generateMemberCode(){
-  const {data}=await sb.from("JBRRMS")
-    .select("member_code")
-    .order("member_code",{ascending:false})
-    .limit(1);
-
-  if(!data||data.length===0) return "JBRRMS0001";
-  let n=parseInt(data[0].member_code.replace("JBRRMS",""))+1;
-  return "JBRRMS"+String(n).padStart(4,"0");
+async function nextCode(){
+ const {data}=await sb.from("JBRRMS")
+ .select("member_code").order("member_code",{ascending:false}).limit(1);
+ if(!data||!data.length) return "JBRRMS0001";
+ let n=parseInt(data[0].member_code.replace("JBRRMS",""))+1;
+ return "JBRRMS"+String(n).padStart(4,"0");
 }
-
-/* ===== PHOTO PROCESS ===== */
+/* PHOTO */
 photoInput.onchange=e=>{
-  const img=new Image();
-  img.src=URL.createObjectURL(e.target.files[0]);
-  img.onload=()=>{
-    const c=document.createElement("canvas");
-    c.width=c.height=600;
-    const x=c.getContext("2d");
-    const s=Math.min(img.width,img.height);
-    x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,600,600);
-    c.toBlob(b=>finalPhotoBlob=b,"image/jpeg",0.9);
-  }
+ const i=new Image();
+ i.src=URL.createObjectURL(e.target.files[0]);
+ i.onload=()=>{
+  const c=document.createElement("canvas");
+  c.width=c.height=600;
+  const x=c.getContext("2d");
+  const s=Math.min(i.width,i.height);
+  x.drawImage(i,(i.width-s)/2,(i.height-s)/2,s,s,0,0,600,600);
+  c.toBlob(b=>blob=b,"image/jpeg",0.9);
+ }
 }
-
-/* ===== JOIN ===== */
-joinBtn.onclick=async()=>{
-  if(!finalPhotoBlob) return alert("Photo upload करें");
-  joinBtn.disabled=true;
-
-  const code=await generateMemberCode();
-
-  const fd=new FormData();
-  fd.append("file",finalPhotoBlob);
-  fd.append("upload_preset","jbrms_unsigned");
-
-  const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
-  const img=await up.json();
-
-  await sb.from("JBRRMS").insert([{
-    member_code:code,
-    name:name.value,
-    father_name:father.value,
-    district:district.value,
-    state:state.value,
-    mobile:mobile.value,
-    photo_url:img.secure_url
-  }]);
-
-  showCard(code);
+/* JOIN */
+async function joinNow(){
+ if(!blob) return alert("Photo required");
+ const code=await nextCode();
+ const fd=new FormData();
+ fd.append("file",blob);
+ fd.append("upload_preset","jbrms_unsigned");
+ const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
+ const img=await up.json();
+ await sb.from("JBRRMS").insert([{
+  member_code:code,
+  name:name.value,
+  father_name:father.value,
+  district:district.value,
+  state:state.value,
+  mobile:mobile.value,
+  photo_url:img.secure_url
+ }]);
+ show(code);
 }
-
-/* ===== SHOW CARD ===== */
-async function showCard(code){
-  joinBox.style.display="none";
-  front.style.display="block";
-  back.style.display="none";
-
-  const {data}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
-
-  c_name.innerText=data.name;
-  c_father.innerText=data.father_name;
-  c_district.innerText=data.district;
-  c_state.innerText=data.state;
-  c_mobile.innerText=data.mobile;
-  c_code.innerText=data.member_code;
-  photo.src=data.photo_url;
-
-  qr.innerHTML="";
-  new QRCode(qr,{text:data.member_code,width:300,height:300});
+/* SEARCH */
+async function searchMember(){
+ show(searchCode.value.trim());
 }
-
-function showFront(){front.style.display="block";back.style.display="none";currentSide="front"}
-function showBack(){front.style.display="none";back.style.display="block";currentSide="back"}
-
-/* ===== DOWNLOAD ===== */
-function downloadCurrent(){
-  const el=currentSide==="front"?front:back;
-  html2canvas(el,{scale:2}).then(c=>{
-    const a=document.createElement("a");
-    a.download=currentSide.toUpperCase()+".png";
-    a.href=c.toDataURL("image/png");
-    a.click();
-  });
+/* SHOW */
+async function show(code){
+ const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
+ if(error) return alert("Member not found");
+ joinBox.style.display="none";
+ front.style.display="block";
+ back.style.display="none";
+ side="front";
+ c_name.innerText=data.name;
+ c_father.innerText=data.father_name;
+ c_district.innerText=data.district;
+ c_state.innerText=data.state;
+ c_mobile.innerText=data.mobile;
+ c_code.innerText=data.member_code;
+ photo.src=data.photo_url;
+ qr.innerHTML="";
+ new QRCode(qr,{text:data.member_code,width:300,height:300});
+}
+function showFront(){front.style.display="block";back.style.display="none";side="front"}
+function showBack(){front.style.display="none";back.style.display="block";side="back"}
+function download(){
+ const el=side==="front"?front:back;
+ html2canvas(el,{scale:2}).then(c=>{
+  const a=document.createElement("a");
+  a.download=side+".png";
+  a.href=c.toDataURL();
+  a.click();
+ });
 }
 </script>
-
 </body>
 </html>
