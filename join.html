@@ -5,7 +5,6 @@
 <title>JBRRMS Join + ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -22,12 +21,12 @@ hr{margin:15px 0}
 .front-title{position:absolute;top:415px;width:100%;text-align:center;font-size:52px;font-weight:900;color:#ff6a00}
 .photo{position:absolute;top:480px;left:390px;width:300px;height:380px;border-radius:24px;overflow:hidden;border:16px solid #d4af37;background:#fff}
 .photo img{width:100%;height:100%;object-fit:cover}
-.details{position:absolute;top:920px;width:100%;padding-left:280px;font-size:54px;line-height:1.6;color:#000}
+.details{position:absolute;top:920px;width:100%;padding-left:280px;font-size:54px;line-height:1.6}
 #c_code{margin-top:18px;font-weight:bold;letter-spacing:2px}
 #back{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover}
 .back-title{position:absolute;top:200px;width:100%;text-align:center;font-size:54px;font-weight:900;color:#ff6a00}
 #qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
-.seven-lines{position:absolute;top:720px;left:50%;transform:translateX(-50%);width:720px;text-align:center;font-size:22px;line-height:1.5;font-weight:600;color:#000}
+.seven-lines{position:absolute;top:720px;left:50%;transform:translateX(-50%);width:720px;text-align:center;font-size:22px;line-height:1.5;font-weight:600}
 .backtext{position:absolute;bottom:120px;width:100%;text-align:center;font-size:26px}
 .actions{text-align:center;margin-bottom:40px}
 .actions button{width:180px;margin:6px}
@@ -69,13 +68,7 @@ hr{margin:15px 0}
  <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
  <div id="qr"></div>
  <div class="seven-lines">
-  पद से बड़ा स्वाभिमान होता है।<br>
-  स्वाभिमान है तो पहचान है।<br>
-  स्वाभिमान कभी गिरवी नहीं रखा जाता।<br>
-  स्वाभिमान ही असली शक्ति है।<br>
-  जिसके पास स्वाभिमान है, वही सच्चा बलवान है।<br>
-  स्वाभिमान समझौता नहीं सिखाता।<br>
-  स्वाभिमान हमारी असली विरासत है।
+  पद से बड़ा स्वाभिमान होता है।
  </div>
  <div class="backtext">
   हेल्पलाइन: 9166377972<br>
@@ -118,57 +111,36 @@ async function joinNow(){
  fd.append("file",blob);
  fd.append("upload_preset","jbrms_unsigned");
 
- const up=await fetch(
-  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
-  {method:"POST",body:fd}
- );
+ const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
  const img=await up.json();
 
- const {data,error}=await sb
-  .from("JBRRMS")
-  .insert([{
-    name:name.value,
-    post:post.value,
-    father_name:father.value,
-    district:district.value,
-    state:state.value,
-    mobile:mobile.value,
-    photo_url:img.secure_url
-  }])
-  .select("member_code")
-  .single();
+ const {data,error}=await sb.from("JBRRMS").insert([{
+   name: document.getElementById("name").value,
+   post: document.getElementById("post").value,
+   father: document.getElementById("father").value,
+   district: document.getElementById("district").value,
+   state: document.getElementById("state").value,
+   mobile: document.getElementById("mobile").value,
+   photo_url: img.secure_url
+ }]).select("*").single();
 
- if(error){
-  alert(error.message);
-  return;
- }
+ if(error) return alert(error.message);
 
  alert("Join सफल ✔️\nMember Code: "+data.member_code);
 }
 
-function searchMember(){
+async function searchMember(){
  const code=searchCode.value.trim();
  if(!code) return alert("Member Code डालें");
- show(code);
-}
-
-async function show(code){
- const {data,error}=await sb
-  .from("JBRRMS")
-  .select("*")
-  .eq("member_code",code)
-  .single();
-
- if(error||!data) return alert("Member not found");
+ const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
+ if(error) return alert("Member not found");
 
  joinBox.style.display="none";
  front.style.display="block";
- back.style.display="none";
- side="front";
 
  c_name.innerText=data.name;
- c_post.innerText=data.post||"";
- c_father.innerText=data.father_name;
+ c_post.innerText=data.post;
+ c_father.innerText=data.father;
  c_district.innerText=data.district;
  c_state.innerText=data.state;
  c_mobile.innerText=data.mobile;
@@ -179,18 +151,14 @@ async function show(code){
  new QRCode(qr,{text:data.member_code,width:300,height:300});
 }
 
-function showFront(){front.style.display="block";back.style.display="none";side="front"}
-function showBack(){front.style.display="none";back.style.display="block";side="back"}
-
-function download(){
- const el=side==="front"?front:back;
- html2canvas(el,{width:1080,height:1676,scale:2,useCORS:true}).then(c=>{
-  const a=document.createElement("a");
-  a.download="JBRRMS_"+side+"_ID_CARD.png";
-  a.href=c.toDataURL("image/png",1);
-  a.click();
- });
-}
+function showFront(){front.style.display="block";back.style.display="none"}
+function showBack(){front.style.display="none";back.style.display="block"}
+function download(){html2canvas(front,{scale:2,useCORS:true}).then(c=>{
+ const a=document.createElement("a");
+ a.download="JBRRMS_ID.png";
+ a.href=c.toDataURL();
+ a.click();
+});}
 </script>
 
 </body>
