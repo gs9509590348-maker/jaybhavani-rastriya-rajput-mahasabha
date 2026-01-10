@@ -11,7 +11,12 @@
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-body{margin:0;background:#111;font-family:Arial}
+body{
+ margin:0;
+ background:#111;
+ font-family:Arial;
+ overflow-x:hidden;
+}
 
 /* ================= JOIN FORM ================= */
 #joinBox{
@@ -58,7 +63,6 @@ button{
  font-size:64px;
  font-weight:900;
  color:#ff7a00;
- letter-spacing:1px;
 }
 
 .photo{
@@ -80,7 +84,7 @@ button{
 
 .details{
  position:absolute;
- top:1020px;
+ top:1100px; /* नाम नीचे */
  width:100%;
  text-align:center;
  color:#000;
@@ -101,7 +105,6 @@ button{
  font-size:38px;
  margin-top:16px;
  font-weight:900;
- letter-spacing:1px;
 }
 
 /* ================= BACK ================= */
@@ -117,15 +120,18 @@ button{
  font-size:60px;
  font-weight:900;
  color:#ff7a00;
- letter-spacing:1px;
 }
 
 #qr{
  position:absolute;
  top:520px;
  left:360px;
- padding:18px;
+ width:360px;
+ height:360px;
  background:#fff;
+ padding:12px;
+ border-radius:14px;
+ box-shadow:0 6px 18px rgba(0,0,0,.35);
 }
 
 .backtext{
@@ -194,8 +200,8 @@ button{
 </div>
 
 <div class="actions" id="actions">
- <button onclick="download(front,'IDCARD_FRONT_'+c_code.innerText)">⬇️ Front</button>
- <button onclick="download(back,'IDCARD_BACK_'+c_code.innerText)">⬇️ Back</button>
+ <button onclick="download(front,'JBRRMS_IDCARD_FRONT_'+c_code.innerText)">⬇️ Front</button>
+ <button onclick="download(back,'JBRRMS_IDCARD_BACK_'+c_code.innerText)">⬇️ Back</button>
 </div>
 
 <script>
@@ -304,9 +310,12 @@ async function show(code){
 
  qr.innerHTML="";
  new QRCode(qr,{
-  text:`JBRRMS ID CARD\nName:${data.name}\nCode:${data.member_code}\nMobile:${data.mobile}`,
-  width:360,
-  height:360
+  text:`JBRRMS ID CARD
+Name:${data.name}
+Code:${data.member_code}
+Mobile:${data.mobile}`,
+  width:336,
+  height:336
  });
 }
 
