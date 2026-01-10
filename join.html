@@ -98,16 +98,6 @@ const sb = supabase.createClient(
 
 let blob=null, side="front";
 
-async function nextCode(){
- const {data}=await sb.from("JBRRMS")
- .select("member_code")
- .order("member_code",{ascending:false})
- .limit(1);
- if(!data||!data.length) return "JBRRMS0001";
- let n=parseInt(data[0].member_code.replace("JBRRMS",""))+1;
- return "JBRRMS"+String(n).padStart(4,"0");
-}
-
 photoInput.onchange=e=>{
  const i=new Image();
  i.src=URL.createObjectURL(e.target.files[0]);
@@ -123,23 +113,37 @@ photoInput.onchange=e=>{
 
 async function joinNow(){
  if(!blob) return alert("Photo required");
- const code=await nextCode();
+
  const fd=new FormData();
  fd.append("file",blob);
  fd.append("upload_preset","jbrms_unsigned");
- const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
+
+ const up=await fetch(
+  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
+  {method:"POST",body:fd}
+ );
  const img=await up.json();
- await sb.from("JBRRMS").insert([{
-  member_code:code,
-  name:name.value,
-  post:post.value,
-  father_name:father.value,
-  district:district.value,
-  state:state.value,
-  mobile:mobile.value,
-  photo_url:img.secure_url
- }]);
- alert("Join सफल ✔️\nMember Code: "+code);
+
+ const {data,error}=await sb
+  .from("JBRRMS")
+  .insert([{
+    name:name.value,
+    post:post.value,
+    father_name:father.value,
+    district:district.value,
+    state:state.value,
+    mobile:mobile.value,
+    photo_url:img.secure_url
+  }])
+  .select("member_code")
+  .single();
+
+ if(error){
+  alert(error.message);
+  return;
+ }
+
+ alert("Join सफल ✔️\nMember Code: "+data.member_code);
 }
 
 function searchMember(){
@@ -149,7 +153,12 @@ function searchMember(){
 }
 
 async function show(code){
- const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
+ const {data,error}=await sb
+  .from("JBRRMS")
+  .select("*")
+  .eq("member_code",code)
+  .single();
+
  if(error||!data) return alert("Member not found");
 
  joinBox.style.display="none";
