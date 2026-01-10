@@ -27,20 +27,27 @@ button:disabled{background:#999}
 img.preview{max-width:100%;border-radius:8px;margin-top:10px}
 
 /* ===== ID CARD ===== */
-.section{margin-top:40px;text-align:center;color:#fff}
+.section{
+  margin-top:40px;
+  text-align:center;
+  color:#fff;
+  display:none;
+}
 .card{
   width:1080px;
   height:1676px;
   margin:20px auto;
   position:relative;
   background-size:cover;
-  background-position:center
+  background-position:center;
 }
+
+/* 🔥 NEW TEMPLATE (CACHE SAFE) */
 .front{
-  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png")
+  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png?v=2");
 }
 .back{
-  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png")
+  background-image:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png?v=2");
 }
 
 /* FRONT */
@@ -124,7 +131,7 @@ img.preview{max-width:100%;border-radius:8px;margin-top:10px}
 </form>
 
 <!-- ================= ID CARD ================= -->
-<div class="section">
+<div class="section" id="cardSection">
 <h2>JBRRMS ID Card</h2>
 
 <div id="front" class="card front">
@@ -165,40 +172,35 @@ const sb = supabase.createClient(
   "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
 );
 
-const CLOUD = "dlqr73p7j";
-const PRESET = "jbrms_unsigned";
-let finalBlob = null;
+const CLOUD="dlqr73p7j";
+const PRESET="jbrms_unsigned";
+let finalBlob=null;
 
-/* ===== AUTO MEMBER CODE ===== */
+/* ===== MEMBER CODE (SAFE) ===== */
 async function generateMemberCode(){
-  const { data } = await sb
-    .from("JBRRMS")
-    .select("member_code")
-    .order("id",{ascending:false})
-    .limit(1);
+ const {data}=await sb
+  .from("JBRRMS")
+  .select("member_code")
+  .order("member_code",{ascending:false})
+  .limit(1);
 
-  if(!data || data.length===0){
-    return "JBRRMS0001";
-  }
-  const last = data[0].member_code || "JBRRMS0000";
-  const num = parseInt(last.replace("JBRRMS","")) + 1;
-  return "JBRRMS" + String(num).padStart(4,"0");
+ if(!data||!data.length) return "JBRRMS0001";
+ const n=parseInt(data[0].member_code.replace("JBRRMS",""))+1;
+ return "JBRRMS"+String(n).padStart(4,"0");
 }
 
 /* ===== PHOTO PROCESS ===== */
-photoInput.onchange = async e=>{
- const f = e.target.files[0];
- if(!f) return;
-
- const img = new Image();
- img.src = URL.createObjectURL(f);
+photoInput.onchange=async e=>{
+ const f=e.target.files[0];
+ if(!f)return;
+ const img=new Image();
+ img.src=URL.createObjectURL(f);
  await img.decode();
 
- const c = document.createElement("canvas");
- const x = c.getContext("2d");
- c.width = c.height = 600;
-
- const s = Math.min(img.width,img.height);
+ const c=document.createElement("canvas");
+ c.width=c.height=600;
+ const x=c.getContext("2d");
+ const s=Math.min(img.width,img.height);
  x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,600,600);
 
  c.toBlob(b=>{
@@ -208,23 +210,23 @@ photoInput.onchange = async e=>{
 };
 
 /* ===== SUBMIT ===== */
-joinForm.onsubmit = async e=>{
+joinForm.onsubmit=async e=>{
  e.preventDefault();
  if(!finalBlob) return alert("Photo wait करें");
-
  submitBtn.disabled=true;
 
  try{
-  const code = await generateMemberCode();
+  const code=await generateMemberCode();
 
   const fd=new FormData();
   fd.append("file",finalBlob);
   fd.append("upload_preset",PRESET);
 
-  const up=await fetch(`https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,
+  const up=await fetch(
+   `https://api.cloudinary.com/v1_1/${CLOUD}/image/upload`,
    {method:"POST",body:fd});
   const u=await up.json();
-  if(!u.secure_url) throw new Error("Photo upload failed");
+  if(!u.secure_url) throw "Photo upload failed";
 
   await sb.from("JBRRMS").insert([{
     member_code:code,
@@ -237,39 +239,41 @@ joinForm.onsubmit = async e=>{
   }]);
 
   alert("✅ Join Successful\nMember Code: "+code);
-  joinForm.reset();
-  preview.src="";
-  finalBlob=null;
+  location.href=`join.html?code=${code}`;
 
  }catch(err){
-  alert("❌ "+err.message);
+  alert("❌ "+err);
+ }finally{
+  submitBtn.disabled=false;
  }
- submitBtn.disabled=false;
 };
 
 /* ===== LOAD CARD ===== */
-const qcode=new URLSearchParams(location.search).get("code");
-if(qcode){
- (async()=>{
-  const {data}=await sb.from("JBRRMS").select("*").eq("member_code",qcode).single();
-  if(!data) return;
+const q=new URLSearchParams(location.search).get("code");
+if(q){
+(async()=>{
+ document.getElementById("joinForm").style.display="none";
+ document.getElementById("cardSection").style.display="block";
 
-  c_name.innerText=data.name;
-  c_father.innerText=data.father_name;
-  c_district.innerText=data.district;
-  c_state.innerText=data.state;
-  c_mobile.innerText=data.mobile;
-  c_code.innerText=data.member_code;
-  cardPhoto.src=data.photo_url;
-  qr.src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+data.member_code;
- })();
+ const {data}=await sb.from("JBRRMS").select("*").eq("member_code",q).single();
+ if(!data)return;
+
+ c_name.innerText=data.name;
+ c_father.innerText=data.father_name;
+ c_district.innerText=data.district;
+ c_state.innerText=data.state;
+ c_mobile.innerText=data.mobile;
+ c_code.innerText=data.member_code;
+ cardPhoto.src=data.photo_url;
+ qr.src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data="+data.member_code;
+})();
 }
 
 /* ===== DOWNLOAD ===== */
 function download(id){
  html2canvas(document.getElementById(id),{scale:2}).then(c=>{
   const a=document.createElement("a");
-  a.download=`JBRRMS_${id}_${qcode||"CARD"}.png`;
+  a.download=`JBRRMS_${id}_${q||"CARD"}.png`;
   a.href=c.toDataURL("image/png");
   a.click();
  });
