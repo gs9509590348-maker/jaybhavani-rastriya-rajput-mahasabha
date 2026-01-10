@@ -2,61 +2,193 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Join + ID Card</title>
+<title>JBRRMS Royal ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-body{margin:0;background:#111;font-family:Arial}
-#joinBox{max-width:360px;background:#fff;margin:30px auto;padding:20px;border-radius:8px}
+body{
+ margin:0;
+ background:#0e0e0e;
+ font-family:Arial, Helvetica, sans-serif;
+}
+
+/* ===== JOIN BOX ===== */
+#joinBox{
+ max-width:360px;
+ background:#fff;
+ margin:25px auto;
+ padding:20px;
+ border-radius:10px;
+}
 #joinBox h2{text-align:center}
-input,button{width:100%;padding:10px;margin:8px 0}
-button{background:#e65100;color:#fff;border:none;cursor:pointer}
+input,button{
+ width:100%;
+ padding:10px;
+ margin:8px 0;
+ font-size:15px;
+}
+button{
+ background:#c69214;
+ color:#fff;
+ border:none;
+ font-weight:bold;
+ cursor:pointer;
+}
 hr{margin:15px 0}
-.card{display:none;position:relative;width:1080px;height:1676px;margin:30px auto;background-size:cover}
-#front{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover}
-.front-title{position:absolute;top:415px;width:100%;text-align:center;font-size:52px;font-weight:900;color:#ff6a00}
-.photo{position:absolute;top:480px;left:390px;width:300px;height:380px;border-radius:24px;overflow:hidden;border:16px solid #d4af37;background:#fff}
-.photo img{width:100%;height:100%;object-fit:cover}
-.details{position:absolute;top:920px;width:100%;padding-left:280px;font-size:54px;line-height:1.6}
-#c_code{margin-top:18px;font-weight:bold;letter-spacing:2px}
-#back{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover}
-.back-title{position:absolute;top:200px;width:100%;text-align:center;font-size:54px;font-weight:900;color:#ff6a00}
-#qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
-.seven-lines{position:absolute;top:720px;left:50%;transform:translateX(-50%);width:720px;text-align:center;font-size:22px;line-height:1.5;font-weight:600}
-.backtext{position:absolute;bottom:120px;width:100%;text-align:center;font-size:26px}
-.actions{text-align:center;margin-bottom:40px}
-.actions button{width:180px;margin:6px}
+
+/* ===== CARD BASE ===== */
+.card{
+ display:none;
+ position:relative;
+ width:1080px;
+ height:1676px;
+ margin:20px auto;
+ background-size:cover;
+}
+
+#front{
+ background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover;
+}
+#back{
+ background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover;
+}
+
+/* ===== PREMIUM TITLES ===== */
+.front-title{
+ position:absolute;
+ top:415px;
+ width:100%;
+ text-align:center;
+ font-size:56px;
+ font-weight:900;
+ letter-spacing:2px;
+ background:linear-gradient(180deg,#fff2b0,#f5c542,#d4af37,#b8860b);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+ text-shadow:0 4px 12px rgba(0,0,0,0.45);
+}
+
+.back-title{
+ position:absolute;
+ top:200px;
+ width:100%;
+ text-align:center;
+ font-size:54px;
+ font-weight:900;
+ letter-spacing:2px;
+ background:linear-gradient(180deg,#fff2b0,#f5c542,#d4af37,#b8860b);
+ -webkit-background-clip:text;
+ -webkit-text-fill-color:transparent;
+ text-shadow:0 4px 12px rgba(0,0,0,0.45);
+}
+
+/* ===== PHOTO FRAME ===== */
+.photo{
+ position:absolute;
+ top:500px;
+ left:390px;
+ width:300px;
+ height:380px;
+ border-radius:26px;
+ overflow:hidden;
+ border:18px solid #d4af37;
+ background:#fff;
+ box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+.photo img{
+ width:100%;
+ height:100%;
+ object-fit:cover;
+}
+
+/* ===== DETAILS ===== */
+.details{
+ position:absolute;
+ top:930px;
+ padding-left:280px;
+ font-size:52px;
+ line-height:1.6;
+ color:#000;
+}
+#c_code{
+ margin-top:15px;
+ font-weight:bold;
+ letter-spacing:3px;
+}
+
+/* ===== BACK SIDE ===== */
+#qr{
+ position:absolute;
+ top:380px;
+ left:50%;
+ transform:translateX(-50%);
+}
+.seven-lines{
+ position:absolute;
+ top:720px;
+ left:50%;
+ transform:translateX(-50%);
+ width:760px;
+ text-align:center;
+ font-size:22px;
+ font-weight:600;
+}
+.backtext{
+ position:absolute;
+ bottom:120px;
+ width:100%;
+ text-align:center;
+ font-size:26px;
+}
+
+/* ===== ACTIONS ===== */
+.actions{
+ text-align:center;
+ margin:30px 0;
+}
+.actions button{
+ width:180px;
+ margin:6px;
+ background:#c69214;
+}
 </style>
 </head>
 
 <body>
 
+<!-- JOIN FORM -->
 <div id="joinBox">
- <h2>JBRRMS Join / Search</h2>
- <input id="name" placeholder="पूरा नाम">
- <input id="post" placeholder="पद">
- <input id="father_name" placeholder="पिता का नाम">
- <input id="district" placeholder="जिला">
- <input id="state" placeholder="राज्य">
- <input id="mobile" placeholder="मोबाइल नंबर">
- <input type="file" id="photoInput" accept="image/*">
- <button onclick="joinNow()">Join Now</button>
- <hr>
- <input id="searchCode" placeholder="Member Code (JBRRMS0001)">
- <button onclick="searchMember()">🆔 Search ID Card</button>
+<h2>JBRRMS Join / Search</h2>
+
+<input id="name" placeholder="पूरा नाम">
+<input id="post" placeholder="पद">
+<input id="father" placeholder="पिता का नाम">
+<input id="district" placeholder="जिला">
+<input id="state" placeholder="राज्य">
+<input id="mobile" placeholder="मोबाइल नंबर">
+<input type="file" id="photoInput" accept="image/*">
+
+<button onclick="joinNow()">Join Now</button>
+<hr>
+
+<input id="searchCode" placeholder="Member Code (JBRRMS0001)">
+<button onclick="searchMember()">🆔 Search ID Card</button>
 </div>
 
+<!-- FRONT -->
 <div id="front" class="card">
  <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
  <div class="photo"><img id="photo"></div>
+
  <div class="details">
   <div><b>नाम :</b> <span id="c_name"></span></div>
   <div><b>पद :</b> <span id="c_post"></span></div>
-  <div><b>पिता :</b> <span id="c_father_name"></span></div>
+  <div><b>पिता :</b> <span id="c_father"></span></div>
   <div><b>जिला :</b> <span id="c_district"></span></div>
   <div><b>राज्य :</b> <span id="c_state"></span></div>
   <div><b>मोबाइल :</b> <span id="c_mobile"></span></div>
@@ -64,12 +196,21 @@ hr{margin:15px 0}
  </div>
 </div>
 
+<!-- BACK -->
 <div id="back" class="card">
  <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
  <div id="qr"></div>
+
  <div class="seven-lines">
-  पद से बड़ा स्वाभिमान होता है।
+  पद से बड़ा स्वाभिमान होता है।<br>
+  स्वाभिमान है तो पहचान है।<br>
+  स्वाभिमान कभी गिरवी नहीं रखा जाता।<br>
+  स्वाभिमान ही असली शक्ति है।<br>
+  जिसके पास स्वाभिमान है, वही सच्चा बलवान है।<br>
+  स्वाभिमान समझौता नहीं सिखाता।<br>
+  स्वाभिमान हमारी असली विरासत है।
  </div>
+
  <div class="backtext">
   हेल्पलाइन: 9166377972<br>
   Email: jbrrms1@gmail.com<br>
@@ -89,17 +230,17 @@ const sb = supabase.createClient(
  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
 );
 
-let blob=null, side="front";
+let blob=null,side="front";
 
 photoInput.onchange=e=>{
- const i=new Image();
- i.src=URL.createObjectURL(e.target.files[0]);
- i.onload=()=>{
+ const img=new Image();
+ img.src=URL.createObjectURL(e.target.files[0]);
+ img.onload=()=>{
   const c=document.createElement("canvas");
   c.width=c.height=600;
   const x=c.getContext("2d");
-  const s=Math.min(i.width,i.height);
-  x.drawImage(i,(i.width-s)/2,(i.height-s)/2,s,s,0,0,600,600);
+  const s=Math.min(img.width,img.height);
+  x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,600,600);
   c.toBlob(b=>blob=b,"image/jpeg",0.9);
  }
 }
@@ -111,20 +252,26 @@ async function joinNow(){
  fd.append("file",blob);
  fd.append("upload_preset","jbrms_unsigned");
 
- const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
+ const up=await fetch(
+  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
+  {method:"POST",body:fd}
+ );
  const img=await up.json();
 
  const {data,error}=await sb.from("JBRRMS").insert([{
-   name: document.getElementById("name").value,
-   post: document.getElementById("post").value,
-   father: document.getElementById("father_name").value,
-   district: document.getElementById("district").value,
-   state: document.getElementById("state").value,
-   mobile: document.getElementById("mobile").value,
-   photo_url: img.secure_url
- }]).select("*").single();
+  name:name.value,
+  post:post.value,
+  father_name:father.value,
+  district:district.value,
+  state:state.value,
+  mobile:mobile.value,
+  photo_url:img.secure_url
+ }]).select("member_code").single();
 
- if(error) return alert(error.message);
+ if(error){
+  alert(error.message);
+  return;
+ }
 
  alert("Join सफल ✔️\nMember Code: "+data.member_code);
 }
@@ -132,14 +279,21 @@ async function joinNow(){
 async function searchMember(){
  const code=searchCode.value.trim();
  if(!code) return alert("Member Code डालें");
- const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
- if(error) return alert("Member not found");
+
+ const {data,error}=await sb.from("JBRRMS")
+  .select("*")
+  .eq("member_code",code)
+  .single();
+
+ if(error || !data) return alert("Member not found");
 
  joinBox.style.display="none";
  front.style.display="block";
+ back.style.display="none";
+ side="front";
 
  c_name.innerText=data.name;
- c_post.innerText=data.post;
+ c_post.innerText=data.post||"";
  c_father.innerText=data.father_name;
  c_district.innerText=data.district;
  c_state.innerText=data.state;
@@ -151,14 +305,26 @@ async function searchMember(){
  new QRCode(qr,{text:data.member_code,width:300,height:300});
 }
 
-function showFront(){front.style.display="block";back.style.display="none"}
-function showBack(){front.style.display="none";back.style.display="block"}
-function download(){html2canvas(front,{scale:2,useCORS:true}).then(c=>{
- const a=document.createElement("a");
- a.download="JBRRMS_ID.png";
- a.href=c.toDataURL();
- a.click();
-});}
+function showFront(){
+ front.style.display="block";
+ back.style.display="none";
+ side="front";
+}
+function showBack(){
+ front.style.display="none";
+ back.style.display="block";
+ side="back";
+}
+
+function download(){
+ const el=side==="front"?front:back;
+ html2canvas(el,{scale:2,useCORS:true}).then(c=>{
+  const a=document.createElement("a");
+  a.download="JBRRMS_"+side+"_ROYAL_ID.png";
+  a.href=c.toDataURL("image/png",1);
+  a.click();
+ });
+}
 </script>
 
 </body>
