@@ -2,176 +2,293 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS ID Card</title>
+<title>JBRRMS Join + ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- QR LIB -->
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- QR -->
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<!-- Download -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body{
   margin:0;
   background:#111;
-  font-family:Arial, sans-serif;
-  text-align:center;
+  font-family:Arial,sans-serif;
 }
 
-/* COMMON */
-.card{
-  width:360px;
-  height:560px;
-  margin:20px auto;
-  background-size:cover;
-  background-position:center;
-  position:relative;
-  border-radius:12px;
-}
-
-/* FRONT */
-#front{
-  background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png');
-}
-
-.logo-title{
-  margin-top:55px;
-  font-size:20px;
-  font-weight:bold;
-  color:#ff7a00;
-}
-
-.photo{
-  width:120px;
-  height:120px;
+/* ===== JOIN FORM ===== */
+#joinBox{
+  max-width:360px;
   background:#fff;
-  border-radius:12px;
-  margin:40px auto 0;
-  overflow:hidden;
+  margin:30px auto;
+  padding:20px;
+  border-radius:8px;
 }
-
-.photo img{
+#joinBox h2{text-align:center}
+input,button{
   width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-/* NAME ↓ थोड़ा नीचे किया */
-.name{
-  margin-top:35px;
-  font-size:20px;
-  font-weight:bold;
-}
-
-.details{
-  margin-top:8px;
-  font-size:15px;
-  line-height:1.5;
-}
-
-.code{
-  margin-top:10px;
-  font-weight:bold;
-}
-
-/* BACK */
-#back{
-  background-image:url('https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png');
-}
-
-.back-title{
-  margin-top:70px;
-  font-size:18px;
-  color:#ff7a00;
-  font-weight:bold;
-}
-
-/* QR FIXED */
-#qrcode{
-  width:120px;
-  height:120px;
-  background:#fff;
-  margin:35px auto 0;
-  padding:6px;
-}
-
-.footer{
-  position:absolute;
-  bottom:30px;
-  width:100%;
-  font-size:13px;
-  line-height:1.5;
-}
-.buttons{
-  margin-bottom:30px;
+  padding:10px;
+  margin:8px 0;
 }
 button{
-  padding:8px 18px;
-  margin:5px;
-  border:none;
-  background:#ff6a00;
+  background:#e65100;
   color:#fff;
-  border-radius:6px;
+  border:none;
+  cursor:pointer;
+}
+button:disabled{background:#999}
+
+/* ===== CARD COMMON ===== */
+.card{
+  display:none;
+  position:relative;
+  width:1080px;
+  height:1676px;
+  margin:30px auto;
+  background-size:cover;
+  background-position:center;
+}
+
+/* ===== FRONT ===== */
+#front{
+  background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover;
+}
+
+/* FRONT HEADER */
+.front-title{
+  position:absolute;
+  top:220px;
+  width:100%;
+  text-align:center;
+  font-size:52px;
+  font-weight:900;
+  color:#ff6a00;
+}
+
+/* PHOTO */
+.photo{
+  position:absolute;
+  top:360px;
+  left:390px;
+  width:300px;
+  height:380px;
+  border-radius:24px;
+  overflow:hidden;
+  border:12px solid #d4af37;
+  background:#fff;
+}
+.photo img{width:100%;height:100%;object-fit:cover}
+
+/* DETAILS */
+.details{
+  position:absolute;
+  top:780px;
+  width:100%;
+  padding-left:220px;
+  font-size:34px;
+  line-height:1.6;
+  color:#000;
+}
+.details b{color:#000}
+#c_code{
+  margin-top:18px;
+  font-size:30px;
+  letter-spacing:2px;
+  font-weight:bold;
+}
+
+/* ===== BACK ===== */
+#back{
+  background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") no-repeat center/cover;
+}
+
+/* BACK TITLE */
+.back-title{
+  position:absolute;
+  top:180px;
+  width:100%;
+  text-align:center;
+  font-size:54px;
+  font-weight:900;
+  color:#ff6a00;
+}
+
+/* QR */
+#qr{
+  position:absolute;
+  top:340px;
+  left:390px;
+}
+
+/* BACK TEXT */
+.backtext{
+  position:absolute;
+  bottom:120px;
+  width:100%;
+  text-align:center;
+  font-size:26px;
+  color:#000;
+}
+
+/* ACTIONS */
+.actions{
+  text-align:center;
+  margin-bottom:40px;
+}
+.actions button{
+  width:180px;
+  margin:6px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- FRONT -->
-<div class="card" id="front">
-  <div class="logo-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
+<!-- ===== JOIN FORM ===== -->
+<div id="joinBox">
+  <h2>JBRRMS Join Form</h2>
+  <input id="name" placeholder="पूरा नाम" required>
+  <input id="father" placeholder="पिता का नाम" required>
+  <input id="district" placeholder="जिला" required>
+  <input id="state" placeholder="राज्य" required>
+  <input id="mobile" placeholder="मोबाइल नंबर" pattern="[0-9]{10}" required>
+  <input type="file" id="photoInput" accept="image/*" required>
+  <button id="joinBtn">Join Now</button>
+</div>
 
-  <div class="photo">
-    <img src="https://i.imgur.com/8Km9tLL.jpg">
-  </div>
+<!-- ===== FRONT ===== -->
+<div id="front" class="card">
+  <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 
-  <div class="name">गोपाल सिंह</div>
+  <div class="photo"><img id="photo"></div>
 
   <div class="details">
-    पिता: पुर सिंह<br>
-    झालावाड़, राजस्थान<br>
-    मोबाइल: 9166377972
+    <div><b>नाम :</b> <span id="c_name"></span></div>
+    <div><b>पिता :</b> <span id="c_father"></span></div>
+    <div><b>जिला :</b> <span id="c_district"></span></div>
+    <div><b>राज्य :</b> <span id="c_state"></span></div>
+    <div><b>मोबाइल :</b> <span id="c_mobile"></span></div>
+    <div id="c_code"></div>
   </div>
-
-  <div class="code">JBRRMS0001</div>
 </div>
 
-<!-- BACK -->
-<div class="card" id="back">
+<!-- ===== BACK ===== -->
+<div id="back" class="card">
   <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 
-  <!-- QR CODE -->
-  <div id="qrcode"></div>
+  <div id="qr"></div>
 
-  <div class="footer">
+  <div class="backtext">
     हेल्पलाइन: 9166377972<br>
     Email: jbrrms1@gmail.com<br>
-    Website: www.jbrrms.in<br>
-    यह पहचान पत्र संगठन की संपत्ति है
+    Website: www.jbrrms.in
   </div>
 </div>
 
-<div class="buttons">
-  <button onclick="showFront()">Front</button>
-  <button onclick="showBack()">Back</button>
+<div class="actions">
+  <button onclick="showFront()">⬅ Front</button>
+  <button onclick="showBack()">Back ➡</button><br>
+  <button onclick="downloadCurrent()">⬇ Download</button>
 </div>
 
 <script>
-function showFront(){
-  document.getElementById('front').style.display='block';
-  document.getElementById('back').style.display='none';
-}
-function showBack(){
-  document.getElementById('front').style.display='none';
-  document.getElementById('back').style.display='block';
-}
-showFront();
+const sb = supabase.createClient(
+  "https://ejdzdptqxelilkseannw.supabase.co",
+  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
+);
 
-/* QR GENERATE */
-new QRCode(document.getElementById("qrcode"), {
-  text: "Name: गोपाल सिंह | ID: JBRRMS0001 | Mobile: 9166377972",
-  width: 110,
-  height: 110
-});
+let finalPhotoBlob=null;
+let currentSide="front";
+
+/* ===== MEMBER CODE ===== */
+async function generateMemberCode(){
+  const {data}=await sb.from("JBRRMS")
+    .select("member_code")
+    .order("member_code",{ascending:false})
+    .limit(1);
+
+  if(!data||data.length===0) return "JBRRMS0001";
+  let n=parseInt(data[0].member_code.replace("JBRRMS",""))+1;
+  return "JBRRMS"+String(n).padStart(4,"0");
+}
+
+/* ===== PHOTO PROCESS ===== */
+photoInput.onchange=e=>{
+  const img=new Image();
+  img.src=URL.createObjectURL(e.target.files[0]);
+  img.onload=()=>{
+    const c=document.createElement("canvas");
+    c.width=c.height=600;
+    const x=c.getContext("2d");
+    const s=Math.min(img.width,img.height);
+    x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,600,600);
+    c.toBlob(b=>finalPhotoBlob=b,"image/jpeg",0.9);
+  }
+}
+
+/* ===== JOIN ===== */
+joinBtn.onclick=async()=>{
+  if(!finalPhotoBlob) return alert("Photo upload करें");
+  joinBtn.disabled=true;
+
+  const code=await generateMemberCode();
+
+  const fd=new FormData();
+  fd.append("file",finalPhotoBlob);
+  fd.append("upload_preset","jbrms_unsigned");
+
+  const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
+  const img=await up.json();
+
+  await sb.from("JBRRMS").insert([{
+    member_code:code,
+    name:name.value,
+    father_name:father.value,
+    district:district.value,
+    state:state.value,
+    mobile:mobile.value,
+    photo_url:img.secure_url
+  }]);
+
+  showCard(code);
+}
+
+/* ===== SHOW CARD ===== */
+async function showCard(code){
+  joinBox.style.display="none";
+  front.style.display="block";
+  back.style.display="none";
+
+  const {data}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
+
+  c_name.innerText=data.name;
+  c_father.innerText=data.father_name;
+  c_district.innerText=data.district;
+  c_state.innerText=data.state;
+  c_mobile.innerText=data.mobile;
+  c_code.innerText=data.member_code;
+  photo.src=data.photo_url;
+
+  qr.innerHTML="";
+  new QRCode(qr,{text:data.member_code,width:300,height:300});
+}
+
+function showFront(){front.style.display="block";back.style.display="none";currentSide="front"}
+function showBack(){front.style.display="none";back.style.display="block";currentSide="back"}
+
+/* ===== DOWNLOAD ===== */
+function downloadCurrent(){
+  const el=currentSide==="front"?front:back;
+  html2canvas(el,{scale:2}).then(c=>{
+    const a=document.createElement("a");
+    a.download=currentSide.toUpperCase()+".png";
+    a.href=c.toDataURL("image/png");
+    a.click();
+  });
+}
 </script>
 
 </body>
