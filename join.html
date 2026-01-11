@@ -26,6 +26,9 @@ button{
  background:#c69214;color:#fff;border:none;
  font-weight:800;border-radius:6px
 }
+button:disabled {
+ background:#ccc; cursor:not-allowed;
+}
 
 /* ===== CARD BASE ===== */
 .card{
@@ -110,10 +113,10 @@ button{
 <input id="mobile" placeholder="मोबाइल">
 <input type="file" id="photoInput" accept="image/*">
 
-<button onclick="joinNow()">Join Now</button>
+<button id="joinButton" onclick="joinNow()">Join Now</button>
 <hr>
 <input id="searchCode" placeholder="Member Code (JBRRMS0001)">
-<button onclick="searchMember()">🆔 Search ID Card</button>
+<button id="searchButton" onclick="searchMember()">🆔 Search ID Card</button>
 </div>
 
 <!-- FRONT -->
@@ -165,86 +168,118 @@ Website: www.jbrrms.in
 </div>
 
 <script>
-const sb = supabase.createClient(
-  "https://ejdzdptqxelilkseannw.supabase.co",
-  "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P"
-);
+// Replace with your actual Supabase anon key (starts with 'eyJ...')
+const SUPABASE_URL = "https://ejdzdptqxelilkseannw.supabase.co";
+const SUPABASE_ANON_KEY = "YOUR_ACTUAL_ANON_KEY_HERE";  // Paste the full key from Supabase dashboard
 
-let blob=null,side="front";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-photoInput.onchange=e=>{
- const img=new Image();
- img.src=URL.createObjectURL(e.target.files[0]);
- img.onload=()=>{
-  const c=document.createElement("canvas");
-  c.width=c.height=600;
-  const x=c.getContext("2d");
-  const s=Math.min(img.width,img.height);
-  x.drawImage(img,(img.width-s)/2,(img.height-s)/2,s,s,0,0,600,600);
-  c.toBlob(b=>blob=b,"image/jpeg",0.9);
- }
+let blob = null, side = "front";
+
+photoInput.onchange = e => {
+  const img = new Image();
+  img.src = URL.createObjectURL(e.target.files[0]);
+  img.onload = () => {
+    const c = document.createElement("canvas");
+    c.width = c.height = 600;
+    const x = c.getContext("2d");
+    const s = Math.min(img.width, img.height);
+    x.drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, 600, 600);
+    c.toBlob(b => blob = b, "image/jpeg", 0.9);
+  }
 }
 
-async function joinNow(){
- if(!name.value.trim()) return alert("नाम जरूरी है");
- if(!blob) return alert("Photo जरूरी है");
+async function joinNow() {
+  const button = document.getElementById("joinButton");
+  button.disabled = true;
+  button.innerText = "Processing...";
 
- const fd=new FormData();
- fd.append("file",blob);
- fd.append("upload_preset","jbrms_unsigned");
+  try {
+    if (!name.value.trim()) throw new Error("नाम जरूरी है");
+    if (!blob) throw new Error("Photo जरूरी है");
+    if (mobile.value && !/^\d{10}$/.test(mobile.value.trim())) throw new Error("10 अंकों का मोबाइल नंबर डालें");
 
- const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
- const img=await up.json();
+    const fd = new FormData();
+    fd.append("file", blob);
+    fd.append("upload_preset", "jbrms_unsigned");  // Note: For production, consider signed uploads for security
 
- const {data,error}=await sb.from("JBRRMS").insert([{
-  name:name.value.trim(),
-  father_name:father.value,
-  post:post.value,
-  district:district.value,
-  state:state.value,
-  mobile:mobile.value,
-  photo_url:img.secure_url
- }]).select("member_code").single();
+    const up = await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload", { method: "POST", body: fd });
+    if (!up.ok) throw new Error("Photo upload failed: " + up.statusText);
+    const img = await up.json();
+    if (!img.secure_url) throw new Error("Photo upload failed");
 
- if(error) return alert(error.message);
- alert("Join सफल ✔️\nMember Code: "+data.member_code);
+    const { data, error } = await sb.from("JBRRMS").insert([{
+      name: name.value.trim(),
+      father_name: father.value.trim(),
+      post: post.value.trim(),
+      district: district.value.trim(),
+      state: state.value.trim(),
+      mobile: mobile.value.trim(),
+      photo_url: img.secure_url
+    }]).select("member_code").single();
+
+    if (error) throw new Error(error.message);
+    alert("Join सफल ✔️\nMember Code: " + data.member_code);
+
+    // Clear form after success
+    name.value = father.value = post.value = district.value = state.value = mobile.value = "";
+    photoInput.value = "";
+    blob = null;
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    button.disabled = false;
+    button.innerText = "Join Now";
+  }
 }
 
-async function searchMember(){
- const code=searchCode.value.trim();
- if(!code) return alert("Member Code डालें");
+async function searchMember() {
+  const button = document.getElementById("searchButton");
+  button.disabled = true;
+  button.innerText = "Searching...";
 
- const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
- if(error) return alert("Member not found");
+  try {
+    const code = searchCode.value.trim();
+    if (!code) throw new Error("Member Code डालें");
 
- joinBox.style.display="none";
- front.style.display="block";
- back.style.display="none";
+    const { data, error } = await sb.from("JBRRMS").select("*").eq("member_code", code).single();
+    if (error) throw new Error(error.message);
+    if (!data) throw new Error("Member not found");
 
- c_name.innerText=data.name;
- c_post.innerText=data.post||"";
- c_father.innerText=data.father_name||"";
- c_district.innerText=data.district||"";
- c_state.innerText=data.state||"";
- c_mobile.innerText=data.mobile||"";
- c_code.innerText=data.member_code;
- photo.src=data.photo_url;
+    joinBox.style.display = "none";
+    front.style.display = "block";
+    back.style.display = "none";
 
- qr.innerHTML="";
- new QRCode(qr,{text:data.member_code,width:300,height:300});
+    c_name.innerText = data.name;
+    c_post.innerText = data.post || "";
+    c_father.innerText = data.father_name || "";
+    c_district.innerText = data.district || "";
+    c_state.innerText = data.state || "";
+    c_mobile.innerText = data.mobile || "";
+    c_code.innerText = data.member_code;
+    photo.src = data.photo_url;
+
+    qr.innerHTML = "";
+    new QRCode(qr, { text: data.member_code, width: 300, height: 300 });
+  } catch (err) {
+    alert(err.message);
+  } finally {
+    button.disabled = false;
+    button.innerText = "🆔 Search ID Card";
+  }
 }
 
-function showFront(){front.style.display="block";back.style.display="none";side="front"}
-function showBack(){front.style.display="none";back.style.display="block";side="back"}
+function showFront() { front.style.display = "block"; back.style.display = "none"; side = "front" }
+function showBack() { front.style.display = "none"; back.style.display = "block"; side = "back" }
 
-function download(){
- const el=side==="front"?front:back;
- html2canvas(el,{scale:2,useCORS:true}).then(c=>{
-  const a=document.createElement("a");
-  a.download="JBRRMS_"+side+"_ID.png";
-  a.href=c.toDataURL("image/png",1);
-  a.click();
- });
+function download() {
+  const el = side === "front" ? front : back;
+  html2canvas(el, { scale: 2, useCORS: true }).then(c => {
+    const a = document.createElement("a");
+    a.download = "JBRRMS_" + side + "_ID.png";
+    a.href = c.toDataURL("image/png", 1);
+    a.click();
+  });
 }
 </script>
 
