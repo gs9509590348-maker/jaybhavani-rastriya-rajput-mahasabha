@@ -183,7 +183,11 @@ photoInput.onchange=e=>{
 }
 
 async function joinNow(){
- if(!name.value||!photoBlob) return alert("नाम और फोटो जरूरी");
+ const file = photoInput.files[0];
+if (!name.value.trim() || !file) {
+  alert("नाम और फोटो जरूरी");
+  return;
+}
  const fd=new FormData();
  fd.append("file",photoBlob);
  fd.append("upload_preset","jbrms_unsigned");
