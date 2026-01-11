@@ -97,6 +97,7 @@ button{
 <h2>JBRRMS Join / Search</h2>
 <input id="name" placeholder="पूरा नाम *">
 <input id="father" placeholder="पिता का नाम">
+<input id="post" placeholder="पद *">
 <input id="district" placeholder="जिला">
 <input id="state" placeholder="राज्य">
 <input id="mobile" placeholder="मोबाइल">
@@ -113,6 +114,7 @@ button{
 <div class="photo"><img id="photo"></div>
 <div class="details">
 <div><b>नाम :</b> <span id="c_name"></span></div>
+<div><b>पद :</b> <span id="c_post"></span></div>
 <div><b>पिता :</b> <span id="c_father"></span></div>
 <div><b>जिला :</b> <span id="c_district"></span></div>
 <div><b>राज्य :</b> <span id="c_state"></span></div>
@@ -157,9 +159,11 @@ const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
+
 /* ELEMENTS */
 const name = document.getElementById("name");
 const father = document.getElementById("father");
+const post = document.getElementById("post");
 const district = document.getElementById("district");
 const state = document.getElementById("state");
 const mobile = document.getElementById("mobile");
@@ -171,6 +175,7 @@ const front = document.getElementById("front");
 const back = document.getElementById("back");
 
 const c_name = document.getElementById("c_name");
+const c_post = document.getElementById("c_post");
 const c_father = document.getElementById("c_father");
 const c_district = document.getElementById("c_district");
 const c_state = document.getElementById("c_state");
@@ -198,8 +203,8 @@ photoInput.onchange = e => {
 
 /* JOIN */
 async function joinNow(){
- if(!name.value || !photoBlob){
-  alert("नाम और फोटो जरूरी है");
+ if(!name.value || !post.value || !photoBlob){
+  alert("नाम, पद और फोटो जरूरी है");
   return;
  }
 
@@ -218,6 +223,7 @@ async function joinNow(){
   .insert([{
     name: name.value,
     father_name: father.value,
+    post: post.value,
     district: district.value,
     state: state.value,
     mobile: mobile.value,
@@ -256,6 +262,7 @@ async function searchMember(){
  back.style.display="none";
 
  c_name.innerText = data.name;
+ c_post.innerText = data.post;
  c_father.innerText = data.father_name || "";
  c_district.innerText = data.district || "";
  c_state.innerText = data.state || "";
