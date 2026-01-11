@@ -246,6 +246,8 @@ async function joinNow(){
 async function searchMember(){
  if(!searchCode.value) return;
 
+ photo.src = ""; // 🔥 IMPORTANT FIX
+
  const { data, error } = await sb
   .from("JBRRMS")
   .select("*")
@@ -268,12 +270,11 @@ async function searchMember(){
  c_state.innerText = data.state || "";
  c_mobile.innerText = data.mobile || "";
  c_code.innerText = data.member_code;
- photo.src = data.photo_url;
 
+ photo.src = data.photo_url; // fresh load
  qr.innerHTML="";
  new QRCode(qr,{text:data.member_code,width:300,height:300});
 }
-
 /* VIEW */
 function showFront(){front.style.display="block";back.style.display="none";side="front"}
 function showBack(){front.style.display="none";back.style.display="block";side="back"}
