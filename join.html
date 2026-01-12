@@ -16,7 +16,6 @@ body{margin:0;background:#0e0e0e;font-family:Arial}
 #joinBox h2{text-align:center;margin-top:0}
 input,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
 button{background:#c69214;color:#fff;border:none;font-weight:800;border-radius:6px;cursor:pointer}
-button:disabled{opacity:.6}
 
 .card{display:none;position:relative;width:1080px;height:1676px;margin:20px auto}
 #front{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") no-repeat center/cover}
@@ -49,13 +48,8 @@ button:disabled{opacity:.6}
  font-size:24px;line-height:1.55;font-weight:600
 }
 
-.back-footer{position:absolute;bottom:120px;width:100%;text-align:center;font-size:26px}
-.disclaimer{position:absolute;bottom:40px;width:100%;text-align:center;font-size:20px;opacity:.85}
-
 .actions{text-align:center;margin:20px}
 .actions button{width:180px;margin:6px}
-
-#photoStatus{font-size:13px;margin-top:4px}
 </style>
 </head>
 
@@ -72,14 +66,14 @@ button:disabled{opacity:.6}
 <input id="mobile" placeholder="मोबाइल">
 
 <input type="file" id="photoInput" accept="image/*" hidden>
-<button type="button" onclick="openPicker()">📸 फोटो चुनें</button>
+<button onclick="openPicker()">📸 फोटो चुनें</button>
 <div id="photoStatus"></div>
 
 <button onclick="joinNow()">Join Now</button>
 
 <hr>
 
-<input id="searchCode" placeholder="Member Code (JBRRMS000001)">
+<input id="searchCode" placeholder="Member Code">
 <button onclick="searchMember()">🆔 Search ID Card</button>
 </div>
 
@@ -113,14 +107,6 @@ button:disabled{opacity:.6}
 स्वाभिमान समझौता नहीं सिखाता।<br>
 स्वाभिमान हमारी असली विरासत है।
 </div>
-
-<div class="back-footer">
-हेल्पलाइन: 9166377972<br>
-Email: jbrrms1@gmail.com<br>
-Website: www.jbrrms.in
-</div>
-
-<div class="disclaimer">यह पहचान पत्र संगठनात्मक प्रयोजनों हेतु है।</div>
 </div>
 
 <div class="actions">
@@ -130,26 +116,20 @@ Website: www.jbrrms.in
 </div>
 
 <script>
-/* SUPABASE */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
+const $ = id => document.getElementById(id);
 let photoBlob=null, side="front";
 
-function showError(msg,e=null){
- console.error(msg,e);
- alert("❌ Error:\n\n"+msg+"\n\nकृपया पुनः प्रयास करें।");
-}
-
 function openPicker(){
- photoInput.value="";
- photoInput.click();
+ $("photoInput").value="";
+ $("photoInput").click();
 }
 
-/* PHOTO HANDLE */
-photoInput.addEventListener("change",e=>{
+$("photoInput").addEventListener("change",e=>{
  const f=e.target.files[0];
  if(!f) return;
 
@@ -161,125 +141,83 @@ photoInput.addEventListener("change",e=>{
   const c=document.createElement("canvas");
   c.width=c.height=600;
   const m=Math.min(img.width,img.height);
-  c.getContext("2d").drawImage(
-   img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600
-  );
+  c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
   URL.revokeObjectURL(url);
   c.toBlob(b=>{
    photoBlob=b;
-   photo.src=c.toDataURL("image/jpeg");
-   photoStatus.textContent="Photo upload हो गई है ✅";
-   photoStatus.style.color="green";
+   $("photo").src=c.toDataURL("image/jpeg");
+   $("photoStatus").textContent="Photo ready ✅";
   },"image/jpeg",0.9);
- };
-
- img.onerror=()=>{
-  URL.revokeObjectURL(url);
-  showError("Photo पढ़ने में समस्या आई");
  };
 });
 
-/* JOIN */
 async function joinNow(){
- try{
-  if(!name.value || !post.value || !photoBlob){
-   alert("नाम, पद और फोटो अनिवार्य है");
-   return;
-  }
-
-  const member_code="JBRRMS"+Date.now().toString().slice(-6);
-
-  const fd=new FormData();
-  fd.append("file",photoBlob);
-  fd.append("upload_preset","jbrms_unsigned");
-
-  const up=await fetch(
-   "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
-   {method:"POST",body:fd}
-  );
-  if(!up.ok) throw "Photo upload failed";
-
-  const img=await up.json();
-  if(!img.secure_url) throw "Photo URL missing";
-
-  const {error}=await sb.from("JBRRMS").insert([{
-   member_code,
-   name:name.value,
-   post:post.value,
-   father_name:father.value,
-   district:district.value,
-   state:state.value,
-   mobile:mobile.value,
-   photo_url:img.secure_url,
-   status:"Pending"
-  }]);
-  if(error) throw error;
-
-  alert(
-   "Photo upload हो गया है ✅\n\n"+
-   "आपका फॉर्म सफलतापूर्वक सबमिट हो गया है।\n\n"+
-   "अब आप अपना ID Card\n"+
-   "Member Code से\n"+
-   "Search कर सकते हैं।\n\n"+
-   "जय भवानी 🚩"
-  );
-
-  searchCode.value=member_code;
-  searchMember();
-
- }catch(e){
-  showError("Join process पूरा नहीं हो पाया",e);
+ if(!photoBlob||!$("name").value||!$("post").value){
+  alert("नाम, पद और फोटो अनिवार्य है");
+  return;
  }
+
+ const member_code="JBRRMS"+Date.now().toString().slice(-5)+Math.floor(Math.random()*10);
+
+ const fd=new FormData();
+ fd.append("file",photoBlob,"JBRRMS_"+member_code+".jpg");
+ fd.append("upload_preset","jbrms_unsigned");
+
+ const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd});
+ const img=await up.json();
+
+ await sb.from("JBRRMS").insert([{
+  member_code,
+  name:$("name").value,
+  post:$("post").value,
+  father_name:$("father").value,
+  district:$("district").value,
+  state:$("state").value,
+  mobile:$("mobile").value,
+  photo_url:img.secure_url,
+  status:"Pending"
+ }]);
+
+ $("searchCode").value=member_code;
+ photoBlob=null;
+ $("photo").src="";
+ $("photoInput").value="";
+ alert("Form submitted successfully 🚩");
+ searchMember();
 }
 
-/* SEARCH */
 async function searchMember(){
- try{
-  const code=searchCode.value.trim();
-  if(!code) return;
+ const code=$("searchCode").value.trim();
+ if(!code) return;
 
-  const {data,error}=await sb
-   .from("JBRRMS")
-   .select("*")
-   .eq("member_code",code)
-   .single();
+ const {data,error}=await sb.from("JBRRMS").select("*").eq("member_code",code).single();
+ if(error||!data){alert("Member नहीं मिला");return;}
 
-  if(error || !data) throw "Member not found";
+ $("c_name").textContent=data.name;
+ $("c_post").textContent=data.post;
+ $("c_father").textContent=data.father_name||"";
+ $("c_district").textContent=data.district||"";
+ $("c_state").textContent=data.state||"";
+ $("c_mobile").textContent=data.mobile||"";
+ $("c_code").textContent=data.member_code;
+ $("photo").src=data.photo_url+"?t="+Date.now();
 
-  c_name.textContent=data.name;
-  c_post.textContent=data.post;
-  c_father.textContent=data.father_name||"";
-  c_district.textContent=data.district||"";
-  c_state.textContent=data.state||"";
-  c_mobile.textContent=data.mobile||"";
-  c_code.textContent=data.member_code;
-  photo.src=data.photo_url;
+ $("qr").innerHTML="";
+ setTimeout(()=>new QRCode($("qr"),{text:data.member_code,width:220,height:220}),50);
 
-  qr.innerHTML="";
-  new QRCode(qr,{text:data.member_code,width:220,height:220});
-
-  showFront();
- }catch(e){
-  showError("Member नहीं मिला",e);
- }
+ showFront();
 }
 
-function showFront(){front.style.display="block";back.style.display="none";side="front";}
-function showBack(){front.style.display="none";back.style.display="block";side="back";}
+function showFront(){ $("front").style.display="block";$("back").style.display="none";side="front";}
+function showBack(){ $("front").style.display="none";$("back").style.display="block";side="back";}
 
-/* DOWNLOAD */
 function download(){
- try{
-  const el=side==="front"?front:back;
-  html2canvas(el,{scale:2,useCORS:true}).then(c=>{
-   const a=document.createElement("a");
-   a.href=c.toDataURL("image/png");
-   a.download="JBRRMS_"+side+".png";
-   a.click();
-  });
- }catch(e){
-  showError("Download में समस्या आई",e);
- }
+ html2canvas(side==="front"?$("front"):$("back"),{scale:2,useCORS:true}).then(c=>{
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/png");
+  a.download="JBRRMS_"+side+".png";
+  a.click();
+ });
 }
 </script>
 
