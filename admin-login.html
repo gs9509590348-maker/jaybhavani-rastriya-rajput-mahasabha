@@ -2,27 +2,32 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Admin Panel</title>
+<title>JBRRMS – Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0;padding:15px}
-h2{text-align:center}
-#loginBox,#panel{max-width:1100px;margin:auto;background:#fff;padding:25px;border-radius:10px;box-shadow:0 4px 15px rgba(0,0,0,.1)}
-input,select,button{padding:10px;font-size:15px;border-radius:6px;border:1px solid #ccc;width:100%;box-sizing:border-box}
-button{cursor:pointer;border:none;margin-top:6px}
-.logout{background:#333;color:#fff;width:auto;float:right}
-.approve{background:#28a745;color:#fff}
-.reject{background:#dc3545;color:#fff}
-.asset{background:#0b57d0;color:#fff}
-.card{background:#fafafa;padding:15px;margin-bottom:15px;border-radius:10px;border:1px solid #ddd}
-.controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.controls>*{flex:1;min-width:180px}
-.info{font-size:14px;color:#555}
-.loading{text-align:center;color:#666;padding:30px}
-@media(max-width:600px){.controls{flex-direction:column}}
+body{margin:0;background:#111;font-family:Arial;color:#fff}
+h1{text-align:center;margin:15px 0}
+.panel{max-width:1200px;margin:20px auto;background:#1c1c1c;padding:20px;border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #333;text-align:left}
+th{background:#222}
+button{padding:6px 10px;border:none;border-radius:6px;font-weight:700;cursor:pointer;margin:2px}
+.approve{background:#1fa84f;color:#fff}
+.reject{background:#c0392b;color:#fff}
+.edit{background:#2980b9;color:#fff}
+.view{background:#c69214;color:#000}
+select,input{padding:8px;margin:6px 0;width:100%}
+
+/* LOGIN */
+#loginBox{
+ max-width:360px;margin:120px auto;
+ background:#fff;color:#000;
+ padding:20px;border-radius:10px;text-align:center
+}
+#loginBox h2{margin-top:0}
 </style>
 </head>
 
@@ -30,153 +35,176 @@ button{cursor:pointer;border:none;margin-top:6px}
 
 <!-- LOGIN -->
 <div id="loginBox">
-  <h2>🛡️ JBRRMS Admin Login</h2>
-  <input type="password" id="adminPass" placeholder="Admin Password">
-  <br><br>
-  <button onclick="login()">Login</button>
+<h2>Admin Login</h2>
+<input type="password" id="adminPass" placeholder="Enter Admin Password">
+<button onclick="login()" style="background:#c69214">Login</button>
+<p id="loginMsg" style="color:red"></p>
 </div>
 
-<!-- PANEL -->
-<div id="panel" style="display:none">
-  <button class="logout" onclick="logout()">Logout</button>
-  <h2>जय भवानी राष्ट्रीय राजपूत महासभा – Admin Panel</h2>
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none">
 
-  <div class="controls">
-    <input id="search" placeholder="नाम / मोबाइल से खोजें" onkeyup="loadMembers()">
-    <select id="statusFilter" onchange="loadMembers()">
-      <option value="Pending">Pending</option>
-      <option value="Approved">Approved</option>
-      <option value="Rejected">Rejected</option>
-    </select>
-  </div>
+<h1>JBRRMS – Admin Panel</h1>
 
-  <div id="list" class="loading">लोड हो रहा है...</div>
+<div class="panel">
+
+<select id="filter" onchange="loadMembers()">
+<option value="Pending">Pending</option>
+<option value="Approved">Approved</option>
+<option value="Rejected">Rejected</option>
+</select>
+
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Post</th>
+<th>Mobile</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="rows"></tbody>
+</table>
+
+</div>
+</div>
+
+<!-- EDIT MODAL -->
+<div id="editBox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,.85)">
+<div style="background:#fff;color:#000;
+max-width:420px;margin:60px auto;padding:20px;border-radius:10px">
+
+<h3>Edit Member</h3>
+
+<input id="e_name" placeholder="नाम">
+<input id="e_post" placeholder="पद">
+<input id="e_father" placeholder="पिता का नाम">
+<input id="e_district" placeholder="जिला">
+<input id="e_state" placeholder="राज्य">
+<input id="e_mobile" placeholder="मोबाइल">
+
+<button onclick="saveEdit()" class="approve">Save</button>
+<button onclick="closeEdit()" class="reject">Cancel</button>
+
+</div>
 </div>
 
 <script>
-/* ================= CONFIG ================= */
-const ADMIN_PASSWORD = "jbrms@123";
+/* ================= LOGIN ================= */
+const ADMIN_PASSWORD="JBRRMS@2026";
 
-const SUPABASE_URL = "https://ejdzdptqxelilkseannw.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_iU5rrjm63ImncflRhIkQYQ_QHyDR92P";
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-/* ================= LOCKED TEMPLATE URLS ================= */
-const TEMPLATE_ID_FRONT = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png";
-const TEMPLATE_ID_BACK  = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png";
-const TEMPLATE_CERT     = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/certificate.png";
-const TEMPLATE_APP      = "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/appointment.png";
-
-/* ================= AUTH ================= */
 function login(){
-  const pass = document.getElementById("adminPass").value;
-  if(pass === ADMIN_PASSWORD){
-    localStorage.setItem("JBRRMS_ADMIN","1");
-    showPanel();
-  } else {
-    alert("गलत पासवर्ड");
-  }
+ if(adminPass.value===ADMIN_PASSWORD){
+  sessionStorage.setItem("jbrms_admin","1");
+  showPanel();
+ }else{
+  loginMsg.textContent="❌ Wrong password";
+ }
 }
-function logout(){
-  localStorage.removeItem("JBRRMS_ADMIN");
-  location.reload();
-}
+
 function showPanel(){
-  document.getElementById("loginBox").style.display="none";
-  document.getElementById("panel").style.display="block";
-  loadMembers();
+ loginBox.style.display="none";
+ adminPanel.style.display="block";
+ loadMembers();
 }
-if(localStorage.getItem("JBRRMS_ADMIN")) showPanel();
 
-/* ================= HELPERS ================= */
-const memberCode = id => "JBRRMS" + String(id).padStart(4,"0");
+if(sessionStorage.getItem("jbrms_admin")){
+ showPanel();
+}
 
-/* ================= LOAD MEMBERS ================= */
+/* ================= SUPABASE ================= */
+const sb = supabase.createClient(
+ "https://ejdzdptqxelilkseannw.supabase.co",
+ "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
+);
+
+const $=id=>document.getElementById(id);
+let editId=null, editCode=null;
+
+/* ================= PANEL ================= */
 async function loadMembers(){
-  const list = document.getElementById("list");
-  list.innerHTML="<div class='loading'>डेटा लोड हो रहा है...</div>";
+ const status=filter.value;
+ rows.innerHTML="<tr><td colspan='5'>Loading...</td></tr>";
 
-  const status = document.getElementById("statusFilter").value;
-  const search = document.getElementById("search").value.trim();
+ const {data}=await sb.from("JBRRMS")
+  .select("*")
+  .eq("status",status)
+  .order("created_at",{ascending:false});
 
-  let q = sb.from("JBRRMS").select("*").eq("status",status);
+ if(!data||!data.length){
+  rows.innerHTML="<tr><td colspan='5'>No records</td></tr>";
+  return;
+ }
 
-  if(search){
-    q = q.or(`name.ilike.%${search}%,mobile.ilike.%${search}%`);
-  }
-
-  const {data,error} = await q.order("id",{ascending:true});
-  if(error){list.innerHTML=error.message;return;}
-  if(!data.length){list.innerHTML="<p style='text-align:center'>कोई डेटा नहीं</p>";return;}
-
-  list.innerHTML="";
-  data.forEach(m=>{
-    list.innerHTML += `
-    <div class="card">
-      <b>${m.name}</b> (${m.mobile})<br><br>
-      <div class="info">
-        Member Code: <b>${m.member_code || "-"}</b><br>
-        Status: <b>${m.status}</b>
-      </div><br>
-
-      ${
-        status==="Pending" ?
-        `
-        <button class="approve" onclick="approveMember(${m.id})">
-          Approve (🆔 ID Card + 📜 Certificate)
-        </button>
-        <button class="reject" onclick="rejectMember(${m.id})">Reject</button>
-        `
-        :
-        `
-        <button class="asset" onclick="openID('${m.member_code}')">🆔 ID Card</button>
-        <button class="asset" onclick="openCert('${m.member_code}')">📜 Certificate</button>
-        <button class="asset" onclick="openApp('${m.member_code}')">📄 Appointment</button>
-        `
-      }
-    </div>`;
-  });
+ rows.innerHTML="";
+ data.forEach(m=>{
+  rows.innerHTML+=`
+   <tr>
+    <td>${m.name}</td>
+    <td>${m.post||""}</td>
+    <td>${m.mobile||""}</td>
+    <td>${m.status}</td>
+    <td>
+     ${m.status==="Pending"?`
+      <button class="approve" onclick="approve('${m.id}')">Approve</button>
+      <button class="reject" onclick="reject('${m.id}')">Reject</button>
+     `:""}
+     <button class="edit" onclick="editMember('${m.id}')">Edit</button>
+     ${m.status==="Approved"?`
+      <button class="view" onclick="openID('${m.member_code}')">ID Card</button>
+     `:""}
+    </td>
+   </tr>`;
+ });
 }
 
-/* ================= ACTIONS ================= */
-async function approveMember(id){
-  if(!confirm("Approve करते ही 🆔 ID Card और 📜 Certificate generate होंगे। Continue?")) return;
-
-  const code = memberCode(id);
-
-  const {error} = await sb.from("JBRRMS").update({
-    status:"Approved",
-    member_code:code
-  }).eq("id",id);
-
-  if(error){alert(error.message);return;}
-
-  openID(code);
-  openCert(code);
-  loadMembers();
+async function approve(id){
+ const member_code="JBRRMS"+Date.now().toString().slice(-5)+Math.floor(Math.random()*10);
+ await sb.from("JBRRMS").update({status:"Approved",member_code}).eq("id",id);
+ loadMembers();
+ setTimeout(()=>openID(member_code),300);
 }
 
-async function rejectMember(id){
-  if(!confirm("Reject करना है?")) return;
-
-  const {error} = await sb.from("JBRRMS")
-    .update({status:"Rejected"})
-    .eq("id",id);
-
-  if(error) alert(error.message);
-  loadMembers();
+async function reject(id){
+ if(!confirm("Reject this member?"))return;
+ await sb.from("JBRRMS").update({status:"Rejected"}).eq("id",id);
+ loadMembers();
 }
 
-/* ================= GENERATOR LINKS ================= */
 function openID(code){
-  window.open(`idcard.html?code=${code}`,"_blank");
+ window.open("index.html?code="+code,"_blank");
 }
-function openCert(code){
-  window.open(`certificate.html?code=${code}`,"_blank");
+
+/* ================= EDIT ================= */
+async function editMember(id){
+ const {data}=await sb.from("JBRRMS").select("*").eq("id",id).single();
+ editId=id; editCode=data.member_code;
+ e_name.value=data.name||"";
+ e_post.value=data.post||"";
+ e_father.value=data.father_name||"";
+ e_district.value=data.district||"";
+ e_state.value=data.state||"";
+ e_mobile.value=data.mobile||"";
+ editBox.style.display="block";
 }
-function openApp(code){
-  window.open(`appointment.html?code=${code}`,"_blank");
+
+function closeEdit(){editBox.style.display="none"}
+
+async function saveEdit(){
+ await sb.from("JBRRMS").update({
+  name:e_name.value,
+  post:e_post.value,
+  father_name:e_father.value,
+  district:e_district.value,
+  state:e_state.value,
+  mobile:e_mobile.value
+ }).eq("id",editId);
+
+ closeEdit();
+ loadMembers();
+ if(editCode) setTimeout(()=>openID(editCode),300);
 }
 </script>
 
