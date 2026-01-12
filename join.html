@@ -177,7 +177,10 @@ photoInput.addEventListener("change", e => {
   if (!file) return;
 
   const img = new Image();
-  img.src = URL.createObjectURL(file);
+const url = URL.createObjectURL(file);
+img.src = url;
+img.onload = () => {
+  URL.revokeObjectURL(url); // 🔥 MEMORY CLEAN
 
   img.onload = () => {
     const size = 600;
