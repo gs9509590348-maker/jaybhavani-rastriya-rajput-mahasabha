@@ -2,141 +2,215 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Admin Panel</title>
+<title>JBRRMS – Join & ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-header{background:#7b1fa2;color:#fff;padding:12px;text-align:center;font-size:18px;font-weight:700}
-.container{padding:10px}
+body{margin:0;background:#0e0e0e;font-family:Arial}
+#joinBox{max-width:380px;background:#fff;margin:20px auto;padding:18px;border-radius:12px}
+h2{text-align:center;margin:0 0 10px}
+input,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
+button{background:#c69214;color:#fff;border:none;font-weight:800;border-radius:6px;cursor:pointer}
+label{font-size:13px;display:block;margin:8px 0}
 
-.controls{display:flex;gap:6px;margin-bottom:8px}
-.controls input,.controls select{
- flex:1;padding:6px;font-size:13px
+.card{display:none;position:relative;width:1080px;height:1676px;margin:20px auto}
+#front{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") center/cover}
+#back{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") center/cover}
+
+.front-title,.back-title{
+position:absolute;width:100%;text-align:center;font-weight:900;
+background:linear-gradient(#fff2b0,#f5c542,#d4af37);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
+.front-title{top:395px;font-size:58px}
+.back-title{top:200px;font-size:60px}
 
-table{width:100%;border-collapse:collapse;background:#fff}
-th,td{border:1px solid #ccc;padding:6px;font-size:12px;text-align:center}
-th{background:#eee}
+.photo{
+position:absolute;top:500px;left:390px;
+width:300px;height:380px;border-radius:26px;
+overflow:hidden;border:18px solid #d4af37;background:#fff
+}
+.photo img{width:100%;height:100%;object-fit:cover}
 
-button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:pointer}
-.approve{background:#2e7d32;color:#fff}
-.reject{background:#c62828;color:#fff}
-.hook{background:#1565c0;color:#fff}
+.details{position:absolute;top:930px;padding-left:280px;font-size:52px;line-height:1.6}
+#c_code{margin-top:14px;font-weight:900;letter-spacing:3px}
 
-.status-Pending{color:#ff9800;font-weight:700}
-.status-Approved{color:#2e7d32;font-weight:700}
-.status-Rejected{color:#c62828;font-weight:700}
+#qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
+
+.actions{text-align:center;margin:20px}
+.actions button{width:180px;margin:6px}
 </style>
 </head>
 
 <body>
-<header>JBRRMS – Admin Panel</header>
 
-<div class="container">
+<!-- JOIN FORM -->
+<div id="joinBox">
+<h2>JBRRMS Join Form</h2>
 
-<div class="controls">
- <input id="search" placeholder="नाम / मोबाइल / Member ID">
- <select id="statusFilter">
-  <option value="All">All</option>
-  <option value="Pending">Pending</option>
-  <option value="Approved">Approved</option>
-  <option value="Rejected">Rejected</option>
- </select>
+<input id="name" placeholder="पूरा नाम *">
+<input id="father" placeholder="पिता का नाम">
+<input id="district" placeholder="जिला">
+<input id="state" placeholder="राज्य">
+<input id="mobile" placeholder="मोबाइल (10 अंक) *">
+
+<input type="file" id="photoInput" accept="image/*" hidden>
+<button onclick="openPicker()">📸 फोटो चुनें</button>
+<div id="photoStatus"></div>
+
+<label><input type="checkbox" id="agree" style="width:auto"> नियम स्वीकार</label>
+<button onclick="joinNow()">Join Now</button>
+
+<hr>
+
+<input id="searchInput" placeholder="Member Code या Mobile">
+<button onclick="searchMember()">🆔 ID Card देखें</button>
 </div>
 
-<table>
-<thead>
-<tr>
- <th>ID</th>
- <th>Name</th>
- <th>Post</th>
- <th>Mobile</th>
- <th>District</th>
- <th>Status</th>
- <th>Action</th>
-</tr>
-</thead>
-<tbody id="tbody"></tbody>
-</table>
+<!-- FRONT -->
+<div id="front" class="card">
+<div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
+<div class="photo"><img id="photoFront"></div>
+<div class="details">
+<div><b>नाम :</b> <span id="c_name"></span></div>
+<div><b>पिता :</b> <span id="c_father"></span></div>
+<div><b>जिला :</b> <span id="c_district"></span></div>
+<div><b>राज्य :</b> <span id="c_state"></span></div>
+<div><b>मोबाइल :</b> <span id="c_mobile"></span></div>
+<div id="c_code"></div>
+</div>
+</div>
 
+<!-- BACK -->
+<div id="back" class="card">
+<div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
+<div id="qr"></div>
+<div class="photo" style="top:520px"><img id="photoBack"></div>
+</div>
+
+<div class="actions">
+<button onclick="showFront()">⬅ Front</button>
+<button onclick="showBack()">Back ➡</button>
+<button onclick="download()">⬇ Download</button>
 </div>
 
 <script>
+/* 🔑 SUPABASE */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
- "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
+ "PASTE_YOUR_REAL_ANON_KEY_HERE"
 );
 
-const tbody = document.getElementById("tbody");
-const search = document.getElementById("search");
-const statusFilter = document.getElementById("statusFilter");
+/* ELEMENTS */
+const el=id=>document.getElementById(id);
+const name=el("name"), father=el("father"), district=el("district"),
+state=el("state"), mobile=el("mobile"), agree=el("agree");
+const photoInput=el("photoInput"), photoStatus=el("photoStatus");
+const searchInput=el("searchInput");
+const front=el("front"), back=el("back");
+const photoFront=el("photoFront"), photoBack=el("photoBack");
+const c_name=el("c_name"), c_father=el("c_father"),
+c_district=el("c_district"), c_state=el("c_state"),
+c_mobile=el("c_mobile"), c_code=el("c_code");
+const qr=el("qr");
 
-async function loadMembers(){
- let q = sb.from("JBRRMS").select("*").order("id",{ascending:false});
+let photoBlob=null, side="front";
 
- if(statusFilter.value!=="All"){
-  q = q.eq("status",statusFilter.value);
+/* PHOTO */
+function openPicker(){photoInput.value="";photoInput.click();}
+photoInput.onchange=e=>{
+ const f=e.target.files[0]; if(!f)return;
+ const img=new Image(),u=URL.createObjectURL(f); img.src=u;
+ img.onload=()=>{
+  const c=document.createElement("canvas");c.width=c.height=600;
+  const m=Math.min(img.width,img.height);
+  c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
+  c.toBlob(b=>{
+    photoBlob=b;
+    photoStatus.textContent="Photo ready ✅";
+  },"image/jpeg",0.85);
+ };
+};
+
+/* JOIN */
+async function joinNow(){
+ if(!photoBlob||!name.value||!mobile.value||!agree.checked){
+  alert("सभी जरूरी फील्ड भरें"); return;
+ }
+ if(!/^\d{10}$/.test(mobile.value)){
+  alert("मोबाइल नंबर गलत"); return;
  }
 
- const {data,error} = await q;
- if(error){console.log(error);return;}
+ const {data:exist}=await sb
+ .from("JBRRMS")
+ .select("id")
+ .eq("mobile",mobile.value)
+ .maybeSingle();
 
- const term = search.value.toLowerCase();
+ if(exist){ alert("मोबाइल पहले से मौजूद है"); return; }
 
- tbody.innerHTML="";
- data.filter(m=>{
-  return !term ||
-   (m.name||"").toLowerCase().includes(term) ||
-   (m.mobile||"").includes(term) ||
-   (m.member_code||"").toLowerCase().includes(term);
- }).forEach(m=>{
-  tbody.innerHTML += `
-  <tr>
-   <td>${m.id}</td>
-   <td>${m.name}</td>
-   <td>${m.post||"-"}</td>
-   <td>${m.mobile}</td>
-   <td>${m.district||"-"}</td>
-   <td class="status-${m.status}">${m.status}</td>
-   <td>
-    ${m.status==="Pending"?`
-     <button class="approve" onclick="approve(${m.id})">Approve</button>
-     <button class="reject" onclick="reject(${m.id})">Reject</button>
-    `:`
-     <button class="hook">ID Card</button>
-     <button class="hook">Cert</button>
-     <button class="hook">Appt</button>
-    `}
-   </td>
-  </tr>`;
+ const fd=new FormData();
+ fd.append("file",photoBlob);
+ fd.append("upload_preset","jbrms_unsigned");
+
+ const img=await fetch(
+  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
+  {method:"POST",body:fd}
+ ).then(r=>r.json());
+
+ await sb.from("JBRRMS").insert([{
+  name:name.value,
+  father_name:father.value,
+  district:district.value,
+  state:state.value,
+  mobile:mobile.value,
+  photo_url:img.secure_url,
+  status:"Pending"
+ }]);
+
+ alert("Submitted – Approval Pending 🚩");
+}
+
+/* SEARCH */
+async function searchMember(){
+ const v=searchInput.value.trim(); if(!v)return;
+
+ let q=sb.from("JBRRMS").select("*").eq("status","Approved");
+ q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v);
+
+ const {data}=await q.maybeSingle();
+ if(!data){ alert("Member नहीं मिला"); return; }
+
+ photoFront.src=photoBack.src=data.photo_url;
+ c_name.textContent=data.name;
+ c_father.textContent=data.father_name||"";
+ c_district.textContent=data.district||"";
+ c_state.textContent=data.state||"";
+ c_mobile.textContent=data.mobile;
+ c_code.textContent=data.member_code;
+
+ qr.innerHTML="";
+ new QRCode(qr,{text:data.member_code,width:220,height:220});
+ showFront();
+}
+
+/* VIEW + DOWNLOAD */
+function showFront(){front.style.display="block";back.style.display="none";side="front";}
+function showBack(){front.style.display="none";back.style.display="block";side="back";}
+function download(){
+ html2canvas(side==="front"?front:back,{scale:2,useCORS:true})
+ .then(c=>{
+  const a=document.createElement("a");
+  a.href=c.toDataURL("image/png");
+  a.download="JBRRMS_"+side+".png";
+  a.click();
  });
 }
-
-async function approve(id){
- const code = "JBRRMS"+String(id).padStart(4,"0");
-
- await sb.from("JBRRMS")
-  .update({status:"Approved",member_code:code})
-  .eq("id",id);
-
- loadMembers();
-}
-
-async function reject(id){
- await sb.from("JBRRMS")
-  .update({status:"Rejected"})
-  .eq("id",id);
-
- loadMembers();
-}
-
-search.oninput = loadMembers;
-statusFilter.onchange = loadMembers;
-
-loadMembers();
 </script>
 
 </body>
