@@ -13,9 +13,7 @@ header{background:#7b1fa2;color:#fff;padding:12px;text-align:center;font-size:18
 .container{padding:10px}
 
 .controls{display:flex;gap:6px;margin-bottom:8px}
-.controls input,.controls select{
- flex:1;padding:6px;font-size:13px
-}
+.controls input,.controls select{flex:1;padding:6px;font-size:13px}
 
 table{width:100%;border-collapse:collapse;background:#fff}
 th,td{border:1px solid #ccc;padding:6px;font-size:12px;text-align:center}
@@ -24,11 +22,19 @@ th{background:#eee}
 button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:pointer}
 .approve{background:#2e7d32;color:#fff}
 .reject{background:#c62828;color:#fff}
+.edit{background:#f9a825;color:#000}
 .hook{background:#1565c0;color:#fff}
 
 .status-Pending{color:#ff9800;font-weight:700}
 .status-Approved{color:#2e7d32;font-weight:700}
 .status-Rejected{color:#c62828;font-weight:700}
+
+/* MODAL */
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6)}
+.modal-box{background:#fff;width:90%;max-width:400px;margin:60px auto;padding:10px;border-radius:6px}
+.modal-box h3{text-align:center;margin:5px 0}
+.modal-box input{width:100%;padding:6px;margin:4px 0;font-size:13px}
+.modal-box button{margin-top:6px;width:48%}
 </style>
 </head>
 
@@ -64,41 +70,59 @@ button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:point
 
 </div>
 
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+ <div class="modal-box">
+  <h3>Edit Member</h3>
+  <input id="e_name" placeholder="Name">
+  <input id="e_father" placeholder="Father Name">
+  <input id="e_post" placeholder="Post / पद">
+  <input id="e_district" placeholder="District">
+  <input id="e_state" placeholder="State">
+  <input id="e_mobile" placeholder="Mobile">
+  <div style="display:flex;justify-content:space-between">
+   <button onclick="saveEdit()" class="approve">Save</button>
+   <button onclick="closeEdit()" class="reject">Cancel</button>
+  </div>
+ </div>
+</div>
+
 <script>
+/* SUPABASE */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-const tbody = document.getElementById("tbody");
-const search = document.getElementById("search");
-const statusFilter = document.getElementById("statusFilter");
+const tbody=document.getElementById("tbody");
+const search=document.getElementById("search");
+const statusFilter=document.getElementById("statusFilter");
 
+let editId=null;
+
+/* LOAD MEMBERS */
 async function loadMembers(){
- let q = sb.from("JBRRMS").select("*").order("id",{ascending:false});
+ let q=sb.from("JBRRMS").select("*").order("id",{ascending:false});
+ if(statusFilter.value!=="All") q=q.eq("status",statusFilter.value);
 
- if(statusFilter.value!=="All"){
-  q = q.eq("status",statusFilter.value);
- }
+ const {data,error}=await q;
+ if(error){alert(error.message);return;}
 
- const {data,error} = await q;
- if(error){console.log(error);return;}
-
- const term = search.value.toLowerCase();
-
+ const term=search.value.toLowerCase();
  tbody.innerHTML="";
+
  data.filter(m=>{
   return !term ||
    (m.name||"").toLowerCase().includes(term) ||
    (m.mobile||"").includes(term) ||
    (m.member_code||"").toLowerCase().includes(term);
  }).forEach(m=>{
-  tbody.innerHTML += `
+  tbody.insertAdjacentHTML("beforeend",`
   <tr>
    <td>${m.id}</td>
-   <td>${m.name}</td>
+   <td>${m.name||""}</td>
    <td>${m.post||"-"}</td>
-   <td>${m.mobile}</td>
+   <td>${m.mobile||""}</td>
    <td>${m.district||"-"}</td>
    <td class="status-${m.status}">${m.status}</td>
    <td>
@@ -106,36 +130,69 @@ async function loadMembers(){
      <button class="approve" onclick="approve(${m.id})">Approve</button>
      <button class="reject" onclick="reject(${m.id})">Reject</button>
     `:`
-     <button class="hook">ID Card</button>
-     <button class="hook">Cert</button>
-     <button class="hook">Appt</button>
+     <button class="edit" onclick="openEdit(${m.id})">Edit</button>
+     <button class="hook" onclick="openID('${m.member_code}')">ID</button>
+     <button class="hook" onclick="openCert('${m.member_code}')">Cert</button>
+     <button class="hook" onclick="openAppt('${m.member_code}')">Appt</button>
     `}
    </td>
-  </tr>`;
+  </tr>
+  `);
  });
 }
 
+/* APPROVE / REJECT */
 async function approve(id){
- const code = "JBRRMS"+String(id).padStart(4,"0");
-
- await sb.from("JBRRMS")
-  .update({status:"Approved",member_code:code})
-  .eq("id",id);
-
+ const code="JBRRMS"+String(id).padStart(4,"0");
+ await sb.from("JBRRMS").update({status:"Approved",member_code:code}).eq("id",id);
  loadMembers();
 }
-
 async function reject(id){
- await sb.from("JBRRMS")
-  .update({status:"Rejected"})
-  .eq("id",id);
-
+ await sb.from("JBRRMS").update({status:"Rejected"}).eq("id",id);
  loadMembers();
 }
 
-search.oninput = loadMembers;
-statusFilter.onchange = loadMembers;
+/* EDIT */
+async function openEdit(id){
+ editId=id;
+ const {data}=await sb.from("JBRRMS").select("*").eq("id",id).single();
+ e_name.value=data.name||"";
+ e_father.value=data.father_name||"";
+ e_post.value=data.post||"";
+ e_district.value=data.district||"";
+ e_state.value=data.state||"";
+ e_mobile.value=data.mobile||"";
+ document.getElementById("editModal").style.display="block";
+}
+function closeEdit(){
+ document.getElementById("editModal").style.display="none";
+}
+async function saveEdit(){
+ await sb.from("JBRRMS").update({
+  name:e_name.value,
+  father_name:e_father.value,
+  post:e_post.value,
+  district:e_district.value,
+  state:e_state.value,
+  mobile:e_mobile.value
+ }).eq("id",editId);
+ closeEdit();
+ loadMembers();
+}
 
+/* LINKS (HOOKS) */
+function openID(code){
+ alert("ID Card Generator\nMember: "+code);
+}
+function openCert(code){
+ alert("Certificate Generator\nMember: "+code);
+}
+function openAppt(code){
+ alert("Appointment Letter\nMember: "+code);
+}
+
+search.oninput=loadMembers;
+statusFilter.onchange=loadMembers;
 loadMembers();
 </script>
 
