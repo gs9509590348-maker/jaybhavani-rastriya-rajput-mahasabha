@@ -8,218 +8,135 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0}
-header{background:#7b1fa2;color:#fff;padding:12px;text-align:center}
+body{margin:0;font-family:Arial;background:#f4f4f4}
+header{background:#7b1fa2;color:#fff;padding:12px;text-align:center;font-size:18px;font-weight:700}
 .container{padding:10px}
+
+.controls{display:flex;gap:6px;margin-bottom:8px}
+.controls input,.controls select{
+ flex:1;padding:6px;font-size:13px
+}
+
 table{width:100%;border-collapse:collapse;background:#fff}
-th,td{border:1px solid #ccc;padding:6px;font-size:13px;text-align:center}
+th,td{border:1px solid #ccc;padding:6px;font-size:12px;text-align:center}
 th{background:#eee}
-button{padding:4px 8px;margin:2px;font-size:12px;cursor:pointer}
+
+button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:pointer}
 .approve{background:#2e7d32;color:#fff}
 .reject{background:#c62828;color:#fff}
-.view{background:#1565c0;color:#fff}
-.del{background:#000;color:#fff}
-input,select{padding:5px;margin:4px;width:100%}
-#editBox{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6)}
-#editInner{background:#fff;width:90%;max-width:400px;margin:40px auto;padding:10px}
+.hook{background:#1565c0;color:#fff}
+
+.status-Pending{color:#ff9800;font-weight:700}
+.status-Approved{color:#2e7d32;font-weight:700}
+.status-Rejected{color:#c62828;font-weight:700}
 </style>
 </head>
 
 <body>
-<header>
-<h3>JBRRMS – Admin Panel</h3>
-</header>
+<header>JBRRMS – Admin Panel</header>
 
 <div class="container">
-<input id="search" placeholder="नाम / मोबाइल / Member ID">
-<select id="filter">
-<option value="">All</option>
-<option value="Pending">Pending</option>
-<option value="Approved">Approved</option>
-<option value="Rejected">Rejected</option>
-</select>
+
+<div class="controls">
+ <input id="search" placeholder="नाम / मोबाइल / Member ID">
+ <select id="statusFilter">
+  <option value="All">All</option>
+  <option value="Pending">Pending</option>
+  <option value="Approved">Approved</option>
+  <option value="Rejected">Rejected</option>
+ </select>
+</div>
 
 <table>
 <thead>
 <tr>
-<th>ID</th><th>Name</th><th>Post</th><th>Mobile</th>
-<th>District</th><th>Status</th><th>Action</th>
+ <th>ID</th>
+ <th>Name</th>
+ <th>Post</th>
+ <th>Mobile</th>
+ <th>District</th>
+ <th>Status</th>
+ <th>Action</th>
 </tr>
 </thead>
-<tbody id="rows"></tbody>
+<tbody id="tbody"></tbody>
 </table>
-</div>
 
-<!-- EDIT BOX -->
-<div id="editBox">
-<div id="editInner">
-<h4>Edit Member</h4>
-<input type="hidden" id="e_id">
-<input id="e_name" placeholder="Name">
-<input id="e_post" placeholder="Post (पद अनिवार्य)">
-<input id="e_father" placeholder="Father Name">
-<input id="e_mobile" placeholder="Mobile">
-<input id="e_district" placeholder="District">
-<input id="e_state" placeholder="State">
-<button onclick="saveEdit()">Save</button>
-<button onclick="closeEdit()">Close</button>
-</div>
 </div>
 
 <script>
-/* ===== SUPABASE ===== */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
- "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"  
-);  
+ "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-/* ===== ELEMENTS ===== */
-const search   = document.getElementById("search");
-const filter   = document.getElementById("filter");
-const rows     = document.getElementById("rows");
-const editBox  = document.getElementById("editBox");
+const tbody = document.getElementById("tbody");
+const search = document.getElementById("search");
+const statusFilter = document.getElementById("statusFilter");
 
-/* EDIT INPUTS (IMPORTANT FIX) */
-const e_id       = document.getElementById("e_id");
-const e_name     = document.getElementById("e_name");
-const e_post     = document.getElementById("e_post");
-const e_father   = document.getElementById("e_father");
-const e_mobile   = document.getElementById("e_mobile");
-const e_district = document.getElementById("e_district");
-const e_state    = document.getElementById("e_state");
-
-/* ===== LOAD ===== */
-async function load(){
+async function loadMembers(){
  let q = sb.from("JBRRMS").select("*").order("id",{ascending:false});
 
- if(filter.value) q = q.eq("status",filter.value);
-
- if(search.value){
-  q = q.or(
-   `name.ilike.%${search.value}%,mobile.ilike.%${search.value}%,member_code.ilike.%${search.value}%`
-  );
+ if(statusFilter.value!=="All"){
+  q = q.eq("status",statusFilter.value);
  }
 
  const {data,error} = await q;
- if(error){alert(error.message);return;}
+ if(error){console.log(error);return;}
 
- rows.innerHTML = "";
+ const term = search.value.toLowerCase();
 
- data.forEach(m=>{
- rows.innerHTML += `
-<tr>
-<td>${m.member_code || "-"}</td>
-<td>${m.name || ""}</td>
-<td>${m.post || "-"}</td>
-<td>${m.mobile || ""}</td>
-<td>${m.district || ""}</td>
-<td>${m.status}</td>
-<td>
-${m.status!=="Approved"
-? `<button class="approve" onclick="approve(${m.id})">Approve</button>`
-: `<button class="view" onclick="openID('${m.member_code}')">ID</button>`}
-
-<button class="view" onclick="editMember(${m.id})">Edit</button>
-
-${m.status!=="Approved"
-? `<button class="reject" onclick="reject(${m.id})">Reject</button>` : ""}
-
-${m.status==="Rejected"
-? `<button class="del" onclick="delMember(${m.id})">Delete</button>` : ""}
-</td>
-</tr>`;
+ tbody.innerHTML="";
+ data.filter(m=>{
+  return !term ||
+   (m.name||"").toLowerCase().includes(term) ||
+   (m.mobile||"").includes(term) ||
+   (m.member_code||"").toLowerCase().includes(term);
+ }).forEach(m=>{
+  tbody.innerHTML += `
+  <tr>
+   <td>${m.id}</td>
+   <td>${m.name}</td>
+   <td>${m.post||"-"}</td>
+   <td>${m.mobile}</td>
+   <td>${m.district||"-"}</td>
+   <td class="status-${m.status}">${m.status}</td>
+   <td>
+    ${m.status==="Pending"?`
+     <button class="approve" onclick="approve(${m.id})">Approve</button>
+     <button class="reject" onclick="reject(${m.id})">Reject</button>
+    `:`
+     <button class="hook">ID Card</button>
+     <button class="hook">Cert</button>
+     <button class="hook">Appt</button>
+    `}
+   </td>
+  </tr>`;
  });
 }
 
-search.oninput = load;
-filter.onchange = load;
-load();
-
-/* ===== EDIT ===== */
-async function editMember(id){
- const {data,error} = await sb.from("JBRRMS").select("*").eq("id",id).single();
- if(error){alert(error.message);return;}
-
- editBox.style.display="block";
- e_id.value = data.id;
- e_name.value = data.name || "";
- e_post.value = data.post || "";
- e_father.value = data.father_name || "";
- e_mobile.value = data.mobile || "";
- e_district.value = data.district || "";
- e_state.value = data.state || "";
-}
-
-function closeEdit(){
- editBox.style.display="none";
-}
-
-async function saveEdit(){
- if(!e_post.value){alert("Post जरूरी है");return;}
-
- await sb.from("JBRRMS").update({
-  name:e_name.value,
-  post:e_post.value,
-  father_name:e_father.value,
-  mobile:e_mobile.value,
-  district:e_district.value,
-  state:e_state.value
- }).eq("id",e_id.value);
-
- closeEdit();
- load();
-}
-
-/* ===== APPROVE ===== */
 async function approve(id){
- const {data,error} = await sb.from("JBRRMS")
- .select("name,post,mobile,member_code").eq("id",id).single();
+ const code = "JBRRMS"+String(id).padStart(4,"0");
 
- if(error){alert(error.message);return;}
- if(!data.post){alert("Approve से पहले Post भरें");return;}
+ await sb.from("JBRRMS")
+  .update({status:"Approved",member_code:code})
+  .eq("id",id);
 
- const code = data.member_code ||
-  "JBRRMS" + new Date().getFullYear() + String(id).padStart(4,"0");
-
- await sb.from("JBRRMS").update({
-  status:"Approved",
-  member_code:code
- }).eq("id",id);
-
- const msg = `जय भवानी ${data.name}
-आपको JBRRMS में ${data.post} पद हेतु अनुमोदित किया गया है।
-
-Member ID: ${code}
-
-पद से बड़ा स्वाभिमान है।`;
-
- window.open(
-  `https://wa.me/91${data.mobile}?text=${encodeURIComponent(msg)}`,
-  "_blank","noopener"
- );
-
- load();
+ loadMembers();
 }
 
-/* ===== REJECT ===== */
 async function reject(id){
- await sb.from("JBRRMS").update({status:"Rejected"}).eq("id",id);
- load();
+ await sb.from("JBRRMS")
+  .update({status:"Rejected"})
+  .eq("id",id);
+
+ loadMembers();
 }
 
-/* ===== DELETE ===== */
-async function delMember(id){
- if(confirm("⚠️ यह सदस्य हमेशा के लिए हट जाएगा।")){
-  await sb.from("JBRRMS").delete().eq("id",id);
-  load();
- }
-}
+search.oninput = loadMembers;
+statusFilter.onchange = loadMembers;
 
-/* ===== ID CARD ===== */
-function openID(code){
- window.open("idcard.html?code="+code,"_blank");
-}
+loadMembers();
 </script>
 
 </body>
