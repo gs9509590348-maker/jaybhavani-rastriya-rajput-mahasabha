@@ -5,207 +5,202 @@
 <title>JBRRMS – Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-body{margin:0;background:#111;font-family:Arial;color:#fff}
-h1{text-align:center;margin:15px 0}
-.panel{max-width:1200px;margin:20px auto;background:#1c1c1c;padding:20px;border-radius:12px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:10px;border-bottom:1px solid #333;text-align:left}
-th{background:#222}
-button{padding:6px 10px;border:none;border-radius:6px;font-weight:700;cursor:pointer;margin:2px}
-.approve{background:#1fa84f;color:#fff}
-.reject{background:#c0392b;color:#fff}
-.edit{background:#2980b9;color:#fff}
-.view{background:#c69214;color:#000}
-select,input{padding:8px;margin:6px 0;width:100%}
+body{margin:0;font-family:Arial;background:#111;color:#fff}
+header{background:#000;padding:14px;text-align:center;font-size:20px;font-weight:900;color:#d4af37}
 
-/* LOGIN */
-#loginBox{
- max-width:360px;margin:120px auto;
- background:#fff;color:#000;
- padding:20px;border-radius:10px;text-align:center
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border:1px solid #333;padding:6px;text-align:center}
+th{background:#222;color:#f5c542}
+tr:nth-child(even){background:#1a1a1a}
+
+button{padding:6px 10px;border:none;border-radius:4px;cursor:pointer;font-weight:700}
+.approve{background:#0a8f3c;color:#fff}
+.reject{background:#b00020;color:#fff}
+.view{background:#c69214;color:#000}
+.del{background:#444;color:#fff}
+
+.topbar{display:flex;justify-content:space-between;padding:10px}
+.logout{background:#900;color:#fff}
+
+/* MODAL */
+#editBox{
+display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,.85);z-index:999;
 }
-#loginBox h2{margin-top:0}
+#editInner{
+background:#111;max-width:420px;margin:40px auto;padding:16px;
+border-radius:10px;border:2px solid #d4af37
+}
+#editInner h3{text-align:center;color:#f5c542}
+#editInner input{width:100%;padding:8px;margin:5px 0}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginBox">
-<h2>Admin Login</h2>
-<input type="password" id="adminPass" placeholder="Enter Admin Password">
-<button onclick="login()" style="background:#c69214">Login</button>
-<p id="loginMsg" style="color:red"></p>
+<header>JBRRMS – ADMIN PANEL (FULL CONTROL)</header>
+
+<div class="topbar">
+<div>सभी सदस्य सूची</div>
+<button class="logout" onclick="logout()">Logout</button>
 </div>
-
-<!-- ADMIN PANEL -->
-<div id="adminPanel" style="display:none">
-
-<h1>JBRRMS – Admin Panel</h1>
-
-<div class="panel">
-
-<select id="filter" onchange="loadMembers()">
-<option value="Pending">Pending</option>
-<option value="Approved">Approved</option>
-<option value="Rejected">Rejected</option>
-</select>
 
 <table>
 <thead>
 <tr>
-<th>Name</th>
-<th>Post</th>
-<th>Mobile</th>
+<th>#</th>
+<th>Member Code</th>
+<th>नाम</th>
+<th>मोबाइल</th>
+<th>जिला</th>
 <th>Status</th>
 <th>Action</th>
 </tr>
 </thead>
-<tbody id="rows"></tbody>
+<tbody id="list"></tbody>
 </table>
 
-</div>
-</div>
-
 <!-- EDIT MODAL -->
-<div id="editBox" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,.85)">
-<div style="background:#fff;color:#000;
-max-width:420px;margin:60px auto;padding:20px;border-radius:10px">
+<div id="editBox">
+ <div id="editInner">
+  <h3>Edit Member Details</h3>
 
-<h3>Edit Member</h3>
+  <input id="e_id" hidden>
+  <input id="e_name" placeholder="नाम">
+  <input id="e_post" placeholder="पद">
+  <input id="e_father" placeholder="पिता का नाम">
+  <input id="e_mobile" placeholder="मोबाइल">
+  <input id="e_district" placeholder="जिला">
+  <input id="e_state" placeholder="राज्य">
 
-<input id="e_name" placeholder="नाम">
-<input id="e_post" placeholder="पद">
-<input id="e_father" placeholder="पिता का नाम">
-<input id="e_district" placeholder="जिला">
-<input id="e_state" placeholder="राज्य">
-<input id="e_mobile" placeholder="मोबाइल">
-
-<button onclick="saveEdit()" class="approve">Save</button>
-<button onclick="closeEdit()" class="reject">Cancel</button>
-
-</div>
+  <button class="approve" onclick="saveEdit()">💾 Save</button>
+  <button class="del" onclick="closeEdit()">Cancel</button>
+ </div>
 </div>
 
 <script>
-/* ================= LOGIN ================= */
-const ADMIN_PASSWORD="JBRRMS@2026";
-
-function login(){
- if(adminPass.value===ADMIN_PASSWORD){
-  sessionStorage.setItem("jbrms_admin","1");
-  showPanel();
- }else{
-  loginMsg.textContent="❌ Wrong password";
- }
+/* 🔐 ADMIN SESSION CHECK */
+if(sessionStorage.getItem("admin")!=="yes"){
+ location.href="admin-login.html";
 }
 
-function showPanel(){
- loginBox.style.display="none";
- adminPanel.style.display="block";
- loadMembers();
-}
-
-if(sessionStorage.getItem("jbrms_admin")){
- showPanel();
-}
-
-/* ================= SUPABASE ================= */
+/* 🔗 SUPABASE (SERVICE ROLE KEY ONLY) */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-const $=id=>document.getElementById(id);
-let editId=null, editCode=null;
+const list = document.getElementById("list");
 
-/* ================= PANEL ================= */
+/* 📥 LOAD MEMBERS */
 async function loadMembers(){
- const status=filter.value;
- rows.innerHTML="<tr><td colspan='5'>Loading...</td></tr>";
-
- const {data}=await sb.from("JBRRMS")
+ list.innerHTML="";
+ const {data,error} = await sb
+  .from("JBRRMS")
   .select("*")
-  .eq("status",status)
   .order("created_at",{ascending:false});
 
- if(!data||!data.length){
-  rows.innerHTML="<tr><td colspan='5'>No records</td></tr>";
-  return;
- }
+ if(error){ alert("Data load error"); return; }
 
- rows.innerHTML="";
- data.forEach(m=>{
-  rows.innerHTML+=`
-   <tr>
-    <td>${m.name}</td>
-    <td>${m.post||""}</td>
-    <td>${m.mobile||""}</td>
-    <td>${m.status}</td>
-    <td>
-     ${m.status==="Pending"?`
-      <button class="approve" onclick="approve('${m.id}')">Approve</button>
-      <button class="reject" onclick="reject('${m.id}')">Reject</button>
-     `:""}
-     <button class="edit" onclick="editMember('${m.id}')">Edit</button>
-     ${m.status==="Approved"?`
-      <button class="view" onclick="openID('${m.member_code}')">ID Card</button>
-     `:""}
-    </td>
-   </tr>`;
+ data.forEach((m,i)=>{
+  const tr=document.createElement("tr");
+  tr.innerHTML=`
+   <td>${i+1}</td>
+   <td>${m.member_code||"-"}</td>
+   <td>${m.name}</td>
+   <td>${m.mobile}</td>
+   <td>${m.district||""}</td>
+   <td>${m.status}</td>
+   <td>
+    ${m.status!=="Approved"
+     ? `<button class="approve" onclick="approve('${m.id}')">Approve</button>`
+     : `<button class="view" onclick="openID('${m.member_code}')">ID Card</button>`
+    }
+    <button class="view" onclick='openEdit(${JSON.stringify(m)})'>✏️ Edit</button>
+    <button class="reject" onclick="reject('${m.id}')">Reject</button>
+    <button class="del" onclick="delMember('${m.id}')">Delete</button>
+   </td>
+  `;
+  list.appendChild(tr);
  });
 }
 
+/* ✅ APPROVE */
 async function approve(id){
- const member_code="JBRRMS"+Date.now().toString().slice(-5)+Math.floor(Math.random()*10);
- await sb.from("JBRRMS").update({status:"Approved",member_code}).eq("id",id);
+ if(!confirm("Approve this member?")) return;
+
+ const code = "JBRRMS" + Date.now().toString().slice(-6);
+
+ await sb.from("JBRRMS").update({
+  status:"Approved",
+  member_code:code
+ }).eq("id",id);
+
  loadMembers();
- setTimeout(()=>openID(member_code),300);
+ setTimeout(()=>openID(code),300);
 }
 
+/* ❌ REJECT */
 async function reject(id){
- if(!confirm("Reject this member?"))return;
+ if(!confirm("Reject this member?")) return;
  await sb.from("JBRRMS").update({status:"Rejected"}).eq("id",id);
  loadMembers();
 }
 
+/* 🗑 DELETE */
+async function delMember(id){
+ if(!confirm("Delete permanently?")) return;
+ await sb.from("JBRRMS").delete().eq("id",id);
+ loadMembers();
+}
+
+/* 🆔 OPEN ID CARD */
 function openID(code){
- window.open("index.html?code="+code,"_blank");
+ window.open("member-card.html?code="+code,"_blank");
 }
 
-/* ================= EDIT ================= */
-async function editMember(id){
- const {data}=await sb.from("JBRRMS").select("*").eq("id",id).single();
- editId=id; editCode=data.member_code;
- e_name.value=data.name||"";
- e_post.value=data.post||"";
- e_father.value=data.father_name||"";
- e_district.value=data.district||"";
- e_state.value=data.state||"";
- e_mobile.value=data.mobile||"";
+/* ✏️ EDIT */
+function openEdit(m){
  editBox.style.display="block";
+ e_id.value=m.id;
+ e_name.value=m.name||"";
+ e_post.value=m.post||"";
+ e_father.value=m.father_name||"";
+ e_mobile.value=m.mobile||"";
+ e_district.value=m.district||"";
+ e_state.value=m.state||"";
 }
 
-function closeEdit(){editBox.style.display="none"}
+function closeEdit(){
+ editBox.style.display="none";
+}
 
 async function saveEdit(){
  await sb.from("JBRRMS").update({
   name:e_name.value,
   post:e_post.value,
   father_name:e_father.value,
+  mobile:e_mobile.value,
   district:e_district.value,
-  state:e_state.value,
-  mobile:e_mobile.value
- }).eq("id",editId);
+  state:e_state.value
+ }).eq("id",e_id.value);
 
  closeEdit();
  loadMembers();
- if(editCode) setTimeout(()=>openID(editCode),300);
+ alert("Member updated successfully ✅");
 }
+
+/* 🚪 LOGOUT */
+function logout(){
+ sessionStorage.removeItem("admin");
+ location.href="admin-login.html";
+}
+
+loadMembers();
 </script>
 
 </body>
