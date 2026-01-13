@@ -28,12 +28,12 @@ button{padding:6px 10px;border:none;border-radius:4px;cursor:pointer;font-weight
 
 /* MODAL */
 #editBox{
-display:none;position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,.85);z-index:999;
+ display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+ background:rgba(0,0,0,.85);z-index:999;
 }
 #editInner{
-background:#111;max-width:420px;margin:40px auto;padding:16px;
-border-radius:10px;border:2px solid #d4af37
+ background:#111;max-width:420px;margin:40px auto;padding:16px;
+ border-radius:10px;border:2px solid #d4af37
 }
 #editInner h3{text-align:center;color:#f5c542}
 #editInner input{width:100%;padding:8px;margin:5px 0}
@@ -73,7 +73,7 @@ border-radius:10px;border:2px solid #d4af37
   <input id="e_name" placeholder="नाम">
   <input id="e_post" placeholder="पद">
   <input id="e_father" placeholder="पिता का नाम">
-  <input id="e_mobile" placeholder="मोबाइल">
+  <input id="e_mobile" placeholder="मोबाइल (10 अंक)">
   <input id="e_district" placeholder="जिला">
   <input id="e_state" placeholder="राज्य">
 
@@ -88,7 +88,7 @@ if(sessionStorage.getItem("admin")!=="yes"){
  location.href="admin-login.html";
 }
 
-/* 🔗 SUPABASE (SERVICE ROLE KEY ONLY) */
+/* 🔗 SUPABASE (ANON PUBLIC KEY – RLS PROTECTED) */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
@@ -102,7 +102,7 @@ async function loadMembers(){
  const {data,error} = await sb
   .from("JBRRMS")
   .select("*")
-  .order("created_at",{ascending:false});
+  .order("id",{ascending:true});
 
  if(error){ alert("Data load error"); return; }
 
@@ -117,23 +117,26 @@ async function loadMembers(){
    <td>${m.status}</td>
    <td>
     ${m.status!=="Approved"
-     ? `<button class="approve" onclick="approve('${m.id}')">Approve</button>`
+     ? `<button class="approve" onclick="approve(${m.id})">Approve</button>`
      : `<button class="view" onclick="openID('${m.member_code}')">ID Card</button>`
     }
     <button class="view" onclick='openEdit(${JSON.stringify(m)})'>✏️ Edit</button>
-    <button class="reject" onclick="reject('${m.id}')">Reject</button>
-    <button class="del" onclick="delMember('${m.id}')">Delete</button>
+    <button class="reject" onclick="reject(${m.id})">Reject</button>
+    ${m.status==="Rejected"
+      ? `<button class="del" onclick="delMember(${m.id})">Delete</button>`
+      : ""
+    }
    </td>
   `;
   list.appendChild(tr);
  });
 }
 
-/* ✅ APPROVE */
+/* ✅ APPROVE (SAFE MEMBER CODE) */
 async function approve(id){
  if(!confirm("Approve this member?")) return;
 
- const code = "JBRRMS" + Date.now().toString().slice(-6);
+ const code = "JBRRMS" + String(id).padStart(4,"0");
 
  await sb.from("JBRRMS").update({
   status:"Approved",
@@ -151,7 +154,7 @@ async function reject(id){
  loadMembers();
 }
 
-/* 🗑 DELETE */
+/* 🗑 DELETE (ONLY REJECTED) */
 async function delMember(id){
  if(!confirm("Delete permanently?")) return;
  await sb.from("JBRRMS").delete().eq("id",id);
@@ -160,7 +163,7 @@ async function delMember(id){
 
 /* 🆔 OPEN ID CARD */
 function openID(code){
- window.open("member-card.html?code="+code,"_blank");
+ window.open("index.html?code="+code,"_blank");
 }
 
 /* ✏️ EDIT */
@@ -180,6 +183,11 @@ function closeEdit(){
 }
 
 async function saveEdit(){
+ if(!/^\d{10}$/.test(e_mobile.value)){
+  alert("मोबाइल नंबर गलत है");
+  return;
+ }
+
  await sb.from("JBRRMS").update({
   name:e_name.value,
   post:e_post.value,
