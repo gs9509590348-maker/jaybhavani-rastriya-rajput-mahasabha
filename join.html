@@ -61,7 +61,6 @@ font-weight:700;color:#3b2b00;
 
 <body>
 
-<!-- JOIN FORM -->
 <div id="joinBox">
 <h2>JBRRMS Join Form</h2>
 
@@ -88,7 +87,7 @@ font-weight:700;color:#3b2b00;
 <button onclick="searchMember()">🆔 ID Card देखें</button>
 </div>
 
-<!-- FRONT CARD -->
+<!-- FRONT -->
 <div id="front" class="card">
 <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div class="photo"><img id="photoFront"></div>
@@ -104,7 +103,7 @@ font-weight:700;color:#3b2b00;
 </div>
 </div>
 
-<!-- BACK CARD -->
+<!-- BACK -->
 <div id="back" class="card">
 <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div id="qr"></div>
@@ -115,17 +114,17 @@ font-weight:700;color:#3b2b00;
 <div>स्वाभिमान कभी गिरवी नहीं रखा जाता।</div>
 <div>स्वाभिमान ही असली शक्ति है।</div>
 <div>जिसके पास स्वाभिमान है, वही सच्चा बलवान है।</div>
-<div>स्वाभिमान समझौता नहीं सिखाता।</div>
 <div>स्वाभिमान हमारी असली विरासत है।</div>
 
 <div class="disclaimer">
 यह पहचान पत्र केवल संगठनात्मक पहचान हेतु है।
 </div>
 
-<div class="contact" style="margin-top:22px;font-size:26px;line-height:1.6;color:#222;font-weight:600">
+<div style="margin-top:22px;font-size:26px;font-weight:600">
 <div>📞 Helpline : 9166377972</div>
 <div>📧 Email : jbrrms1@gmail.com</div>
 <div>🌐 Website : jbrrms.in</div>
+</div>
 </div>
 
 <div class="actions">
@@ -137,152 +136,102 @@ font-weight:700;color:#3b2b00;
 <script>
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
- "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
+ "PASTE_YOUR_ANON_KEY"
 );
 
 const el = id => document.getElementById(id);
-const name = el("name"), father = el("father"),
-district = el("district"), state = el("state"),
-post = el("post"), mobile = el("mobile"),
-agree = el("agree");
+const name=el("name"),father=el("father"),district=el("district"),
+state=el("state"),post=el("post"),mobile=el("mobile"),
+agree=el("agree");
 
-const photoInput = el("photoInput"),
-photoStatus = el("photoStatus"),
-searchInput = el("searchInput");
+const photoInput=el("photoInput"),photoStatus=el("photoStatus"),
+searchInput=el("searchInput");
 
-const front = el("front"), back = el("back");
-const photoFront = el("photoFront");
+const front=el("front"),back=el("back"),
+photoFront=el("photoFront");
 
-const c_name = el("c_name"), c_father = el("c_father"),
-c_district = el("c_district"), c_state = el("c_state"),
-c_post = el("c_post"), c_mobile = el("c_mobile"),
-c_code = el("c_code"), qr = el("qr");
+const c_name=el("c_name"),c_father=el("c_father"),
+c_district=el("c_district"),c_state=el("c_state"),
+c_post=el("c_post"),c_mobile=el("c_mobile"),
+c_code=el("c_code"),qr=el("qr");
 
-let photoBlob = null, side = "front";
+let photoBlob=null,side="front";
 
-function openPicker(){
- photoInput.value = "";
- photoInput.click();
-}
+function openPicker(){photoInput.click();}
 
-photoInput.onchange = e => {
- const f = e.target.files[0];
- if(!f) return;
-
- const img = new Image();
- img.src = URL.createObjectURL(f);
-
- img.onload = () => {
-  const c = document.createElement("canvas");
-  c.width = c.height = 600;
-  const m = Math.min(img.width, img.height);
-
-  c.getContext("2d").drawImage(
-   img,
-   (img.width-m)/2,(img.height-m)/2,
-   m,m,0,0,600,600
-  );
-
-  c.toBlob(b=>{
-   photoBlob = b;
-   photoStatus.textContent = "Photo ready ✅";
-  },"image/jpeg",0.85);
+photoInput.onchange=e=>{
+ const f=e.target.files[0]; if(!f)return;
+ const img=new Image(); img.src=URL.createObjectURL(f);
+ img.onload=()=>{
+  const c=document.createElement("canvas");
+  c.width=c.height=600;
+  const m=Math.min(img.width,img.height);
+  c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
+  c.toBlob(b=>{photoBlob=b;photoStatus.textContent="Photo ready ✅";},"image/jpeg",0.85);
  };
 };
 
 async function joinNow(){
- if(!photoBlob || !name.value || !mobile.value || !post.value || !agree.checked){
-  alert("सभी जरूरी फील्ड भरें");
-  return;
+ if(!photoBlob||!name.value||!post.value||!mobile.value||!agree.checked){
+  alert("सभी जरूरी फील्ड भरें"); return;
  }
-
  if(!/^\d{10}$/.test(mobile.value)){
-  alert("मोबाइल नंबर गलत");
-  return;
+  alert("मोबाइल गलत"); return;
  }
 
- const {data:ex} = await sb
-  .from("JBRRMS")
-  .select("id")
-  .eq("mobile",mobile.value)
-  .maybeSingle();
-
- if(ex){
-  alert("मोबाइल पहले से मौजूद");
-  return;
- }
-
- const fd = new FormData();
+ const fd=new FormData();
  fd.append("file",photoBlob);
  fd.append("upload_preset","jbrms_unsigned");
 
- const up = await fetch(
+ const up=await fetch(
   "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
   {method:"POST",body:fd}
  ).then(r=>r.json());
 
  await sb.from("JBRRMS").insert([{
-  name: name.value,
-  father_name: father.value,
-  district: district.value,
-  state: state.value,
-  post: post.value,
-  mobile: mobile.value,
-  photo_url: up.secure_url,
-  status: "Pending"
+  name:name.value,
+  father_name:father.value,
+  district:district.value,
+  state:state.value,
+  post:post.value,
+  mobile:mobile.value,
+  photo_url:up.secure_url,
+  status:"Pending"
  }]);
 
- alert("Form Submitted – Approval Pending 🚩 जय भवानी ");
+ alert("Submitted – Approval Pending 🚩");
 }
 
 async function searchMember(){
- const v = searchInput.value.trim();
- if(!v) return;
+ const v=searchInput.value.trim(); if(!v)return;
 
- let q = sb.from("JBRRMS").select("*").eq("status","Approved");
- q = /^\d{10}$/.test(v) ? q.eq("mobile",v) : q.eq("member_code",v);
+ let q=sb.from("JBRRMS").select("*");
+ q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v.toUpperCase());
 
- const {data} = await q.maybeSingle();
- if(!data){
-  alert("Member नहीं मिला");
-  return;
- }
+ const {data}=await q.order("id",{ascending:false}).limit(1).maybeSingle();
+ if(!data){alert("Member नहीं मिला");return;}
 
- photoFront.src = "";
- photoFront.src = data.photo_url + "?t=" + Date.now();
+ photoFront.src=data.photo_url+"?v="+data.id;
 
- c_name.textContent = data.name;
- c_father.textContent = data.father_name || "";
- c_district.textContent = data.district || "";
- c_state.textContent = data.state || "";
- c_post.textContent = data.post || "";
- c_mobile.textContent = data.mobile;
- c_code.textContent = data.member_code;
+ c_name.textContent=data.name||"";
+ c_father.textContent=data.father_name||"";
+ c_district.textContent=data.district||"";
+ c_state.textContent=data.state||"";
+ c_post.textContent=data.post||"";
+ c_mobile.textContent=data.mobile||"";
+ c_code.textContent=data.member_code||"Pending";
 
- qr.innerHTML = "";
- new QRCode(qr,{
-  text: data.member_code,
-  width:220,
-  height:220
- });
+ qr.innerHTML="";
+ new QRCode(qr,{text:data.member_code||data.mobile,width:220,height:220});
 
  showFront();
 }
 
-function showFront(){
- front.style.display="block";
- back.style.display="none";
- side="front";
-}
-function showBack(){
- front.style.display="none";
- back.style.display="block";
- side="back";
-}
+function showFront(){front.style.display="block";back.style.display="none";side="front";}
+function showBack(){front.style.display="none";back.style.display="block";side="back";}
 
 function download(){
- html2canvas(side==="front"?front:back,{scale:2,useCORS:true})
- .then(c=>{
+ html2canvas(side==="front"?front:back,{scale:2,useCORS:true}).then(c=>{
   const a=document.createElement("a");
   a.href=c.toDataURL("image/png");
   a.download="JBRRMS_"+side+".png";
