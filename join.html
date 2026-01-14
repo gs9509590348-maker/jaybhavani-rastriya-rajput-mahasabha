@@ -5,14 +5,13 @@
 <title>JBRRMS – Join & ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body{margin:0;background:#0e0e0e;font-family:Arial}
-#joinBox{max-width:380px;background:#fff;margin:20px auto;padding:18px;border-radius:12px}
+#joinBox{max-width:400px;background:#fff;margin:20px auto;padding:18px;border-radius:12px}
 h2{text-align:center;margin:0 0 10px}
 input,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
 button{background:#c69214;color:#fff;border:none;font-weight:800;border-radius:6px;cursor:pointer}
@@ -37,10 +36,19 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 }
 .photo img{width:100%;height:100%;object-fit:cover}
 
-.details{position:absolute;top:930px;padding-left:280px;font-size:52px;line-height:1.6}
+.details{position:absolute;top:900px;padding-left:260px;font-size:48px;line-height:1.6}
 #c_code{margin-top:14px;font-weight:900;letter-spacing:3px}
 
 #qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
+
+.swabhiman{
+position:absolute;top:980px;left:120px;right:120px;
+text-align:center;font-size:34px;line-height:1.4;
+font-weight:700;color:#3b2b00;
+}
+.disclaimer{
+margin-top:20px;font-size:26px;font-weight:500;color:#444;
+}
 
 .actions{text-align:center;margin:20px}
 .actions button{width:180px;margin:6px}
@@ -49,14 +57,13 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 
 <body>
 
-<!-- JOIN FORM -->
 <div id="joinBox">
 <h2>JBRRMS Join Form</h2>
-
 <input id="name" placeholder="पूरा नाम *">
 <input id="father" placeholder="पिता का नाम">
 <input id="district" placeholder="जिला">
 <input id="state" placeholder="राज्य">
+<input id="post" placeholder="पद *">
 <input id="mobile" placeholder="मोबाइल (10 अंक) *">
 
 <input type="file" id="photoInput" accept="image/*" hidden>
@@ -81,6 +88,7 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 <div><b>पिता :</b> <span id="c_father"></span></div>
 <div><b>जिला :</b> <span id="c_district"></span></div>
 <div><b>राज्य :</b> <span id="c_state"></span></div>
+<div><b>पद :</b> <span id="c_post"></span></div>
 <div><b>मोबाइल :</b> <span id="c_mobile"></span></div>
 <div id="c_code"></div>
 </div>
@@ -91,6 +99,20 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div id="qr"></div>
 <div class="photo" style="top:520px"><img id="photoBack"></div>
+
+<div class="swabhiman">
+<div>पद से बड़ा स्वाभिमान होता है।</div>
+<div>स्वाभिमान है तो पहचान है।</div>
+<div>स्वाभिमान कभी गिरवी नहीं रखा जाता।</div>
+<div>स्वाभिमान ही असली शक्ति है।</div>
+<div>जिसके पास स्वाभिमान है, वही सच्चा बलवान है।</div>
+<div>स्वाभिमान समझौता नहीं सिखाता।</div>
+<div>स्वाभिमान हमारी असली विरासत है।</div>
+
+<div class="disclaimer">
+यह पहचान पत्र केवल संगठनात्मक पहचान हेतु है।
+</div>
+</div>
 </div>
 
 <div class="actions">
@@ -100,116 +122,98 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 </div>
 
 <script>
-/* 🔑 SUPABASE */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-/* ELEMENTS */
 const el=id=>document.getElementById(id);
-const name=el("name"), father=el("father"), district=el("district"),
-state=el("state"), mobile=el("mobile"), agree=el("agree");
-const photoInput=el("photoInput"), photoStatus=el("photoStatus");
+const name=el("name"),father=el("father"),district=el("district"),
+state=el("state"),post=el("post"),mobile=el("mobile"),agree=el("agree");
+const photoInput=el("photoInput"),photoStatus=el("photoStatus");
 const searchInput=el("searchInput");
-const front=el("front"), back=el("back");
-const photoFront=el("photoFront"), photoBack=el("photoBack");
-const c_name=el("c_name"), c_father=el("c_father"),
-c_district=el("c_district"), c_state=el("c_state"),
-c_mobile=el("c_mobile"), c_code=el("c_code");
-const qr=el("qr");
+const front=el("front"),back=el("back");
+const photoFront=el("photoFront"),photoBack=el("photoBack");
+const c_name=el("c_name"),c_father=el("c_father"),
+c_district=el("c_district"),c_state=el("c_state"),
+c_post=el("c_post"),c_mobile=el("c_mobile"),
+c_code=el("c_code"),qr=el("qr");
 
-let photoBlob=null, side="front";
+let photoBlob=null,side="front";
 
-/* PHOTO */
 function openPicker(){photoInput.value="";photoInput.click();}
+
 photoInput.onchange=e=>{
- const f=e.target.files[0]; if(!f)return;
- const img=new Image(),u=URL.createObjectURL(f); img.src=u;
- img.onload=()=>{
-  const c=document.createElement("canvas");c.width=c.height=600;
-  const m=Math.min(img.width,img.height);
-  c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
-  c.toBlob(b=>{
-    photoBlob=b;
-    photoStatus.textContent="Photo ready ✅";
-  },"image/jpeg",0.85);
- };
+const f=e.target.files[0]; if(!f) return;
+const img=new Image(),u=URL.createObjectURL(f); img.src=u;
+img.onload=()=>{
+const c=document.createElement("canvas"); c.width=c.height=600;
+const m=Math.min(img.width,img.height);
+c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
+c.toBlob(b=>{photoBlob=b;photoStatus.textContent="Photo ready ✅";},"image/jpeg",0.85);
+};
 };
 
-/* JOIN */
 async function joinNow(){
- if(!photoBlob||!name.value||!mobile.value||!agree.checked){
-  alert("सभी जरूरी फील्ड भरें"); return;
- }
- if(!/^\d{10}$/.test(mobile.value)){
-  alert("मोबाइल नंबर गलत"); return;
- }
+if(!photoBlob||!name.value||!mobile.value||!post.value||!agree.checked){
+alert("सभी जरूरी फील्ड भरें");return;
+}
+if(!/^\d{10}$/.test(mobile.value)){alert("मोबाइल गलत");return;}
 
- const {data:exist}=await sb
- .from("JBRRMS")
- .select("id")
- .eq("mobile",mobile.value)
- .maybeSingle();
+const {data:ex}=await sb.from("JBRRMS").select("id").eq("mobile",mobile.value).maybeSingle();
+if(ex){alert("मोबाइल पहले से मौजूद");return;}
 
- if(exist){ alert("मोबाइल पहले से मौजूद है"); return; }
+const fd=new FormData();
+fd.append("file",photoBlob);
+fd.append("upload_preset","jbrms_unsigned");
 
- const fd=new FormData();
- fd.append("file",photoBlob);
- fd.append("upload_preset","jbrms_unsigned");
+const up=await fetch("https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",{method:"POST",body:fd}).then(r=>r.json());
 
- const img=await fetch(
-  "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
-  {method:"POST",body:fd}
- ).then(r=>r.json());
+await sb.from("JBRRMS").insert([{
+name:name.value,
+father_name:father.value,
+district:district.value,
+state:state.value,
+post:post.value,
+mobile:mobile.value,
+photo_url:up.secure_url,
+status:"Pending"
+}]);
 
- await sb.from("JBRRMS").insert([{
-  name:name.value,
-  father_name:father.value,
-  district:district.value,
-  state:state.value,
-  mobile:mobile.value,
-  photo_url:img.secure_url,
-  status:"Pending"
- }]);
-
- alert("Submitted – Approval Pending 🚩");
+alert("Submitted – Approval Pending 🚩");
 }
 
-/* SEARCH */
 async function searchMember(){
- const v=searchInput.value.trim(); if(!v)return;
+const v=searchInput.value.trim(); if(!v)return;
+let q=sb.from("JBRRMS").select("*").eq("status","Approved");
+q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v);
+const {data}=await q.maybeSingle();
+if(!data){alert("Member नहीं मिला");return;}
 
- let q=sb.from("JBRRMS").select("*").eq("status","Approved");
- q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v);
+photoFront.src=photoBack.src=data.photo_url;
+c_name.textContent=data.name;
+c_father.textContent=data.father_name||"";
+c_district.textContent=data.district||"";
+c_state.textContent=data.state||"";
+c_post.textContent=data.post||"";
+c_mobile.textContent=data.mobile;
+c_code.textContent=data.member_code;
 
- const {data}=await q.maybeSingle();
- if(!data){ alert("Member नहीं मिला"); return; }
-
- photoFront.src=photoBack.src=data.photo_url;
- c_name.textContent=data.name;
- c_father.textContent=data.father_name||"";
- c_district.textContent=data.district||"";
- c_state.textContent=data.state||"";
- c_mobile.textContent=data.mobile;
- c_code.textContent=data.member_code;
-
- qr.innerHTML="";
- new QRCode(qr,{text:data.member_code,width:220,height:220});
- showFront();
+qr.innerHTML="";
+new QRCode(qr,{text:data.member_code,width:220,height:220});
+showFront();
 }
 
-/* VIEW + DOWNLOAD */
 function showFront(){front.style.display="block";back.style.display="none";side="front";}
 function showBack(){front.style.display="none";back.style.display="block";side="back";}
+
 function download(){
- html2canvas(side==="front"?front:back,{scale:2,useCORS:true})
- .then(c=>{
-  const a=document.createElement("a");
-  a.href=c.toDataURL("image/png");
-  a.download="JBRRMS_"+side+".png";
-  a.click();
- });
+html2canvas(side==="front"?front:back,{scale:2,useCORS:true}).then(c=>{
+const a=document.createElement("a");
+a.href=c.toDataURL("image/png");
+a.download="JBRRMS_"+side+".png";
+a.click();
+});
 }
 </script>
 
