@@ -5,6 +5,7 @@
 <title>JBRRMS Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -73,7 +74,7 @@ button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:point
 <!-- EDIT MODAL -->
 <div class="modal" id="editModal">
  <div class="modal-box">
-  <h3>Edit Member (All Details)</h3>
+  <h3>Edit Member</h3>
 
   <input id="e_member_code" placeholder="Member Code">
   <input id="e_name" placeholder="Name">
@@ -97,27 +98,29 @@ button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:point
 </div>
 
 <script>
-/* SUPABASE */
+"use strict";
+
+/* SUPABASE CONFIG */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-const tbody=document.getElementById("tbody");
-const search=document.getElementById("search");
-const statusFilter=document.getElementById("statusFilter");
+const tbody = document.getElementById("tbody");
+const searchInput = document.getElementById("search");
+const statusFilter = document.getElementById("statusFilter");
 
-let editId=null;
+let editId = null;
 
 /* LOAD MEMBERS */
 async function loadMembers(){
- let q=sb.from("JBRRMS").select("*").order("id",{ascending:false});
- if(statusFilter.value!=="All") q=q.eq("status",statusFilter.value);
+ let q = sb.from("JBRRMS").select("*").order("id",{ascending:false});
+ if(statusFilter.value!=="All") q = q.eq("status",statusFilter.value);
 
- const {data,error}=await q;
- if(error){alert(error.message);return;}
+ const {data,error} = await q;
+ if(error){ alert(error.message); return; }
 
- const term=search.value.toLowerCase();
+ const term = (searchInput.value||"").toLowerCase();
  tbody.innerHTML="";
 
  data.filter(m=>{
@@ -136,7 +139,7 @@ async function loadMembers(){
    <td class="status-${m.status}">${m.status}</td>
    <td>
     ${m.status==="Pending"?`
-     <button class="approve" onclick="approveAll(${m.id})">Approve + All</button>
+     <button class="approve" onclick="approveAll(${m.id})">Approve</button>
      <button class="reject" onclick="reject(${m.id})">Reject</button>
     `:`
      <button class="edit" onclick="openEdit(${m.id})">Edit</button>
@@ -148,14 +151,16 @@ async function loadMembers(){
  });
 }
 
-/* APPROVE + ALL */
+/* APPROVE */
 async function approveAll(id){
- const code="JBRRMS"+String(id).padStart(4,"0");
- await sb.from("JBRRMS").update({
+ if(!confirm("Approve this member?")) return;
+ const code = "JBRRMS"+String(id).padStart(4,"0");
+ const {error} = await sb.from("JBRRMS").update({
   status:"Approved",
   member_code:code
  }).eq("id",id);
 
+ if(error){alert(error.message);return;}
  openAll(code);
  loadMembers();
 }
@@ -168,8 +173,7 @@ async function reject(id){
 /* EDIT */
 async function openEdit(id){
  editId=id;
- const {data}=await sb.from("JBRRMS").select("*").eq("id",id).single();
-
+ const {data} = await sb.from("JBRRMS").select("*").eq("id",id).single();
  e_member_code.value=data.member_code||"";
  e_name.value=data.name||"";
  e_father.value=data.father_name||"";
@@ -178,12 +182,14 @@ async function openEdit(id){
  e_state.value=data.state||"";
  e_mobile.value=data.mobile||"";
  e_status.value=data.status||"Pending";
-
  document.getElementById("editModal").style.display="block";
 }
+
 function closeEdit(){
+ editId=null;
  document.getElementById("editModal").style.display="none";
 }
+
 async function saveEdit(){
  await sb.from("JBRRMS").update({
   member_code:e_member_code.value,
@@ -200,24 +206,26 @@ async function saveEdit(){
  loadMembers();
 }
 
-/* ALL LINKS (HOOKS) */
+/* ALL LINKS */
 function openAll(code){
+ if(!code){alert("Member not approved");return;}
  openID(code);
  openCert(code);
  openAppt(code);
 }
+
 function openID(code){
- alert("ID Card Generator\nMember: "+code);
+ window.open("id-card.html?code="+code,"_blank");
 }
 function openCert(code){
- alert("Certificate Generator\nMember: "+code);
+ window.open("certificate.html?code="+code,"_blank");
 }
 function openAppt(code){
- alert("Appointment Letter\nMember: "+code);
+ window.open("appointment.html?code="+code,"_blank");
 }
 
-search.oninput=loadMembers;
-statusFilter.onchange=loadMembers;
+searchInput.oninput = loadMembers;
+statusFilter.onchange = loadMembers;
 loadMembers();
 </script>
 
