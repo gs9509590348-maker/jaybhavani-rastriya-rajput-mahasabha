@@ -5,13 +5,14 @@
 <title>JBRRMS – Join & ID Card</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- LIBRARIES -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
 body{margin:0;background:#0e0e0e;font-family:Arial}
-#joinBox{max-width:400px;background:#fff;margin:20px auto;padding:18px;border-radius:12px}
+#joinBox{max-width:420px;background:#fff;margin:20px auto;padding:18px;border-radius:12px}
 h2{text-align:center;margin:0 0 10px}
 input,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
 button{background:#c69214;color:#fff;border:none;font-weight:800;border-radius:6px;cursor:pointer}
@@ -39,16 +40,19 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 .details{position:absolute;top:900px;padding-left:260px;font-size:48px;line-height:1.6}
 #c_code{margin-top:14px;font-weight:900;letter-spacing:3px}
 
-#qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
+#qr{
+position:absolute;
+top:380px;
+left:50%;
+transform:translateX(-50%);
+}
 
 .swabhiman{
 position:absolute;top:980px;left:120px;right:120px;
 text-align:center;font-size:34px;line-height:1.4;
 font-weight:700;color:#3b2b00;
 }
-.disclaimer{
-margin-top:20px;font-size:26px;font-weight:500;color:#444;
-}
+.disclaimer{margin-top:20px;font-size:26px;font-weight:500;color:#444}
 
 .actions{text-align:center;margin:20px}
 .actions button{width:180px;margin:6px}
@@ -57,6 +61,7 @@ margin-top:20px;font-size:26px;font-weight:500;color:#444;
 
 <body>
 
+<!-- JOIN FORM -->
 <div id="joinBox">
 <h2>JBRRMS Join Form</h2>
 <input id="name" placeholder="पूरा नाम *">
@@ -79,10 +84,11 @@ margin-top:20px;font-size:26px;font-weight:500;color:#444;
 <button onclick="searchMember()">🆔 ID Card देखें</button>
 </div>
 
-<!-- FRONT -->
+<!-- FRONT CARD -->
 <div id="front" class="card">
 <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div class="photo"><img id="photoFront"></div>
+
 <div class="details">
 <div><b>नाम :</b> <span id="c_name"></span></div>
 <div><b>पिता :</b> <span id="c_father"></span></div>
@@ -94,11 +100,10 @@ margin-top:20px;font-size:26px;font-weight:500;color:#444;
 </div>
 </div>
 
-<!-- BACK -->
+<!-- BACK CARD (NO PHOTO) -->
 <div id="back" class="card">
 <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div id="qr"></div>
-<div class="photo" style="top:520px"><img id="photoBack"></div>
 
 <div class="swabhiman">
 <div>पद से बड़ा स्वाभिमान होता है।</div>
@@ -122,9 +127,9 @@ margin-top:20px;font-size:26px;font-weight:500;color:#444;
 </div>
 
 <script>
-const sb = supabase.createClient(
- "https://ejdzdptqxelilkseannw.supabase.co",
- "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
+const sb=supabase.createClient(
+"https://ejdzdptqxelilkseannw.supabase.co",
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
 const el=id=>document.getElementById(id);
@@ -133,7 +138,7 @@ state=el("state"),post=el("post"),mobile=el("mobile"),agree=el("agree");
 const photoInput=el("photoInput"),photoStatus=el("photoStatus");
 const searchInput=el("searchInput");
 const front=el("front"),back=el("back");
-const photoFront=el("photoFront"),photoBack=el("photoBack");
+const photoFront=el("photoFront");
 const c_name=el("c_name"),c_father=el("c_father"),
 c_district=el("c_district"),c_state=el("c_state"),
 c_post=el("c_post"),c_mobile=el("c_mobile"),
@@ -144,7 +149,7 @@ let photoBlob=null,side="front";
 function openPicker(){photoInput.value="";photoInput.click();}
 
 photoInput.onchange=e=>{
-const f=e.target.files[0]; if(!f) return;
+const f=e.target.files[0]; if(!f)return;
 const img=new Image(),u=URL.createObjectURL(f); img.src=u;
 img.onload=()=>{
 const c=document.createElement("canvas"); c.width=c.height=600;
@@ -190,7 +195,7 @@ q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v);
 const {data}=await q.maybeSingle();
 if(!data){alert("Member नहीं मिला");return;}
 
-photoFront.src=photoBack.src=data.photo_url;
+photoFront.src=data.photo_url;
 c_name.textContent=data.name;
 c_father.textContent=data.father_name||"";
 c_district.textContent=data.district||"";
