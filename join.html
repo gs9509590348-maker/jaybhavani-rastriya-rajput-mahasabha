@@ -40,19 +40,13 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 .details{position:absolute;top:900px;padding-left:260px;font-size:48px;line-height:1.6}
 #c_code{margin-top:14px;font-weight:900;letter-spacing:3px}
 
-#qr{
-position:absolute;
-top:380px;
-left:50%;
-transform:translateX(-50%);
-}
+#qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
 
 .swabhiman{
 position:absolute;top:980px;left:120px;right:120px;
 text-align:center;font-size:34px;line-height:1.4;
 font-weight:700;color:#3b2b00;
 }
-.disclaimer{margin-top:20px;font-size:26px;font-weight:500;color:#444}
 
 .actions{text-align:center;margin:20px}
 .actions button{width:180px;margin:6px}
@@ -72,14 +66,11 @@ font-weight:700;color:#3b2b00;
 <input id="mobile" placeholder="मोबाइल (10 अंक) *">
 
 <input type="file" id="photoInput" accept="image/*" hidden>
-<button onclick="openPicker()">📸 फोटो चुनें</button>
+<button onclick="photoInput.click()">📸 फोटो चुनें</button>
 <div id="photoStatus"></div>
 
-<label>
-<input type="checkbox" id="agree" style="width:auto"> नियम स्वीकार
-</label>
-
-<button onclick="joinNow()">Join Now</button>
+<label><input type="checkbox" id="agree"> नियम स्वीकार</label>
+<button onclick="joinNow()">Join</button>
 
 <hr>
 
@@ -90,15 +81,15 @@ font-weight:700;color:#3b2b00;
 <!-- FRONT -->
 <div id="front" class="card">
 <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
-<div class="photo"><img id="photoFront"></div>
+<div class="photo"><img id="photoFront" crossorigin="anonymous"></div>
 
 <div class="details">
-<div><b>नाम :</b> <span id="c_name"></span></div>
-<div><b>पिता :</b> <span id="c_father"></span></div>
-<div><b>जिला :</b> <span id="c_district"></span></div>
-<div><b>राज्य :</b> <span id="c_state"></span></div>
-<div><b>पद :</b> <span id="c_post"></span></div>
-<div><b>मोबाइल :</b> <span id="c_mobile"></span></div>
+<div>नाम : <span id="c_name"></span></div>
+<div>पिता : <span id="c_father"></span></div>
+<div>जिला : <span id="c_district"></span></div>
+<div>राज्य : <span id="c_state"></span></div>
+<div>पद : <span id="c_post"></span></div>
+<div>मोबाइल : <span id="c_mobile"></span></div>
 <div id="c_code"></div>
 </div>
 </div>
@@ -107,30 +98,33 @@ font-weight:700;color:#3b2b00;
 <div id="back" class="card">
 <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div id="qr"></div>
+<div class="card-info">
+  <p>स्वाभिमान हमारा धर्म है।</p>
+  <p>संघर्ष हमारी पहचान है।</p>
+  <p>एकता में ही शक्ति है।</p>
+  <p>सम्मान से ही समाज आगे बढ़ता है।</p>
+  <p><b>पद से बड़ा स्वाभिमान होता है।</b></p>
+  <p>राजपूत समाज – शौर्य और संस्कार।</p>
+  <p>जय भवानी, जय राजपूताना।</p>
 
-<div class="swabhiman">
-<div>पद से बड़ा स्वाभिमान होता है।</div>
-<div>स्वाभिमान है तो पहचान है।</div>
-<div>स्वाभिमान कभी गिरवी नहीं रखा जाता।</div>
-<div>स्वाभिमान ही असली शक्ति है।</div>
-<div>जिसके पास स्वाभिमान है, वही सच्चा बलवान है।</div>
-<div>स्वाभिमान हमारी असली विरासत है।</div>
+  <hr>
 
-<div class="disclaimer">
-यह पहचान पत्र केवल संगठनात्मक पहचान हेतु है।
-</div>
+  <p>📞 Helpline : 9166377972</p>
+  <p>📧 Email : jbrrms1@gmail.com</p>
+  <p>🌐 Website : www.jbrrms.in</p>
 
-<div style="margin-top:22px;font-size:26px;font-weight:600">
-<div>📞 Helpline : 9166377972</div>
-<div>📧 Email : jbrrms1@gmail.com</div>
-<div>🌐 Website : jbrrms.in</div>
+  <p class="disclaimer">
+    यह पहचान पत्र JBRRMS का आंतरिक सदस्यता कार्ड है।
+    यह किसी भी सरकारी, कानूनी या वित्तीय पहचान के रूप में मान्य नहीं है।
+    दुरुपयोग की स्थिति में सदस्यता रद्द की जा सकती है।
+  </p>
 </div>
-</div>
+<div 
 
 <div class="actions">
-<button onclick="showFront()">⬅ Front</button>
-<button onclick="showBack()">Back ➡</button>
-<button onclick="download()">⬇ Download</button>
+<button onclick="showFront()">Front</button>
+<button onclick="showBack()">Back</button>
+<button onclick="download()">Download</button>
 </div>
 
 <script>
@@ -139,26 +133,23 @@ const sb = supabase.createClient(
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-const el = id => document.getElementById(id);
-const name=el("name"),father=el("father"),district=el("district"),
-state=el("state"),post=el("post"),mobile=el("mobile"),
-agree=el("agree");
+const el=id=>document.getElementById(id);
 
-const photoInput=el("photoInput"),photoStatus=el("photoStatus"),
-searchInput=el("searchInput");
+/* ELEMENTS */
+const name=el("name"), father=el("father"), district=el("district"),
+state=el("state"), post=el("post"), mobile=el("mobile"),
+agree=el("agree"), photoInput=el("photoInput"),
+photoStatus=el("photoStatus"), searchInput=el("searchInput");
 
-const front=el("front"),back=el("back"),
-photoFront=el("photoFront");
+const photoFront=el("photoFront"), c_name=el("c_name"),
+c_father=el("c_father"), c_district=el("c_district"),
+c_state=el("c_state"), c_post=el("c_post"),
+c_mobile=el("c_mobile"), c_code=el("c_code"),
+qr=el("qr"), front=el("front"), back=el("back");
 
-const c_name=el("c_name"),c_father=el("c_father"),
-c_district=el("c_district"),c_state=el("c_state"),
-c_post=el("c_post"),c_mobile=el("c_mobile"),
-c_code=el("c_code"),qr=el("qr");
+let photoBlob=null, side="front", currentMemberCode="";
 
-let photoBlob=null,side="front";
-
-function openPicker(){photoInput.click();}
-
+/* PHOTO */
 photoInput.onchange=e=>{
  const f=e.target.files[0]; if(!f)return;
  const img=new Image(); img.src=URL.createObjectURL(f);
@@ -167,21 +158,25 @@ photoInput.onchange=e=>{
   c.width=c.height=600;
   const m=Math.min(img.width,img.height);
   c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
-  c.toBlob(b=>{photoBlob=b;photoStatus.textContent="Photo ready ✅";},"image/jpeg",0.85);
+  c.toBlob(b=>{
+   photoBlob=b;
+   photoStatus.textContent="Photo ready ✅";
+   photoInput.value="";
+  },"image/jpeg",0.9);
  };
 };
 
+/* JOIN */
 async function joinNow(){
- if(!photoBlob||!name.value||!post.value||!mobile.value||!agree.checked){
-  alert("सभी जरूरी फील्ड भरें"); return;
- }
- if(!/^\d{10}$/.test(mobile.value)){
-  alert("मोबाइल गलत"); return;
- }
+ if(!photoBlob||!name.value||!post.value||!agree.checked)
+  return alert("Form incomplete");
+ if(!/^\d{10}$/.test(mobile.value))
+  return alert("Mobile invalid");
 
  const fd=new FormData();
  fd.append("file",photoBlob);
  fd.append("upload_preset","jbrms_unsigned");
+ fd.append("public_id","JBRRMS_"+mobile.value+"_"+Date.now());
 
  const up=await fetch(
   "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
@@ -199,19 +194,22 @@ async function joinNow(){
   status:"Pending"
  }]);
 
- alert("Submitted – Approval Pending 🚩");
+ alert("Submitted – Approval Pending");
+ photoBlob=null; photoStatus.textContent="";
 }
 
+/* SEARCH */
 async function searchMember(){
  const v=searchInput.value.trim(); if(!v)return;
 
- let q=sb.from("JBRRMS").select("*");
+ let q=sb.from("JBRRMS").select("*").eq("status","Approved");
  q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v.toUpperCase());
 
  const {data}=await q.order("id",{ascending:false}).limit(1).maybeSingle();
- if(!data){alert("Member नहीं मिला");return;}
+ if(!data)return alert("Approved member नहीं मिला");
 
- photoFront.src=data.photo_url+"?v="+data.id;
+ currentMemberCode=data.member_code;
+ photoFront.src=data.photo_url+"?t="+Date.now();
 
  c_name.textContent=data.name||"";
  c_father.textContent=data.father_name||"";
@@ -219,22 +217,25 @@ async function searchMember(){
  c_state.textContent=data.state||"";
  c_post.textContent=data.post||"";
  c_mobile.textContent=data.mobile||"";
- c_code.textContent=data.member_code||"Pending";
+ c_code.textContent=data.member_code||"";
 
  qr.innerHTML="";
- new QRCode(qr,{text:data.member_code||data.mobile,width:220,height:220});
-
+ new QRCode(qr,{text:data.member_code,width:220,height:220});
  showFront();
 }
 
+/* VIEW */
 function showFront(){front.style.display="block";back.style.display="none";side="front";}
 function showBack(){front.style.display="none";back.style.display="block";side="back";}
 
+/* DOWNLOAD */
 function download(){
- html2canvas(side==="front"?front:back,{scale:2,useCORS:true}).then(c=>{
+ html2canvas(side==="front"?front:back,{
+  scale:2,useCORS:true,backgroundColor:null
+ }).then(c=>{
   const a=document.createElement("a");
   a.href=c.toDataURL("image/png");
-  a.download="JBRRMS_"+side+".png";
+  a.download="JBRRMS_"+currentMemberCode+"_"+side+".png";
   a.click();
  });
 }
