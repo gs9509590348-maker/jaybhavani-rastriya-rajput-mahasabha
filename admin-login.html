@@ -38,26 +38,21 @@ button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:point
 .modal-box button{margin-top:6px;width:48%}
 </style>
 </head>
-<script>
-const ADMIN_PASSWORD = "JBRRMS@2026";
 
-const pass = prompt("Enter Admin Password");
-if(pass !== ADMIN_PASSWORD){
-  alert("Wrong Password");
-  document.body.innerHTML = "";
-}
-</script>
 <body>
 
-/* SIMPLE ADMIN PASSWORD */
-const ADMIN_PASSWORD = "JBRRMS@2026";  // ← अपना password यहाँ रखें
+<!-- 🔐 SIMPLE ADMIN PASSWORD -->
+<script>
+const ADMIN_PASSWORD = "JBRRMS@2026";
 
 const entered = prompt("Enter Admin Password");
 if (entered !== ADMIN_PASSWORD) {
   alert("❌ Wrong Password");
-  document.body.innerHTML = "<h2 style='text-align:center;margin-top:40px'>Access Denied</h2>";
+  document.body.innerHTML =
+    "<h2 style='text-align:center;margin-top:40px;color:red'>Access Denied</h2>";
 }
-  </script>
+</script>
+
 <header>JBRRMS – All-in-One Admin Panel</header>
 
 <div class="container">
@@ -173,12 +168,11 @@ async function loadMembers(){
 async function approveAll(id){
  if(!confirm("Approve this member?")) return;
  const code = "JBRRMS"+String(id).padStart(4,"0");
- const {error} = await sb.from("JBRRMS").update({
+ await sb.from("JBRRMS").update({
   status:"Approved",
   member_code:code
  }).eq("id",id);
 
- if(error){alert(error.message);return;}
  openAll(code);
  loadMembers();
 }
@@ -227,18 +221,8 @@ async function saveEdit(){
 /* ALL LINKS */
 function openAll(code){
  if(!code){alert("Member not approved");return;}
- openID(code);
- openCert(code);
- openAppt(code);
-}
-
-function openID(code){
  window.open("id-card.html?code="+code,"_blank");
-}
-function openCert(code){
  window.open("certificate.html?code="+code,"_blank");
-}
-function openAppt(code){
  window.open("appointment.html?code="+code,"_blank");
 }
 
