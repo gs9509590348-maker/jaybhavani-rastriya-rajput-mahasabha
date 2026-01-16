@@ -38,7 +38,15 @@ button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:point
 .modal-box button{margin-top:6px;width:48%}
 </style>
 </head>
+<script>
+const ADMIN_PASSWORD = "JBRRMS@2026";
 
+const pass = prompt("Enter Admin Password");
+if(pass !== ADMIN_PASSWORD){
+  alert("Wrong Password");
+  document.body.innerHTML = "";
+}
+</script>
 <body>
 <header>JBRRMS – All-in-One Admin Panel</header>
 
