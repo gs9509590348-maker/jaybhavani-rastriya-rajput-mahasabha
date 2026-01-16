@@ -18,6 +18,7 @@ input,button{width:100%;padding:10px;margin:6px 0;font-size:15px}
 button{background:#c69214;color:#fff;border:none;font-weight:800;border-radius:6px;cursor:pointer}
 label{font-size:13px;display:block;margin:8px 0}
 
+/* CARD */
 .card{display:none;position:relative;width:1080px;height:1676px;margin:20px auto}
 #front{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_front.png") center/cover}
 #back{background:url("https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/idcard_back.png") center/cover}
@@ -37,16 +38,23 @@ overflow:hidden;border:18px solid #d4af37;background:#fff
 }
 .photo img{width:100%;height:100%;object-fit:cover}
 
-.details{position:absolute;top:900px;padding-left:260px;font-size:48px;line-height:1.6}
+.details{
+position:absolute;top:900px;padding-left:260px;
+font-size:48px;line-height:1.6
+}
 #c_code{margin-top:14px;font-weight:900;letter-spacing:3px}
 
-#qr{position:absolute;top:380px;left:50%;transform:translateX(-50%)}
-
-.swabhiman{
-position:absolute;top:980px;left:120px;right:120px;
-text-align:center;font-size:34px;line-height:1.4;
-font-weight:700;color:#3b2b00;
+#qr{
+position:absolute;top:380px;left:50%;
+transform:translateX(-50%)
 }
+
+.card-info{
+position:absolute;top:720px;left:120px;right:120px;
+text-align:center;font-size:34px;line-height:1.45;color:#2b1d00
+}
+.card-info hr{margin:30px 0;border:1px solid #d4af37}
+.disclaimer{font-size:26px;opacity:.85}
 
 .actions{text-align:center;margin:20px}
 .actions button{width:180px;margin:6px}
@@ -55,6 +63,7 @@ font-weight:700;color:#3b2b00;
 
 <body>
 
+<!-- JOIN FORM -->
 <div id="joinBox">
 <h2>JBRRMS Join Form</h2>
 
@@ -78,7 +87,7 @@ font-weight:700;color:#3b2b00;
 <button onclick="searchMember()">🆔 ID Card देखें</button>
 </div>
 
-<!-- FRONT -->
+<!-- FRONT CARD -->
 <div id="front" class="card">
 <div class="front-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
 <div class="photo"><img id="photoFront" crossorigin="anonymous"></div>
@@ -94,39 +103,40 @@ font-weight:700;color:#3b2b00;
 </div>
 </div>
 
-<!-- BACK -->
+<!-- BACK CARD -->
 <div id="back" class="card">
 <div class="back-title">जय भवानी राष्ट्रीय राजपूत महासभा</div>
+
 <div id="qr"></div>
+
 <div class="card-info">
-  <p>स्वाभिमान हमारा धर्म है।</p>
-  <p>संघर्ष हमारी पहचान है।</p>
-  <p>एकता में ही शक्ति है।</p>
-  <p>सम्मान से ही समाज आगे बढ़ता है।</p>
-  <p><b>पद से बड़ा स्वाभिमान होता है।</b></p>
-  <p>राजपूत समाज – शौर्य और संस्कार।</p>
-  <p>जय भवानी, जय राजपूताना।</p>
+<p>स्वाभिमान हमारा धर्म है।</p>
+<p>संघर्ष हमारी पहचान है।</p>
+<p>एकता में ही शक्ति है।</p>
+<p>सम्मान से ही समाज आगे बढ़ता है।</p>
+<p><b>पद से बड़ा स्वाभिमान होता है।</b></p>
+<p>राजपूत समाज – शौर्य और संस्कार।</p>
+<p>जय भवानी, जय राजपूताना।</p>
 
-  <hr>
+<hr>
 
-  <p>📞 Helpline : 9166377972</p>
-  <p>📧 Email : jbrrms1@gmail.com</p>
-  <p>🌐 Website : www.jbrrms.in</p>
+<p>📞 Helpline : 9166377972</p>
+<p>📧 Email : jbrrms1@gmail.com</p>
+<p>🌐 Website : www.jbrrms.in</p>
 
-  <p class="disclaimer">
-    यह पहचान पत्र JBRRMS का आंतरिक सदस्यता कार्ड है।
-    यह किसी भी सरकारी, कानूनी या वित्तीय पहचान के रूप में मान्य नहीं है।
-    दुरुपयोग की स्थिति में सदस्यता रद्द की जा सकती है।
-  </p>
+<p class="disclaimer">
+यह पहचान पत्र JBRRMS का आंतरिक सदस्यता कार्ड है।
+यह किसी भी सरकारी, कानूनी या वित्तीय पहचान के रूप में मान्य नहीं है।
+दुरुपयोग की स्थिति में सदस्यता रद्द की जा सकती है।
+</p>
 </div>
-<div 
+</div>
 
-
-<!-- ACTION BUTTONS (ALWAYS VISIBLE) -->
+<!-- ACTIONS -->
 <div class="actions">
-  <button onclick="showFront()">⬅ Front</button>
-  <button onclick="showBack()">➡ Back</button>
-  <button onclick="download()">⬇ Download</button>
+<button onclick="showFront()">⬅ Front</button>
+<button onclick="showBack()">➡ Back</button>
+<button onclick="download()">⬇ Download</button>
 </div>
 
 <script>
@@ -151,7 +161,7 @@ qr=el("qr"), front=el("front"), back=el("back");
 
 let photoBlob=null, side="front", currentMemberCode="";
 
-/* PHOTO */
+/* PHOTO CROP */
 photoInput.onchange=e=>{
  const f=e.target.files[0]; if(!f)return;
  const img=new Image(); img.src=URL.createObjectURL(f);
@@ -159,11 +169,12 @@ photoInput.onchange=e=>{
   const c=document.createElement("canvas");
   c.width=c.height=600;
   const m=Math.min(img.width,img.height);
-  c.getContext("2d").drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600);
+  c.getContext("2d").drawImage(
+   img,(img.width-m)/2,(img.height-m)/2,m,m,0,0,600,600
+  );
   c.toBlob(b=>{
    photoBlob=b;
    photoStatus.textContent="Photo ready ✅";
-   photoInput.value="";
   },"image/jpeg",0.9);
  };
 };
@@ -178,7 +189,6 @@ async function joinNow(){
  const fd=new FormData();
  fd.append("file",photoBlob);
  fd.append("upload_preset","jbrms_unsigned");
- fd.append("public_id","JBRRMS_"+mobile.value+"_"+Date.now());
 
  const up=await fetch(
   "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
@@ -197,7 +207,7 @@ async function joinNow(){
  }]);
 
  alert("Submitted – Approval Pending");
- photoBlob=null; photoStatus.textContent="";
+ location.reload();
 }
 
 /* SEARCH */
@@ -205,21 +215,21 @@ async function searchMember(){
  const v=searchInput.value.trim(); if(!v)return;
 
  let q=sb.from("JBRRMS").select("*").eq("status","Approved");
- q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v.toUpperCase());
+ q=/^\d{10}$/.test(v)?q.eq("mobile",v):q.eq("member_code",v);
 
- const {data}=await q.order("id",{ascending:false}).limit(1).maybeSingle();
+ const {data}=await q.limit(1).maybeSingle();
  if(!data)return alert("Approved member नहीं मिला");
 
  currentMemberCode=data.member_code;
  photoFront.src=data.photo_url+"?t="+Date.now();
 
- c_name.textContent=data.name||"";
- c_father.textContent=data.father_name||"";
- c_district.textContent=data.district||"";
- c_state.textContent=data.state||"";
- c_post.textContent=data.post||"";
- c_mobile.textContent=data.mobile||"";
- c_code.textContent=data.member_code||"";
+ c_name.textContent=data.name;
+ c_father.textContent=data.father_name;
+ c_district.textContent=data.district;
+ c_state.textContent=data.state;
+ c_post.textContent=data.post;
+ c_mobile.textContent=data.mobile;
+ c_code.textContent=data.member_code;
 
  qr.innerHTML="";
  new QRCode(qr,{text:data.member_code,width:220,height:220});
@@ -232,9 +242,8 @@ function showBack(){front.style.display="none";back.style.display="block";side="
 
 /* DOWNLOAD */
 function download(){
- html2canvas(side==="front"?front:back,{
-  scale:2,useCORS:true,backgroundColor:null
- }).then(c=>{
+ html2canvas(side==="front"?front:back,{scale:2,useCORS:true})
+ .then(c=>{
   const a=document.createElement("a");
   a.href=c.toDataURL("image/png");
   a.download="JBRRMS_"+currentMemberCode+"_"+side+".png";
