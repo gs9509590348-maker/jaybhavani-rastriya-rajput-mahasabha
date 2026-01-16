@@ -48,6 +48,16 @@ if(pass !== ADMIN_PASSWORD){
 }
 </script>
 <body>
+
+/* SIMPLE ADMIN PASSWORD */
+const ADMIN_PASSWORD = "JBRRMS@2026";  // ← अपना password यहाँ रखें
+
+const entered = prompt("Enter Admin Password");
+if (entered !== ADMIN_PASSWORD) {
+  alert("❌ Wrong Password");
+  document.body.innerHTML = "<h2 style='text-align:center;margin-top:40px'>Access Denied</h2>";
+}
+  </script>
 <header>JBRRMS – All-in-One Admin Panel</header>
 
 <div class="container">
