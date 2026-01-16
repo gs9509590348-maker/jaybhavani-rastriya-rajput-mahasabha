@@ -2,8 +2,10 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Member Login - JB RRMS</title>
+<title>Member Login - JBRRMS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{font-family:system-ui;background:#f3f3f3;padding:10px;text-align:center}
@@ -19,68 +21,67 @@ button{background:#8b0000;color:#fff;border:none}
 <h3>👤 Member Login</h3>
 
 <div class="card">
-<input id="mobile" maxlength="10" placeholder="मोबाइल नंबर दर्ज करें">
-<button id="loginBtn">Login</button>
+<input id="mobile" maxlength="10" inputmode="numeric" placeholder="मोबाइल नंबर दर्ज करें">
+<button onclick="login()">Login</button>
 
 <p id="msg"></p>
 
 <div id="memberBox" style="display:none;text-align:left">
   <p><b>नाम:</b> <span id="mname"></span></p>
   <p><b>मोबाइल:</b> <span id="mmobile"></span></p>
-  <p><b>पता:</b> <span id="maddress"></span></p>
-  <p><b>पद:</b> <span id="mrole"></span></p>
+  <p><b>पद:</b> <span id="mpost"></span></p>
   <p><b>स्टेटस:</b> <span id="mstatus"></span></p>
 </div>
-
 </div>
 
-<script type="module">
+<script>
+/* Supabase Client */
+const sb = supabase.createClient(
+  "https://ejdzdptqxelilkseannw.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
+);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getFirestore, collection, query, where, getDocs }
-from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+/* DOM */
+const msg = document.getElementById("msg");
+const memberBox = document.getElementById("memberBox");
+const mname = document.getElementById("mname");
+const mmobile = document.getElementById("mmobile");
+const mpost = document.getElementById("mpost");
+const mstatus = document.getElementById("mstatus");
 
-const firebaseConfig = {
- apiKey:"AIzaSyBQpzc5xAvInmSCbzsZiy7TpD0OXVyij_4",
- authDomain:"jb-rrms-membership-system.firebaseapp.com",
- projectId:"jb-rrms-membership-system",
- storageBucket:"jb-rrms-membership-system.firebasestorage.app",
- messagingSenderId:"493815911364",
- appId:"1:493815911364:web:e8f2270cf73d93dd368a91"
-};
+async function login(){
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const mobile = document.getElementById("mobile").value.trim();
 
-loginBtn.onclick = async ()=>{
+  if(!/^\d{10}$/.test(mobile)){
+    alert("कृपया सही 10 अंकों का मोबाइल नंबर डालें");
+    return;
+  }
 
- let mobile = document.getElementById("mobile").value.trim();
+  msg.innerText = "🔍 खोजा जा रहा है...";
+  memberBox.style.display = "none";
 
- if(mobile.length!=10){
-   alert("सही मोबाइल डालें");
-   return;
- }
+  const { data, error } = await sb
+    .from("JBRRMS")
+    .select("name,mobile,post,status")
+    .eq("mobile", mobile)
+    .eq("status", "Approved")
+    .limit(1)
+    .maybeSingle();
 
- const q = query(collection(db,"members"), where("mobile","==",mobile));
- const snap = await getDocs(q);
+  if(error || !data){
+    msg.innerText = "❌ Approved member नहीं मिला";
+    return;
+  }
 
- if(snap.empty){
-   msg.innerText="❌ आपका रिकॉर्ड नहीं मिला";
-   return;
- }
+  memberBox.style.display = "block";
+  msg.innerText = "";
 
- snap.forEach(d=>{
-   let m = d.data();
-   memberBox.style.display="block";
-   mname.innerText = m.name;
-   mmobile.innerText = m.mobile;
-   maddress.innerText = m.address;
-   mrole.innerText = m.role;
-   mstatus.innerText = m.status=="approved" ? "✔ Approved Member" : "⏳ Pending Approval";
- });
-
-};
-
+  mname.textContent = data.name;
+  mmobile.textContent = data.mobile;
+  mpost.textContent = data.post || "-";
+  mstatus.textContent = "✔ Approved Member";
+}
 </script>
 
 </body>
