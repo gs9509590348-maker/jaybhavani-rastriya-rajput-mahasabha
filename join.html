@@ -187,8 +187,14 @@ async function joinNow(){
   return alert("Mobile invalid");
 
  const fd=new FormData();
- fd.append("file",photoBlob);
- fd.append("upload_preset","jbrms_unsigned");
+fd.append("file",photoBlob);
+fd.append("upload_preset","jbrms_unsigned");
+
+// 🔥 UNIQUE photo id (NO overwrite, NO cache issue)
+fd.append(
+  "public_id",
+  "JBRRMS_" + mobile.value + "_" + Date.now()
+);
 
  const up=await fetch(
   "https://api.cloudinary.com/v1_1/dlqr73p7j/image/upload",
