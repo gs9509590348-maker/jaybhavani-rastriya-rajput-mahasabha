@@ -227,20 +227,27 @@ async function searchMember(){
  if(!data)return alert("Approved member नहीं मिला");
 
  currentMemberCode=data.member_code;
- photoFront.src=data.photo_url+"?t="+Date.now();
+ photoFront.crossOrigin = "anonymous";
+photoFront.src = data.photo_url + "?v=" + data.member_code + "_" + Date.now();
 
- c_name.textContent=data.name;
- c_father.textContent=data.father_name;
- c_district.textContent=data.district;
- c_state.textContent=data.state;
- c_post.textContent=data.post;
- c_mobile.textContent=data.mobile;
- c_code.textContent=data.member_code;
+c_name.textContent = data.name;
+c_father.textContent = data.father_name;
+c_district.textContent = data.district;
+c_state.textContent = data.state;
+c_post.textContent = data.post;
+c_mobile.textContent = data.mobile;
+c_code.textContent = data.member_code;
 
- qr.innerHTML="";
- new QRCode(qr,{text:data.member_code,width:220,height:220});
- showFront();
-}
+photoFront.onload = () => {
+  qr.innerHTML = "";
+  new QRCode(qr,{
+    text: data.member_code,
+    width: 220,
+    height: 220
+  });
+
+  showFront(); // 👈 अब image load के बाद ही चलेगा
+};
 
 /* VIEW */
 function showFront(){front.style.display="block";back.style.display="none";side="front";}
@@ -248,7 +255,10 @@ function showBack(){front.style.display="none";back.style.display="block";side="
 
 /* DOWNLOAD */
 function download(){
- html2canvas(side==="front"?front:back,{scale:2,useCORS:true})
+ html2canvas(
+  side==="front"?front:back,
+  { scale:2, useCORS:true, imageTimeout:0 }
+)
  .then(c=>{
   const a=document.createElement("a");
   a.href=c.toDataURL("image/png");
