@@ -152,7 +152,9 @@ async function loadMembers(){
    <td class="status-${m.status}">${m.status}</td>
    <td>
     ${m.status==="Pending"?`
-     <button class="approve" onclick="approveAll(${m.id})">Approve</button>
+     <button class="approve" onclick="approveAll(${m.id})">
+ Approve + WA + ID
+</button>
      <button class="reject" onclick="reject(${m.id})">Reject</button>
     `:`
      <button class="edit" onclick="openEdit(${m.id})">Edit</button>
@@ -164,16 +166,63 @@ async function loadMembers(){
  });
 }
 
-/* APPROVE */
+// 🤖 ONE CLICK APPROVE + WA + ID CARD
+function approveOneClick(member){
+ const msg = `
+🚩 जय भवानी राष्ट्रीय राजपूत महासभा 🚩
+
+प्रिय ${member.name},
+
+आपका आवेदन *Approved* कर दिया गया है।
+
+📌 Member ID: ${member.member_code}
+📌 पद: ${member.post || "-"}
+📌 जिला: ${member.district || "-"}
+
+👉 अपना ID Card देखें:
+${location.origin}/id-card.html?code=${member.member_code}
+
+क्योंकि —
+पद से बड़ा स्वाभिमान है।
+
+🚩 जय भवानी 🚩
+`;
+
+ // WhatsApp
+ window.open(
+  "https://wa.me/91"+member.mobile+
+  "?text="+encodeURIComponent(msg),
+  "_blank"
+ );
+
+ // ID Card
+ window.open(
+  "id-card.html?code="+member.member_code,
+  "_blank"
+ );
+}
+
 async function approveAll(id){
- if(!confirm("Approve this member?")) return;
+ if(!confirm("Approve + WhatsApp + ID Card?")) return;
+
  const code = "JBRRMS"+String(id).padStart(4,"0");
+
+ // Update DB
  await sb.from("JBRRMS").update({
   status:"Approved",
   member_code:code
  }).eq("id",id);
 
- openAll(code);
+ // Fetch member
+ const {data:member} = await sb
+  .from("JBRRMS")
+  .select("*")
+  .eq("id",id)
+  .single();
+
+ // One click action
+ approveOneClick(member);
+
  loadMembers();
 }
 
