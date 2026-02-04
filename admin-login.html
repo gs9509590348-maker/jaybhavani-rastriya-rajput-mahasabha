@@ -2,30 +2,24 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>JBRRMS Admin Panel</title>
+<title>JBRRMS Unified Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{margin:0;font-family:Arial;background:#f4f4f4}
 header{background:#7b1fa2;color:#fff;padding:12px;text-align:center;font-size:18px;font-weight:700}
 .container{padding:10px}
-
-.controls{display:flex;gap:6px;margin-bottom:8px}
-.controls input,.controls select{flex:1;padding:6px;font-size:13px}
-
+.controls{display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap}
+.controls input,.controls select{padding:6px;font-size:13px}
 table{width:100%;border-collapse:collapse;background:#fff}
 th,td{border:1px solid #ccc;padding:6px;font-size:12px;text-align:center}
 th{background:#eee}
-
-button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:pointer}
+button{padding:4px 8px;border:none;border-radius:4px;font-size:11px;cursor:pointer}
 .approve{background:#2e7d32;color:#fff}
 .reject{background:#c62828;color:#fff}
-.edit{background:#f9a825;color:#000}
 .hook{background:#1565c0;color:#fff}
-
+.edit{background:#f9a825;color:#000}
 .status-Pending{color:#ff9800;font-weight:700}
 .status-Approved{color:#2e7d32;font-weight:700}
 .status-Rejected{color:#c62828;font-weight:700}
@@ -36,46 +30,71 @@ button{padding:4px 7px;font-size:11px;border:none;border-radius:4px;cursor:point
 .modal-box h3{text-align:center;margin:5px 0}
 .modal-box input,.modal-box select{width:100%;padding:6px;margin:4px 0;font-size:13px}
 .modal-box button{margin-top:6px;width:48%}
+.modal-box img{width:120px;height:120px;object-fit:cover;border-radius:8px;display:none;margin:6px auto}
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 ADMIN PASSWORD -->
 <script>
-const ADMIN_PASSWORD = "JBRRMS@2026";
-const entered = prompt("Enter Admin Password");
-if (entered !== ADMIN_PASSWORD) {
- alert("❌ Wrong Password");
- document.body.innerHTML =
- "<h2 style='text-align:center;margin-top:40px;color:red'>Access Denied</h2>";
+/* ========= LOGIN ========= */
+const ROLE = prompt(
+"Role लिखें:\nmain-admin\nnational-president\nyouth-national-president\nstate-president\nyouth-state-president\ndistrict-president\nyouth-district-president"
+);
+const PASS = prompt("Passcode लिखें");
+
+const ROLE_KEYS={
+ "main-admin":"JBRRMS@ROOT",
+ "national-president":"JBRRMS@NP",
+ "youth-national-president":"JBRRMS@YNP",
+ "state-president":"JBRRMS@SP",
+ "youth-state-president":"JBRRMS@YSP",
+ "district-president":"JBRRMS@DP",
+ "youth-district-president":"JBRRMS@YDP"
+};
+
+if(!ROLE_KEYS[ROLE] || ROLE_KEYS[ROLE]!==PASS){
+ document.body.innerHTML="<h2 style='text-align:center;margin-top:40px;color:red'>🚫 Access Denied</h2>";
+ throw new Error("Unauthorized");
 }
+
+const PERMISSION={
+ "main-admin":{approve:1,reject:1},
+ "national-president":{approve:1,reject:1},
+ "youth-national-president":{approve:0,reject:1},
+ "state-president":{approve:0,reject:1},
+ "youth-state-president":{approve:0,reject:0},
+ "district-president":{approve:0,reject:1},
+ "youth-district-president":{approve:0,reject:0}
+};
+const P=PERMISSION[ROLE];
+
+let STATE="", DISTRICT="", TEHSIL="";
 </script>
 
-<header>JBRRMS – All-in-One Admin Panel</header>
+<header>🚩 JBRRMS Unified Admin Panel</header>
 
 <div class="container">
 
 <div class="controls">
- <input id="search" placeholder="नाम / मोबाइल / Member ID">
- <select id="statusFilter">
-  <option value="All">All</option>
-  <option value="Pending">Pending</option>
-  <option value="Approved">Approved</option>
-  <option value="Rejected">Rejected</option>
- </select>
+<input id="search" placeholder="नाम / मोबाइल / Member ID">
+<select id="stateSelect"></select>
+<select id="districtSelect"></select>
+<select id="tehsilSelect"></select>
+<select id="statusFilter">
+<option value="All">All</option>
+<option value="Pending">Pending</option>
+<option value="Approved">Approved</option>
+<option value="Rejected">Rejected</option>
+</select>
+<button class="hook" onclick="meeting()">📢 बैठक</button>
 </div>
 
 <table>
 <thead>
 <tr>
- <th>ID</th>
- <th>Name</th>
- <th>Post</th>
- <th>Mobile</th>
- <th>District</th>
- <th>Status</th>
- <th>Action</th>
+<th>ID</th><th>नाम</th><th>पद</th><th>मोबाइल</th>
+<th>जिला</th><th>तहसील</th><th>Status</th><th>Action</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -87,7 +106,6 @@ if (entered !== ADMIN_PASSWORD) {
 <div class="modal" id="editModal">
  <div class="modal-box">
   <h3>Edit Member</h3>
-
   <input id="e_member_code" placeholder="Member Code">
   <input id="e_name" placeholder="Name">
   <input id="e_father" placeholder="Father Name">
@@ -95,20 +113,13 @@ if (entered !== ADMIN_PASSWORD) {
   <input id="e_district" placeholder="District">
   <input id="e_state" placeholder="State">
   <input id="e_mobile" placeholder="Mobile">
-
   <select id="e_status">
    <option value="Pending">Pending</option>
    <option value="Approved">Approved</option>
    <option value="Rejected">Rejected</option>
   </select>
-
-  <!-- PHOTO UPDATE -->
-  <img id="photoPreview"
-       style="width:120px;height:120px;object-fit:cover;
-       border-radius:8px;display:none;margin:6px auto">
-
+  <img id="photoPreview">
   <input type="file" id="photoFile" accept="image/*">
-
   <div style="display:flex;justify-content:space-between">
    <button class="approve" onclick="saveEdit()">Save</button>
    <button class="reject" onclick="closeEdit()">Cancel</button>
@@ -117,75 +128,124 @@ if (entered !== ADMIN_PASSWORD) {
 </div>
 
 <script>
-"use strict";
-
-/* SUPABASE */
+/* ========= SUPABASE ========= */
 const sb = supabase.createClient(
  "https://ejdzdptqxelilkseannw.supabase.co",
  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVqZHpkcHRxeGVsaWxrc2Vhbm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc3MTE2MTYsImV4cCI6MjA4MzI4NzYxNn0.j3V1D7Ha2SlKwM9cCCHXlFOzAACQZQ4PVXBIkLq4_cc"
 );
 
-const tbody = document.getElementById("tbody");
-const searchInput = document.getElementById("search");
-const statusFilter = document.getElementById("statusFilter");
+/* ========= DATA ========= */
+const DATA={
+ "Rajasthan":{
+  "Jhalawar":["Jhalarapatan","Aklera","Pirawa","ManoharThana"],
+  "Kota":["Kota","Sangod","Digod","Pipalda"],
+  "Baran":["Baran","Chhabra","Anta"],
+  "Bundi":["Bundi","Nainwa","Keshoraipatan"]
+ },
+ "Madhya Pradesh":{
+  "Rajgarh":["Rajgarh","Biaora","Narsinghgarh","Sarangpur"],
+  "Mandsaur":["Mandsaur","Malhargarh","Sitamau","Garoth","Bhanpura","Suwasra","Shamgarh"],
+  "Neemuch":["Neemuch","Manasa","Jawad"],
+  "Ratlam":["Ratlam","Jaora","Alot","Sailana"],
+  "Ujjain":["Ujjain","Mahidpur","Khachrod","Tarana"],
+  "Indore":["Indore","Depalpur","Sanwer","Mhow"],
+  "Shajapur":["Shajapur","Agar","Susner"],
+  "Agar Malwa":["Agar","Barod"],
+  "Guna":["Guna","Aron","Chachoda"]
+ }
+};
 
-const photoFile = document.getElementById("photoFile");
-const photoPreview = document.getElementById("photoPreview");
+/* ========= ELEMENTS ========= */
+const stateSel=stateSelect, districtSel=districtSelect, tehsilSel=tehsilSelect;
+const tbody=document.getElementById("tbody");
+const search=document.getElementById("search");
+const statusFilter=document.getElementById("statusFilter");
+const photoFile=document.getElementById("photoFile");
+const photoPreview=document.getElementById("photoPreview");
 
-let editId = null;
-let selectedPhotoFile = null;
+let editId=null;
+let selectedPhotoFile=null;
+
+/* INIT DROPDOWNS */
+stateSel.innerHTML='<option value="">All State</option>';
+Object.keys(DATA).forEach(s=>stateSel.innerHTML+=`<option>${s}</option>`);
+districtSel.innerHTML='<option value="">All District</option>';
+tehsilSel.innerHTML='<option value="">All Tehsil</option>';
+
+/* DROPDOWN EVENTS */
+stateSel.onchange=()=>{
+ STATE=stateSel.value; DISTRICT=""; TEHSIL="";
+ districtSel.innerHTML='<option value="">All District</option>';
+ tehsilSel.innerHTML='<option value="">All Tehsil</option>';
+ if(DATA[STATE]) Object.keys(DATA[STATE]).forEach(d=>districtSel.innerHTML+=`<option>${d}</option>`);
+ loadMembers();
+};
+districtSel.onchange=()=>{
+ DISTRICT=districtSel.value; TEHSIL="";
+ tehsilSel.innerHTML='<option value="">All Tehsil</option>';
+ if(DATA[STATE]?.[DISTRICT]) DATA[STATE][DISTRICT].forEach(t=>tehsilSel.innerHTML+=`<option>${t}</option>`);
+ loadMembers();
+};
+tehsilSel.onchange=()=>{TEHSIL=tehsilSel.value; loadMembers();};
+
+/* ROLE LOCK */
+if(ROLE.includes("state")){
+ STATE=prompt("State लिखें"); stateSel.value=STATE; stateSel.disabled=true; stateSel.onchange();
+}
+if(ROLE.includes("district")){
+ STATE=prompt("State लिखें"); DISTRICT=prompt("District लिखें");
+ stateSel.value=STATE; districtSel.value=DISTRICT; stateSel.disabled=true; districtSel.disabled=true;
+ stateSel.onchange(); districtSel.onchange();
+}
 
 /* LOAD MEMBERS */
 async function loadMembers(){
- let q = sb.from("JBRRMS").select("*").order("id",{ascending:false});
- if(statusFilter.value!=="All") q = q.eq("status",statusFilter.value);
+ let q=sb.from("JBRRMS").select("*").order("id",{ascending:false});
+ if(statusFilter.value!=="All") q=q.eq("status",statusFilter.value);
+ if(STATE) q=q.eq("state",STATE);
+ if(DISTRICT) q=q.eq("district",DISTRICT);
+ if(TEHSIL) q=q.eq("tehsil",TEHSIL);
 
- const {data} = await q;
+ const {data=[]}=await q;
  tbody.innerHTML="";
+ const term=(search.value||"").toLowerCase();
 
- const term=(searchInput.value||"").toLowerCase();
-
- data.filter(m=>{
-  return !term ||
-   (m.name||"").toLowerCase().includes(term) ||
-   (m.mobile||"").includes(term) ||
-   (m.member_code||"").toLowerCase().includes(term);
- }).forEach(m=>{
-  tbody.insertAdjacentHTML("beforeend",`
-  <tr>
-   <td>${m.id}</td>
-   <td>${m.name||""}</td>
-   <td>${m.post||"-"}</td>
-   <td>${m.mobile||""}</td>
-   <td>${m.district||"-"}</td>
-   <td class="status-${m.status}">${m.status}</td>
-   <td>
-    ${m.status==="Pending"?`
-     <button class="approve" onclick="approve(${m.id})">Approve</button>
-     <button class="reject" onclick="reject(${m.id})">Reject</button>
-    `:`
-     <button class="edit" onclick="openEdit(${m.id})">Edit</button>
-    `}
-   </td>
-  </tr>
-  `);
+ data.filter(m=>
+  !term ||
+  (m.name||"").toLowerCase().includes(term) ||
+  (m.mobile||"").includes(term)
+ ).forEach(m=>{
+  tbody.innerHTML+=`
+<tr>
+<td>${m.id}</td>
+<td>${m.name||""}</td>
+<td>${m.post||""}</td>
+<td>${m.mobile||""}</td>
+<td>${m.district||""}</td>
+<td>${m.tehsil||""}</td>
+<td class="status-${m.status}">${m.status}</td>
+<td>
+${P.approve && m.status==="Pending"?`<button class="approve" onclick="approve(${m.id})">Approve</button>`:""}
+${P.reject?`<button class="reject" onclick="reject(${m.id})">Reject</button>`:""}
+<button class="hook" onclick="openEdit(${m.id})">Edit</button>
+<button class="hook" onclick="appointment(${m.id})">नियुक्ति पत्र</button>
+</td>
+</tr>`;
  });
 }
 
-/* PHOTO PREVIEW */
-photoFile.onchange = e=>{
- const file=e.target.files[0];
- if(!file) return;
- selectedPhotoFile=file;
- const r=new FileReader();
- r.onload=ev=>{
-  photoPreview.src=ev.target.result;
-  photoPreview.style.display="block";
- };
- r.readAsDataURL(file);
-};
+/* APPROVE / REJECT */
+async function approve(id){
+ const code="JBRRMS"+String(id).padStart(5,"0");
+ await sb.from("JBRRMS").update({status:"Approved",member_code:code}).eq("id",id);
+ loadMembers();
+}
+async function reject(id){
+ await sb.from("JBRRMS").update({status:"Rejected"}).eq("id",id);
+ loadMembers();
+}
 
-/* EDIT */
+/* EDIT MODAL */
 async function openEdit(id){
  editId=id;
  const {data}=await sb.from("JBRRMS").select("*").eq("id",id).single();
@@ -200,46 +260,34 @@ async function openEdit(id){
  e_status.value=data.status||"Pending";
 
  selectedPhotoFile=null;
-
- if(data.photo_url){
-  photoPreview.src=data.photo_url;
-  photoPreview.style.display="block";
- }else photoPreview.style.display="none";
+ if(data.photo_url){photoPreview.src=data.photo_url; photoPreview.style.display="block";}
+ else photoPreview.style.display="none";
 
  photoFile.disabled = data.status!=="Approved";
-
  document.getElementById("editModal").style.display="block";
 }
+function closeEdit(){editId=null;document.getElementById("editModal").style.display="none";}
 
-function closeEdit(){
- editId=null;
- document.getElementById("editModal").style.display="none";
-}
+/* PHOTO PREVIEW */
+photoFile.onchange=e=>{
+ const file=e.target.files[0];
+ if(!file) return;
+ selectedPhotoFile=file;
+ const r=new FileReader();
+ r.onload=ev=>{photoPreview.src=ev.target.result; photoPreview.style.display="block";}
+ r.readAsDataURL(file);
+};
 
-/* SAVE */
+/* SAVE EDIT */
 async function saveEdit(){
-
- if(e_status.value!=="Approved" && selectedPhotoFile){
-  alert("❌ Photo update only for Approved members");
-  return;
- }
-
+ if(selectedPhotoFile && e_status.value!=="Approved"){alert("Photo update only for Approved members"); return;}
  if(selectedPhotoFile && !confirm("⚠️ Photo replace होगी, sure?")) return;
 
  let photoUrl=null;
-
  if(selectedPhotoFile){
   const name=(e_member_code.value||("JBRRMS"+editId))+".jpg";
-
-  await sb.storage.from("members").upload(
-   "photos/"+name,
-   selectedPhotoFile,
-   {upsert:true}
-  );
-
-  photoUrl=
-  "https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/photos/"
-  +name+"?v="+Date.now();
+  await sb.storage.from("members").upload("photos/"+name, selectedPhotoFile, {upsert:true});
+  photoUrl="https://ejdzdptqxelilkseannw.supabase.co/storage/v1/object/public/members/photos/"+name+"?v="+Date.now();
  }
 
  await sb.from("JBRRMS").update({
@@ -258,18 +306,20 @@ async function saveEdit(){
  loadMembers();
 }
 
-/* APPROVE / REJECT */
-async function approve(id){
- const code="JBRRMS"+String(id).padStart(4,"0");
- await sb.from("JBRRMS").update({status:"Approved",member_code:code}).eq("id",id);
- loadMembers();
-}
-async function reject(id){
- await sb.from("JBRRMS").update({status:"Rejected"}).eq("id",id);
- loadMembers();
+/* APPOINTMENT HOOK */
+async function appointment(id){
+ const {data:m}=await sb.from("JBRRMS").select("*").eq("id",id).single();
+ if(m.status!=="Approved"){alert("केवल Approved सदस्य"); return;}
+ alert("नियुक्ति पत्र / Certificate / ID Card generator hook ready");
 }
 
-searchInput.oninput=loadMembers;
+/* MEETING */
+function meeting(){
+ const t=prompt("बैठक सूचना लिखें");
+ if(t) window.open("https://wa.me/?text="+encodeURIComponent("🚩 JBRRMS 🚩\n\n"+t));
+}
+
+search.oninput=loadMembers;
 statusFilter.onchange=loadMembers;
 loadMembers();
 </script>
